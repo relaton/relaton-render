@@ -1,7 +1,7 @@
 
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "cnccs/version"
+require "iso690render/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "iso690render"
@@ -27,7 +27,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "simplecov"
   spec.add_development_dependency "byebug"
   spec.add_development_dependency "equivalent-xml", "~> 0.6"
-  spec.add_development_dependency "byebug"
 
   spec.add_dependency 'nokogiri'
   spec.add_dependency "twitter_cldr"

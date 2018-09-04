@@ -49,18 +49,27 @@ module Iso690Render
     "--"
   end
 
+  def self.contributorRole(contributors)
+    return "" unless contributors.length > 0
+    if contributors[0]["role"] == "editor"
+      return contributors.length > 1 ? " (Eds.)" : "(Ed.)"
+    end
+  end
+
   def self.creatornames(doc)
     cr = doc.xpath("/bibitem/contributor[role = 'author']") ||
       doc.xpath("/bibitem/contributor[role = 'performer']") ||
       doc.xpath("/bibitem/contributor[role = 'publisher']") ||
       doc.xpath("/bibitem/contributor[role = 'adapter']") ||
       doc.xpath("/bibitem/contributor[role = 'translator']") ||
-      doc.xpath("/bibitem/contributor[role = 'distributor']")
+      doc.xpath("/bibitem/contributor[role = 'editor']") ||
+      doc.xpath("/bibitem/contributor[role = 'distributor']") ||
+      doc.xpath("/bibitem/contributor")
     ret = []
     cr.each do |x|
       ret << extractname(x)
     end
-    multiplenames(ret)
+    multiplenames(ret) + contributorRole(cr)
   end
 
   def self.title(doc)
@@ -159,10 +168,10 @@ module Iso690Render
     ret.join(", ")
   end
 
-  def self.parse(doc)
+  def self.parse(doc, embedded = false)
     ret = ""
     type = type(doc)
-    ret += wrap(creatornames(doc))
+    ret += embedded ? wrap(creatornames(doc)) : wrap(creatornames(doc), " ", ",")
     ret += included(type) ? wrap(title(doc)) : wrap(title(doc), " <I>", "</I>.")
     ret += wrap(medium(doc), " [", "].")
     ret += wrap(edition(doc))
@@ -172,10 +181,10 @@ module Iso690Render
     ret += wrap(standardidentifier(doc))
     ret += wrap(accessLocation(doc, "At: ", "."))
     if container = doc.at("./bibitem/relation[@type='includedIn']")
-      ret += wrap(parse(container.at("./bibitem")), "In: ", "")
-      ret += wrap(extent(container.xpath("./locality")) || doc.xpath("./bibitem/extent"))
+      ret += wrap(parse(container.at("./bibitem"), true), "In: ", "")
+      ret += wrap(extent(container.xpath("./locality") || doc.xpath("./bibitem/extent")))
     else
-      ret += wrap(extent(doc.xpath("./bibitem/extent"))
+      ret += wrap(extent(doc.xpath("./bibitem/extent")))
     end
     ret
   end
