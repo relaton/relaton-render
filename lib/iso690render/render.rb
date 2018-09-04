@@ -88,7 +88,7 @@ module Iso690Render
     doc.at("./bibitem/date[@type = 'published']")
   end
 
-  def self.series(doc)
+  def self.series(doc, type)
     s = doc.at("./bibitem/series[@type = 'main']") || 
       doc.at("./bibitem/series[not(@type)]") ||
       doc.at("./bibitem/series")
@@ -98,10 +98,33 @@ module Iso690Render
     n = s.at("./number")
     p = s.at("./partnumber")
     ret = ""
-    ret += t.text if t
+    if t
+      title = included(type) ? wrap(t.text, " <I>", "</I>.") : wrap(t.text)
+      ret += title
+    end
     ret += " #{n.text}" if n
     ret += ".#{p.text}" if p
-    p
+    ret
+  end
+
+  def self.standardidentifier(doc)
+    ret = []
+    doc.xpath("./bibitem/docidentifier").each do |id|
+      r = ""
+      r += "#{id['type']} " if id["type"]
+      r += id.text
+      ret << r
+    end
+    ret.join(". ")
+  end
+
+  def self.accessLocation
+    s = doc.at("./bibitem/accessLocation") or return ""
+    s.text
+  end
+
+  def self.included(type)
+    ["article", "presentation"].include? type
   end
 
   def self.wrap(text, startdelim = " ", enddelim = ".")
@@ -109,33 +132,18 @@ module Iso690Render
     "#{startdelim}#{text}#{enddelim}"
   end
 
-  # series title; numeration within item; standard identifier; availability accesss or location; additional general information
   def self.parse(doc)
     ret = ""
+    type = doc&.at("./bibitem/@type")&.text || "book"
     ret += wrap(creatornames(doc))
-    ret += wrap(title(doc), " <I>", "</I>.")
+    ret += included(type) ? wrap(title(doc)) : wrap(title(doc), " <I>", "</I>.")
     ret += wrap(medium(doc), " [", "].")
     ret += wrap(edition(doc))
     ret += wrap(placepub(doc))
     ret += wrap(date(doc))
-    ret += wrap(series(doc))
+    ret += wrap(series(doc), type)
+    ret += wrap(standardidentifier(doc))
+    ret += wrap(accessLocation(doc, "At: ", "."))
     ret
   end
-
-=begin
-  def self.parse(node)
-    out = ""
-    if node.text?
-      return node.text
-    else
-      case node.name
-      when "bib"
-        node.elements.each { |n| out << parse(n) }
-        return out
-      else
-        node.to_xml
-      end
-    end
-    end
-=end
 end
