@@ -1,6 +1,10 @@
 require "nokogiri"
 
 module Iso690Render
+=begin
+  Out of scope: Provenance (differentiating elements by @source in rendering)
+=end
+
   def self.render(bib)
     docxml = Nokogiri::XML(bib)
     parse(docxml.root)
@@ -124,7 +128,7 @@ module Iso690Render
   end
 
   def self.included(type)
-    ["article", "presentation"].include? type
+    ["article", "inbook", "incollection", "inproceedings"].include? type
   end
 
   def self.wrap(text, startdelim = " ", enddelim = ".")
@@ -132,9 +136,32 @@ module Iso690Render
     "#{startdelim}#{text}#{enddelim}"
   end
 
+  def self.type(doc)
+    type = doc.at("./bibitem/@type") and return type
+    doc.at("./bibitem/includedIn") and return "inbook"
+    "book"
+  end
+
+  def self.extent1(type, from, to)
+    ret = ""
+    ret += "#{type} " unless type == "page"
+    ret += from.text if from
+    ret += "&ndash;#{to.text}" if to
+    ret
+  end
+
+  def self.extent(localities)
+    ret = []
+    localities.each do |l|
+      ret << extent1(["type"] || "page", 
+                     l.at("./referenceFrom"), l.at("./referenceTo"))
+    end
+    ret.join(", ")
+  end
+
   def self.parse(doc)
     ret = ""
-    type = doc&.at("./bibitem/@type")&.text || "book"
+    type = type(doc)
     ret += wrap(creatornames(doc))
     ret += included(type) ? wrap(title(doc)) : wrap(title(doc), " <I>", "</I>.")
     ret += wrap(medium(doc), " [", "].")
@@ -144,6 +171,12 @@ module Iso690Render
     ret += wrap(series(doc), type)
     ret += wrap(standardidentifier(doc))
     ret += wrap(accessLocation(doc, "At: ", "."))
+    if container = doc.at("./bibitem/relation[@type='includedIn']")
+      ret += wrap(parse(container.at("./bibitem")), "In: ", "")
+      ret += wrap(extent(container.xpath("./locality")) || doc.xpath("./bibitem/extent"))
+    else
+      ret += wrap(extent(doc.xpath("./bibitem/extent"))
+    end
     ret
   end
 end
