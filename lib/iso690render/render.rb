@@ -22,23 +22,31 @@ module Iso690Render
     name&.text || "--"
   end
 
+  def self.frontname(initials, given)
+    if given.empty? && initials.empty? then ""
+    elsif initials.empty?
+      given.map{ |m| m.text }.join(" ")
+    else
+      initials.map{ |m| m.text }.join(" ")
+    end
+  end
+
+  def self.commajoin(a, b)
+    return a unless b
+    return b unless a
+    "#{a}, #{b}"
+  end
+
   def self.extract_personname(person)
     completename = person.at("./completename")
     return completename.text if completename
-    surname = person.at("./surname")
-    initials = person.xpath("./initial")
-    forenames = person.xpath("./forename")
-    given = []
-    forenames.each { |x| given << x.text }
-    given.empty? && initials.each { |x| given << x.text }
-    front = if forenames.empty? && initials.empty? 
-              ""
-            elsif initials.empty? 
-              given.join(" ")
-            else 
-              given "" 
-            end
-    "#{surname.upcase}, #{front}"
+    surname = person.at("./name/surname")
+    initials = person.xpath("./name/initials")
+    forenames = person.xpath("./name/forename")
+    #given = []
+    #forenames.each { |x| given << x.text }
+    #given.empty? && initials.each { |x| given << x.text }
+    commajoin(surname&.text&.upcase, frontname(forenames, initials))
   end
 
   def self.extractname(contributor)
@@ -54,17 +62,19 @@ module Iso690Render
     if contributors[0]["role"] == "editor"
       return contributors.length > 1 ? " (Eds.)" : "(Ed.)"
     end
+    ""
   end
 
   def self.creatornames(doc)
-    cr = doc.xpath("/bibitem/contributor[role = 'author']") ||
-      doc.xpath("/bibitem/contributor[role = 'performer']") ||
-      doc.xpath("/bibitem/contributor[role = 'publisher']") ||
-      doc.xpath("/bibitem/contributor[role = 'adapter']") ||
-      doc.xpath("/bibitem/contributor[role = 'translator']") ||
-      doc.xpath("/bibitem/contributor[role = 'editor']") ||
-      doc.xpath("/bibitem/contributor[role = 'distributor']") ||
-      doc.xpath("/bibitem/contributor")
+    cr = doc.xpath("/bibitem/contributor[role/@type = 'author']") 
+    cr.empty? and cr = doc.xpath("/bibitem/contributor[role/@type = 'performer']") 
+    cr.empty? and cr = doc.xpath("/bibitem/contributor[role/@type = 'adapter']") 
+    cr.empty? and cr = doc.xpath("/bibitem/contributor[role/@type = 'translator']") 
+    cr.empty? and cr = doc.xpath("/bibitem/contributor[role/@type = 'editor']") 
+    cr.empty? and cr = doc.xpath("/bibitem/contributor[role/@type = 'publisher']") 
+    cr.empty? and cr = doc.xpath("/bibitem/contributor[role/@type = 'distributor']") 
+    cr.empty? and cr = doc.xpath("/bibitem/contributor")
+    cr.empty? and return ""
     ret = []
     cr.each do |x|
       ret << extractname(x)
@@ -73,11 +83,11 @@ module Iso690Render
   end
 
   def self.title(doc)
-    doc.at("./bibitem/title")
+    doc&.at("./bibitem/title")&.text
   end
 
   def self.medium(doc)
-    doc.at("./bibitem/medium")
+    doc&.at("./bibitem/medium")&.text
   end
 
   def self.edition(doc)
@@ -98,7 +108,7 @@ module Iso690Render
   end
 
   def self.date(doc)
-    doc.at("./bibitem/date[@type = 'published']")
+    doc&.at("./bibitem/date[@type = 'published']")&.text
   end
 
   def self.series(doc, type)
@@ -131,7 +141,7 @@ module Iso690Render
     ret.join(". ")
   end
 
-  def self.accessLocation
+  def self.accessLocation(doc)
     s = doc.at("./bibitem/accessLocation") or return ""
     s.text
   end
@@ -146,14 +156,17 @@ module Iso690Render
   end
 
   def self.type(doc)
-    type = doc.at("./bibitem/@type") and return type
+    type = doc.at("./bibitem/@type") and return type&.text
     doc.at("./bibitem/includedIn") and return "inbook"
     "book"
   end
 
   def self.extent1(type, from, to)
     ret = ""
-    ret += "#{type} " unless type == "page"
+    if type == "page"
+      type = to ? "pp." : "p"
+    end
+    ret += "#{type} "
     ret += from.text if from
     ret += "&ndash;#{to.text}" if to
     ret
@@ -162,30 +175,38 @@ module Iso690Render
   def self.extent(localities)
     ret = []
     localities.each do |l|
-      ret << extent1(["type"] || "page", 
+      ret << extent1(l["type"] || "page", 
                      l.at("./referenceFrom"), l.at("./referenceTo"))
     end
     ret.join(", ")
   end
 
-  def self.parse(doc, embedded = false)
+  def self.parse(xml, embedded = false)
     ret = ""
+    doc = Nokogiri::XML(xml)
+    require "byebug"; byebug
     type = type(doc)
-    ret += embedded ? wrap(creatornames(doc)) : wrap(creatornames(doc), " ", ",")
+    container = doc.at("./bibitem/relation[@type='includedIn']")
+    if container && date(doc) && !date(container)
+      container.at("./bibitem") << doc.at("./bibitem/date[@type = 'published']").remove
+    end
+    ret += embedded ? wrap(creatornames(doc), " ", ",") : wrap(creatornames(doc), "", ".")
     ret += included(type) ? wrap(title(doc)) : wrap(title(doc), " <I>", "</I>.")
     ret += wrap(medium(doc), " [", "].")
     ret += wrap(edition(doc))
-    ret += wrap(placepub(doc))
+    ret += date(doc) ? wrap(placepub(doc), " ", ",") : wrap(placepub(doc))
     ret += wrap(date(doc))
-    ret += wrap(series(doc), type)
+    ret += wrap(series(doc, type))
     ret += wrap(standardidentifier(doc))
-    ret += wrap(accessLocation(doc, "At: ", "."))
-    if container = doc.at("./bibitem/relation[@type='includedIn']")
-      ret += wrap(parse(container.at("./bibitem"), true), "In: ", "")
-      ret += wrap(extent(container.xpath("./locality") || doc.xpath("./bibitem/extent")))
+    ret += wrap(accessLocation(doc), "At: ", ".")
+    if container 
+      ret += wrap(parse(container.at("./bibitem").to_xml, true), " In:", "")
+      locality = container.xpath("./locality")
+      locality.empty? and locality = doc.xpath("./bibitem/extent")
+      ret += wrap(extent(locality))
     else
       ret += wrap(extent(doc.xpath("./bibitem/extent")))
     end
-    ret
+    embedded ? ret : "<p>#{ret}</p>"
   end
 end
