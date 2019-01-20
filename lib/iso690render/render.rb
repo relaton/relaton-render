@@ -107,8 +107,19 @@ module Iso690Render
     ret
   end
 
+  def self.date1(date)
+    return nil if date.nil?
+    on = doc&.at("./on")&.text
+    from = doc&.at("./from")&.text
+    to = doc&.at("./to")&.text
+    return on if on
+    return "#{from}&ndash;#{to}" if from
+    nil
+  end
+
   def self.date(doc)
-    doc&.at("./bibitem/date[@type = 'published']")&.text
+    pub = date1(doc&.at("./bibitem/date[@type = 'published']")) and return pub
+    date1(doc&.at("./bibitem/date"))
   end
 
   def self.series(doc, type)
