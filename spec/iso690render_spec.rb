@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'spec_helper'
+
 RSpec.describe Iso690Render do
   it "has a version number" do
     expect(Iso690Render::VERSION).not_to be nil
