@@ -109,10 +109,10 @@ module Iso690Render
 
   def self.date1(date)
     return nil if date.nil?
-    on = doc&.at("./on")&.text
-    from = doc&.at("./from")&.text
-    to = doc&.at("./to")&.text
+    on = date&.at("./on")&.text
     return on if on
+    from = date&.at("./from")&.text
+    to = date&.at("./to")&.text
     return "#{from}&ndash;#{to}" if from
     nil
   end
@@ -195,7 +195,6 @@ module Iso690Render
   def self.parse(xml, embedded = false)
     ret = ""
     doc = Nokogiri::XML(xml)
-    require "byebug"; byebug
     type = type(doc)
     container = doc.at("./bibitem/relation[@type='includedIn']")
     if container && date(doc) && !date(container)
