@@ -1,6 +1,8 @@
 = ISO 690 Render
 
 image:https://img.shields.io/gem/v/iso690render.svg["Gem Version", link="https://rubygems.org/gems/iso690render"]
-image:https://img.shields.io/travis/metanorma/iso690render/master.svg["Build Status", link="https://travis-ci.org/metanorma/iso690render"]
+image:https://github.com/metanorma/iso690render/workflows/ubuntu/badge.svg["Ubuntu Build Status", link="https://github.com/metanorma/iso690render/actions?query=workflow%3Aubuntu"]
+image:https://github.com/metanorma/iso690render/workflows/macos/badge.svg["OSX Build Status", link="https://github.com/metanorma/iso690render/actions?query=workflow%3Amacos"]
+image:https://github.com/metanorma/iso690render/workflows/windows/badge.svg["Windows Build Status", link="https://github.com/metanorma/iso690render/actions?query=workflow%3Awindows"]
 image:https://codeclimate.com/github/metanorma/iso690render/badges/gpa.svg["Code Climate", link="https://codeclimate.com/github/metanorma/iso690render"]
 
