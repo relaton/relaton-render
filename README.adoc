@@ -37,11 +37,11 @@ drawn from the bibliographic item:
 | access_location | ./accessLocation | |
 | extent | ./extent | Y | Render with standard abbreviations for pp, vols, with n-dash, with delimiting of multiple locations
 | status | ./status | | Rendering varies by flavour
-| creatornames | ./contributor[role/@type = 'author'] \| ./contributor[role/@type = 'performer'] \| ./contributor[role/@type = 'adapter'] \| ./contributor[role/@type = 'translator'] \| ./contributor[role/@type = 'editor'] | ./contributor[role/@type = 'publisher'] \| ./contributor[role/@type = 'distributor'] \| ./contributor | Y | name_template applied to each name; joining template applied to multiple names; contributor role suffixed to sequence of names
+| creatornames | ./contributor[role/@type = 'author'] \| ./contributor[role/@type = 'performer'] \| ./contributor[role/@type = 'adapter'] \| ./contributor[role/@type = 'translator'] \| ./contributor[role/@type = 'editor'] \| ./contributor[role/@type = 'publisher'] \| ./contributor[role/@type = 'distributor'] \| ./contributor | Y | name_template applied to each name; joining template applied to multiple names; contributor role suffixed to sequence of names
 | date | ./date[@type = 'issued'] \| ./date[@type = 'circulated'] \| ./date | |
 | date_updated | ./date[@type = 'updated'] | |
 | type | ./@type | |
-| labels | text to be looked up in internationalisation: "edition", "In", "At", "Vol", "Vols", "p.", "pp" | |
+| labels | | | text to be looked up in internationalisation: "edition", "In", "At", "Vol", "Vols", "p.", "pp" 
 |===
 
 The Liquid template surrounds each field by preceding and following punctuation, which is meant to be space delimited. 
