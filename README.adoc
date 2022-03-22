@@ -5,36 +5,43 @@ image:https://github.com/metanorma/iso690render/workflows/rake/badge.svg["Build 
 image:https://codeclimate.com/github/metanorma/iso690render/badges/gpa.svg["Code Climate", link="https://codeclimate.com/github/metanorma/iso690render"]
 
 Gem that takes a https://github.com/relaton/relaton[Relaton] bibliographic description and 
-a stylesheet, and generates a https://www.metanorma.org[Metanorma] XML rendering of that description.
+a configuration, and generates a https://www.metanorma.org[Metanorma] XML rendering of that description.
+
+[source,ruby]
+----
+input = "<bibitem type='...'>....</bibitem>"
+
+Iso690Render.new(template: template, lang: "en").render(input)
+----
 
 The gem is intended to be inherited from by Metanorma flavours, which may specialise it with their own
-code. The stylesheet is however intended to determine much of the rendering.
+code. The templates are however intended to determine much of the rendering.
 
-The base stylesheet is a https://shopify.github.io/liquid/[Liquid Markup], with the following fields
+The base `template` is a https://shopify.github.io/liquid/[Liquid Markup], with the following fields
 drawn from the bibliographic item:
 
 |===
 | Field   | Relaton XPath | Multiple | Note
 
-| title   | ./title
+| title   | ./title | |
 | edition | ./edition | | Spelled out as ordinal in current language
-| medium  | ./medium
-| place   | ./place
-| publisher | ./contributor[role/@type = 'publisher']/organization/name
-| series_title  | ./series[@type = 'main' or not(@type) or true]/name
-| series_abbr  | ./series[@type = 'main' or not(@type) or true]/abbreviation
-| series_num  | ./series[@type = 'main' or not(@type) or true]/number
-| series_partnumber  | ./series[@type = 'main' or not(@type) or true]/partnumber
-| standardidentifier | ./docidentifier[not(@type = 'metanorma' or @type = 'ordinal')] | Y
-| uri | ./uri[@type = 'doi' or @type = 'uri' or @type = 'src' or true]
-| access_location | ./accessLocation
+| medium  | ./medium | |
+| place   | ./place | |
+| publisher | ./contributor[role/@type = 'publisher']/organization/name | |
+| series_title  | ./series[@type = 'main' or not(@type) or true]/name | |
+| series_abbr  | ./series[@type = 'main' or not(@type) or true]/abbreviation | |
+| series_num  | ./series[@type = 'main' or not(@type) or true]/number | |
+| series_partnumber  | ./series[@type = 'main' or not(@type) or true]/partnumber | |
+| standardidentifier | ./docidentifier[not(@type = 'metanorma' or @type = 'ordinal')] | Y |
+| uri | ./uri[@type = 'doi' or @type = 'uri' or @type = 'src' or true] | |
+| access_location | ./accessLocation | |
 | extent | ./extent | Y | Render with standard abbreviations for pp, vols, with n-dash, with delimiting of multiple locations
 | status | ./status | | Rendering varies by flavour
 | creatornames | ./contributor[role/@type = 'author'] \| ./contributor[role/@type = 'performer'] \| ./contributor[role/@type = 'adapter'] \| ./contributor[role/@type = 'translator'] \| ./contributor[role/@type = 'editor'] | ./contributor[role/@type = 'publisher'] \| ./contributor[role/@type = 'distributor'] \| ./contributor | Y | name_template applied to each name; joining template applied to multiple names; contributor role suffixed to sequence of names
-| date | ./date[@type = 'issued'] \| ./date[@type = 'circulated'] \| ./date
-| date_updated | ./date[@type = 'updated']
-| type | ./@type
-| labels | text to be looked up in internationalisation: "edition", "In", "At", "Vol", "Vols", "p.", "pp"
+| date | ./date[@type = 'issued'] \| ./date[@type = 'circulated'] \| ./date | |
+| date_updated | ./date[@type = 'updated'] | |
+| type | ./@type | |
+| labels | text to be looked up in internationalisation: "edition", "In", "At", "Vol", "Vols", "p.", "pp" | |
 |===
 
 The Liquid template surrounds each field by preceding and following punctuation, which is meant to be space delimited. 
@@ -43,13 +50,46 @@ The Liquid template surrounds each field by preceding and following punctuation,
 * Underscore is treated as space, attaching to the preceding or following field.
 * If punctuation is space delimited and preceded by `|`, it is inserted regardless of preceding content.
 
-So for example:
+For example:
 
 ....
-{{ creatornames }} ({{date}}) |. <em>{{ title }}</em> [{{medium}}] ,_{{ edition }}_edition |. 
+"{{ creatornames }} ({{date}}) |. <em>{{ title }}</em> [{{medium}}] ,_{{ edition }}_edition |."
 ....
 
 Different templates are offered for different types of reference:
+
+The `nametemplate` is also a Liquid template for the formatting of contributor names in particular positions. It
+draws on the following fields frawn from the bibliographic item:
+
+|===
+| Field  | Relaton XPath | Note
+
+| surname | ./contributor[1]/name/surname |
+| surname2 | ./contributor[2]/name/surname |
+| surname3 | ./contributor[3]/name/surname |
+| initials | ./contributor[1]/name/initial |
+| initials2 | ./contributor[2]/name/initial |
+| given | ./contributor[1]/name/forename[1] |
+| given2 |  ./contributor[2]/name/forename[1] |
+| middle | ./contributor[1]/name/forename[not(first())] |
+| middle2 | ./contributor[2]/name/forename[not(first())] |
+| role | ./contributor[1]/role | ./contributor[1]/role/@type |
+| role2 | ./contributor[1]/role | ./contributor[2]/role/@type |
+|===
+
+There are at least three distinct nametemplate instances that need to be provided, one for a single contributor, one for two contributors, one for three or more. If more nametemplate instances are provided, they apply for the matching number of contributors, up to the last template. For example, if five templates are provided, they apply to 1, 2, 3, 4, or 5 or more contributors.
+
+For example:
+....
+[
+  "{{ surname }}, {{ given}} {{middle | slice : 0 }}",
+  "{{ surname }}, {{ given}} {{middle | slice : 0 }} &amp; {{ given2 }} {{middle2 | slice : 0 }} {{ surname2 }}",
+  "{{ surname }}, {{ given}} {{middle | slice : 0 }}, {{ given2 }} {{middle2 | slice : 0 }} {{ surname2 }} &amp; {{ given3 }} {{middle3 | slice : 0 }} {{ surname3 }}",
+  "{{ surname }}, {{ given}} {{middle | slice : 0 }}, {{ given2 }} {{middle2 | slice : 0 }} {{ surname2 }}, {{ given3 }} {{middle3 | slice : 0 }} {{ surname3 }} &amp; {{ given4 }} {{middle4 | slice : 0 }} {{ surname4 }}",
+  "{{ surname }}, {{ given}} {{middle | slice : 0 }}, {{ given2 }} {{middle2 | slice : 0 }} {{ surname2 }} <em>et al.</em>"
+]
+....
+
 
 In addition, the stylesheet includes different configuration options for rendering:
 

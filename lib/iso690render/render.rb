@@ -8,6 +8,7 @@ require "liquid"
 class Iso690Render
   def initialize(options)
     @template = Liquid::Template.parse(options[:template])
+    @nametemplate = options[:nametemplate].map { |x| Liquid::Template.parse(x) }
     @lang = options[:language]
     @i18n = i18n(@lang)
   end
