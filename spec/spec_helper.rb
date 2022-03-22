@@ -1,10 +1,9 @@
-require 'simplecov'
+require "simplecov"
 SimpleCov.start
 require "bundler/setup"
 require "iso690render"
 require "rspec/matchers"
 require "equivalent-xml"
-
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
