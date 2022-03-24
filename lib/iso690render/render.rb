@@ -10,11 +10,12 @@ class Iso690Render
     @template = Liquid::Template.parse(options[:template])
     @nametemplate = options[:nametemplate].map { |x| Liquid::Template.parse(x) }
     @lang = options[:language]
-    @i18n = i18n(@lang)
+    @script = options[:script]
+    @i18n = i18n(@lang, @script)
   end
 
-  def i18n(_lang)
-    {}
+  def i18n(lang, script)
+    ::Isodoc::I18n.new(lang, script)
   end
 
   def render(bib, embedded: false)

@@ -17,32 +17,75 @@ Iso690Render.new(template: template, lang: "en").render(input)
 The gem is intended to be inherited from by Metanorma flavours, which may specialise it with their own
 code. The templates are however intended to determine much of the rendering.
 
-The base `template` is a https://shopify.github.io/liquid/[Liquid Markup], with the following fields
+There is one template provided for each of the bibliographic types recognised by Relaton, and a default template:
+
+* article 
+* book 
+* booklet 
+* manual 
+* proceedings 
+* presentation 
+* thesis 
+* techreport 
+* standard 
+* unpublished 
+* map 
+* electronic resource 
+* audiovisual 
+* film 
+* video 
+* broadcast 
+* software 
+* graphic_work 
+* music 
+* patent 
+* inbook 
+* incollection 
+* inproceedings 
+* journal 
+* website
+* webresource
+* dataset
+* archival 
+* social_media 
+* alert 
+* message 
+* conversation 
+* misc (default)
+
+In Metanorma, not all types are used, but there are exemplars for all of these given on this site, following
+the human-readable style used in ISO 690.
+
+Each `template` is a string marked up with https://shopify.github.io/liquid/[Liquid Markup], with the following fields
 drawn from the bibliographic item:
 
 |===
-| Field   | Relaton XPath | Multiple | Note
+| Field   | Relaton XPath | Multiple | Can come from host | Note
 
-| title   | ./title | |
-| edition | ./edition | | Spelled out as ordinal in current language
-| medium  | ./medium | |
-| place   | ./place | |
-| publisher | ./contributor[role/@type = 'publisher']/organization/name | |
-| series_title  | ./series[@type = 'main' or not(@type) or true]/name | |
-| series_abbr  | ./series[@type = 'main' or not(@type) or true]/abbreviation | |
-| series_num  | ./series[@type = 'main' or not(@type) or true]/number | |
-| series_partnumber  | ./series[@type = 'main' or not(@type) or true]/partnumber | |
-| standardidentifier | ./docidentifier[not(@type = 'metanorma' or @type = 'ordinal')] | Y |
-| uri | ./uri[@type = 'doi' or @type = 'uri' or @type = 'src' or true] | |
-| access_location | ./accessLocation | |
-| extent | ./extent | Y | Render with standard abbreviations for pp, vols, with n-dash, with delimiting of multiple locations
-| status | ./status | | Rendering varies by flavour
-| creatornames | ./contributor[role/@type = 'author'] \| ./contributor[role/@type = 'performer'] \| ./contributor[role/@type = 'adapter'] \| ./contributor[role/@type = 'translator'] \| ./contributor[role/@type = 'editor'] \| ./contributor[role/@type = 'publisher'] \| ./contributor[role/@type = 'distributor'] \| ./contributor | Y | name_template applied to each name; joining template applied to multiple names; contributor role suffixed to sequence of names
-| date | ./date[@type = 'issued'] \| ./date[@type = 'circulated'] \| ./date | |
-| date_updated | ./date[@type = 'updated'] | |
+| title   | ./title | | |
+| edition | ./edition | | Y |
+| medium  | ./medium | | Y |
+| place   | ./place | | Y |
+| publisher | ./contributor[role/@type = 'publisher']/organization/name | | Y | 
+| standardidentifier | ./docidentifier[not(@type = 'metanorma' or @type = 'ordinal')] | Y | |
+| status | ./status | | | Rendering varies by flavour
+| uri | ./uri[@type = 'doi' or @type = 'uri' or @type = 'src' or true] | | |
+| access_location | ./accessLocation | | Y |
+| extent | ./extent | Y | | Render with standard abbreviations for pp, vols, with n-dash, with delimiting of multiple locations
+| creatornames | ./contributor[role/@type = 'author'] \| ./contributor[role/@type = 'performer'] \| ./contributor[role/@type = 'adapter'] \| ./contributor[role/@type = 'translator'] \| ./contributor[role/@type = 'editor'] \| ./contributor[role/@type = 'publisher'] \| ./contributor[role/@type = 'distributor'] \| ./contributor | Y | | name_template applied to each name; joining template applied to multiple names; contributor role suffixed to sequence of names
+| date | ./date[@type = 'issued'] \| ./date[@type = 'circulated'] \| ./date | | Y |
+| date_updated | ./date[@type = 'updated'] | | Y | 
+| series_title  | ./series[@type = 'main' or not(@type) or true]/name | | Y |
+| series_abbr  | ./series[@type = 'main' or not(@type) or true]/abbreviation | | Y |
+| series_num  | ./series[@type = 'main' or not(@type) or true]/number | | Y |
+| series_partnumber  | ./series[@type = 'main' or not(@type) or true]/partnumber | | Y |
+| host_creatornames | ./relation[@type = 'includedIn']/bibitem/contributor[role/@type = 'author'] | |  Y | Follows options for `creatornames`
+| host_title | ./relation[@type = 'includedIn']/bibitem/title | Y | Y | Follows options for `creatornames`
 | type | ./@type | |
-| labels | | | text to be looked up in internationalisation: "edition", "In", "At", "Vol", "Vols", "p.", "pp" 
+| labels | | | text to be looked up in internationalisation configuration files: "edition", "In", "At", "Vol", "Vols", "p.", "pp" 
 |===
+
+Many fields are populated either by the description of the bibliographic item itself, or by the description of the item containing it (the _host_ item: `./relation[@type = 'includedIn']`). For example, in a paper included in an edited volume, the edition will typically be given for the editor volume, rather than for the paper. Those fields are indicated by "Can come from host" in the table.
 
 The Liquid template surrounds each field by preceding and following punctuation, which is meant to be space delimited. 
 
@@ -55,8 +98,6 @@ For example:
 ....
 "{{ creatornames }} ({{date}}) |. <em>{{ title }}</em> [{{medium}}] ,_{{ edition }}_edition |."
 ....
-
-Different templates are offered for different types of reference:
 
 The `nametemplate` is also a Liquid template for the formatting of contributor names in particular positions. It
 draws on the following fields frawn from the bibliographic item:
