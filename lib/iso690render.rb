@@ -1,5 +1,5 @@
 require "iso690render/version"
-require "iso690render/parse"
+require "iso690render/render"
 
 class Iso690Render
 end

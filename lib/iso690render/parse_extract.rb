@@ -1,19 +1,20 @@
-class Iso690Render
+class Iso690Parse
   def title(doc)
     doc&.at("./title")&.text
   end
 
-  def medium(doc)
-    doc&.at("./medium")&.text
+  def medium(doc, host)
+    x = doc.at("./medium") || host&.at("./medium") or return nil
+
+    x.text
   end
 
   def blank?(text)
     text.nil? || text.empty?
   end
 
-  def edition(doc)
-    x = doc.at("./edition")
-    return "" unless x
+  def edition(doc, host)
+    x = doc.at("./edition") || host&.at("./edition") or return nil
     return x.text unless /^\d+$/.match? x.text
 
     x.text.to_i.localize.to_rbnf_s("SpelloutRules", "spellout-ordinal")
@@ -21,33 +22,32 @@ class Iso690Render
 
   BIBLIO_PUBLISHER = "contributor[role/@type = 'publisher']/organization".freeze
 
-  def place(doc)
-    doc&.at("./place")&.text
+  def place(doc, host)
+    x = doc.at("./place") || host&.at("./place") or return nil
+
+    x.text
   end
 
-  def publisher(doc)
-    doc&.at("./#{BIBLIO_PUBLISHER}/name")&.text
-  end
-
-  def series_extract(doc)
-    doc.at("./series[@type = 'main']") || doc.at("./series[not(@type)]") ||
-      doc.at("./series")
+  def publisher(doc, host)
+    x = doc.at("./#{BIBLIO_PUBLISHER}/name") ||
+      host&.at("./#{BIBLIO_PUBLISHER}/name") or return nil
+    x.text
   end
 
   def series_title(doc)
-    series_extract(doc)&.at("./title")&.text
+    doc&.at("./title")&.text || doc&.at("./formattedref")&.text
   end
 
   def series_abbr(doc)
-    series_extract(doc)&.at("./title")&.text
+    doc&.at("./abbreviation")&.text
   end
 
   def series_num(doc)
-    series_extract(doc)&.at("./number")&.text
+    doc&.at("./number")&.text
   end
 
   def series_partnumber(doc)
-    series_extract(doc)&.at("./partnumber")&.text
+    doc&.at("./partnumber")&.text
   end
 
   def series(doc, type)
@@ -94,9 +94,10 @@ class Iso690Render
     uri&.text
   end
 
-  def access_location(doc)
-    s = doc.at("./accessLocation") or return ""
-    s.text
+  def access_location(doc, host)
+    x = doc.at("./accessLocation") || host&.at("./accessLocation") or
+      return nil
+    x.text
   end
 
   def included(type)
@@ -111,7 +112,7 @@ class Iso690Render
 
   def type(doc)
     type = doc.at("./@type") and return type&.text
-    doc.at("./includedIn") and return "inbook"
+    doc.at("./relation[@type = 'includedIn']") and return "inbook"
     "book"
   end
 

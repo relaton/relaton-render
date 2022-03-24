@@ -17,7 +17,7 @@ RSpec.describe Iso690Render do
           <person>
             <name>
               <surname>Ramsey</surname>
-              <initials>J. K.</initials>
+              <initial>J. K.</initial>
             </name>
           </person>
         </contributor>
@@ -26,7 +26,7 @@ RSpec.describe Iso690Render do
           <person>
             <name>
               <surname>McGrew</surname>
-              <initials>W. C.</initials>
+              <initial>W. C.</initial>
             </name>
           </person>
         </contributor>
@@ -38,7 +38,7 @@ RSpec.describe Iso690Render do
               <person>
                 <name>
                   <surname>Pellegrini</surname>
-                  <initials>A. D.</initials>
+                  <initial>A. D.</initial>
                 </name>
               </person>
             </contributor>
@@ -47,7 +47,7 @@ RSpec.describe Iso690Render do
               <person>
                 <name>
                   <surname>Smith</surname>
-                  <initials>P. K.</initials>
+                  <initial>P. K.</initial>
                 </name>
               </person>
             </contributor>
@@ -71,12 +71,12 @@ RSpec.describe Iso690Render do
     OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ({{date}}) |. <em>{{ title }}</em> [{{medium}}] ,_{{ edition }}_edition |.
-      {{ standardidentifier }}. {{ uri }}. At:_{{ access_location }}.
+      {{ standardidentifier | first }}. {{ uri }}. At:_{{ access_location }}.
     TEMPLATE
-    p = Iso690Parse
+    p = Iso690Render
       .new(template: { incollection: template },
-           nametemplate: ["{{surname}}, {{given}}",
-                          "{{surname}}, {{given}} & {{given2}} {{surname}}"],
+           nametemplate: { one: "{{surname[0] | upcase }}, {{initials[0]}}",
+                           two: "{{surname[0] | upcase}}, {{initials[0]}} & {{initials[1]}} {{surname[1] | upcase}}" },
            lang: "en")
     expect(p.render(input))
       .to be_equivalent_to output

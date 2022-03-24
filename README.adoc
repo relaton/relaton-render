@@ -72,7 +72,8 @@ drawn from the bibliographic item:
 | uri | ./uri[@type = 'doi' or @type = 'uri' or @type = 'src' or true] | | |
 | access_location | ./accessLocation | | Y |
 | extent | ./extent | Y | | Render with standard abbreviations for pp, vols, with n-dash, with delimiting of multiple locations
-| creatornames | ./contributor[role/@type = 'author'] \| ./contributor[role/@type = 'performer'] \| ./contributor[role/@type = 'adapter'] \| ./contributor[role/@type = 'translator'] \| ./contributor[role/@type = 'editor'] \| ./contributor[role/@type = 'publisher'] \| ./contributor[role/@type = 'distributor'] \| ./contributor | Y | | name_template applied to each name; joining template applied to multiple names; contributor role suffixed to sequence of names
+| creatornames | ./contributor[role/@type = 'author'] \| ./contributor[role/@type = 'performer'] \| ./contributor[role/@type = 'adapter'] \| ./contributor[role/@type = 'translator'] \| ./contributor[role/@type = 'editor'] \| ./contributor[role/@type = 'publisher'] \| ./contributor[role/@type = 'distributor'] \| ./contributor | Y | | name_template applied to each name; joining template applied to multiple names
+| role | ./contributor[role/description] \| ./contributor[role/@type] | | | 
 | date | ./date[@type = 'issued'] \| ./date[@type = 'circulated'] \| ./date | | Y |
 | date_updated | ./date[@type = 'updated'] | | Y | 
 | series_title  | ./series[@type = 'main' or not(@type) or true]/name | | Y |
@@ -81,11 +82,12 @@ drawn from the bibliographic item:
 | series_partnumber  | ./series[@type = 'main' or not(@type) or true]/partnumber | | Y |
 | host_creatornames | ./relation[@type = 'includedIn']/bibitem/contributor[role/@type = 'author'] | |  Y | Follows options for `creatornames`
 | host_title | ./relation[@type = 'includedIn']/bibitem/title | Y | Y | Follows options for `creatornames`
+| host_role | ./relation[@type = 'includedIn']/bibitem/contributor[role/description] \| ./relation[@type = 'includedIn']/bibitem/contributor[role/@type] | | Y | 
 | type | ./@type | |
 | labels | | | text to be looked up in internationalisation configuration files: "edition", "In", "At", "Vol", "Vols", "p.", "pp" 
 |===
 
-Many fields are populated either by the description of the bibliographic item itself, or by the description of the item containing it (the _host_ item: `./relation[@type = 'includedIn']`). For example, in a paper included in an edited volume, the edition will typically be given for the editor volume, rather than for the paper. Those fields are indicated by "Can come from host" in the table.
+Many fields are populated either by the description of the bibliographic item itself, or by the description of the item containing it (the _host_ item: `./relation[@type = 'includedIn']/bibitem`). For example, in a paper included in an edited volume, the edition will typically be given for the editor volume, rather than for the paper. Those fields are indicated by "Can come from host" in the table.
 
 The Liquid template surrounds each field by preceding and following punctuation, which is meant to be space delimited. 
 
@@ -100,36 +102,36 @@ For example:
 ....
 
 The `nametemplate` is also a Liquid template for the formatting of contributor names in particular positions. It
-draws on the following fields frawn from the bibliographic item:
+draws on the following fields drawn from the bibliographic item:
 
 |===
-| Field  | Relaton XPath | Note
+| Field  | Relaton XPath | Multiple | Note
 
-| surname | ./contributor[1]/name/surname |
-| surname2 | ./contributor[2]/name/surname |
-| surname3 | ./contributor[3]/name/surname |
-| initials | ./contributor[1]/name/initial |
-| initials2 | ./contributor[2]/name/initial |
-| given | ./contributor[1]/name/forename[1] |
-| given2 |  ./contributor[2]/name/forename[1] |
-| middle | ./contributor[1]/name/forename[not(first())] |
-| middle2 | ./contributor[2]/name/forename[not(first())] |
-| role | ./contributor[1]/role \| ./contributor[1]/role/@type |
-| role2 | ./contributor[1]/role \| ./contributor[2]/role/@type |
+| surname[0] | ./contributor[1]/person/name/surname \| ./contributor[1]/person/name/completename \| ./contributor[1]/organization/name | | i.e. surname is the name default
+| surname[1] | ./contributor[2]/name/surname | |
+| surname[2] | ./contributor[3]/name/surname | |
+| initials[0] | ./contributor[1]/name/initial | |
+| initials[1] | ./contributor[2]/name/initial | |
+| given[0] | ./contributor[1]/name/forename[1] | |
+| given[1] |  ./contributor[2]/name/forename[1] | |
+| middle[0] | ./contributor[1]/name/forename[not(first())] | Y |
+| middle[1] | ./contributor[2]/name/forename[not(first())] | Y |
 |===
 
-There are at least three distinct nametemplate instances that need to be provided, one for a single contributor, one for two contributors, one for three or more. If more nametemplate instances are provided, they apply for the matching number of contributors, up to the last template. For example, if five templates are provided, they apply to 1, 2, 3, 4, or 5 or more contributors.
+There are at least three distinct `nametemplate` instances that need to be provided, one for a single contributor (`one:`), one for two contributors (`two:`), one for three or more (`more:`), and optionally one for "et al." (`etal:`). The number of contributors for which "et al." starts being used is indicated by `etal_count`.
 
 For example:
 ....
-[
-  "{{ surname }}, {{ given}} {{middle | slice : 0 }}",
-  "{{ surname }}, {{ given}} {{middle | slice : 0 }} &amp; {{ given2 }} {{middle2 | slice : 0 }} {{ surname2 }}",
-  "{{ surname }}, {{ given}} {{middle | slice : 0 }}, {{ given2 }} {{middle2 | slice : 0 }} {{ surname2 }} &amp; {{ given3 }} {{middle3 | slice : 0 }} {{ surname3 }}",
-  "{{ surname }}, {{ given}} {{middle | slice : 0 }}, {{ given2 }} {{middle2 | slice : 0 }} {{ surname2 }}, {{ given3 }} {{middle3 | slice : 0 }} {{ surname3 }} &amp; {{ given4 }} {{middle4 | slice : 0 }} {{ surname4 }}",
-  "{{ surname }}, {{ given}} {{middle | slice : 0 }}, {{ given2 }} {{middle2 | slice : 0 }} {{ surname2 }} <em>et al.</em>"
-]
+{
+  one: "{{ surname[0] }}, {{ given[0] }} {{ middle[0] | slice : 0 }}",
+  two: "{{ surname[0] }}, {{ given[0] }} {{ middle[0] | slice : 0 }} &amp; {{ given[1] }} {{ middle[1] | slice : 0 }} {{ surname[1] }}",
+  more: "{{ surname[0] }}, {{ given[0] }} {{ middle[0] | slice : 0 }}, {{ given[1] }} {{ middle[1] | slice : 0 }} {{ surname[1] }} &amp; {{ given[2] }} {{ middle[2] | slice : 0 }} {{ surname[2] }}",
+  etal: "{{ surname[0] }}, {{ given[0] }} {{ middle[0] | slice : 0 }}, {{ given[1] }} {{ middle[1] | slice : 0 }} {{ surname[1] }} <em>et al.</em>",
+  etal_count: 6
+}
 ....
+
+In the case of `more`, the `(name)[1]` entries are repeated for all additional authors above 2 and before the final author.
 
 
 In addition, the stylesheet includes different configuration options for rendering:
