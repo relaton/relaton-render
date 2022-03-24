@@ -70,11 +70,15 @@ RSpec.describe Iso690Render do
       <formattedref>RAMSEY, J. K. and MCGREW, W. C.. Object play in great apes: Studies in nature and captivity. In: PELLEGRINI, A. D. and SMITH, P. K., <I>The nature of play: Great apes and humans</I>. New York, NY, 2005. pp. 89&ndash;112.</formattedref>
     OUTPUT
     template = <<~TEMPLATE
-      {{ creatornames }} ({{date}}) |. <em>{{ title }}</em> [{{medium}}] ,_{{ edition }}_edition |. 
-      {{ standardidentifier }}. {{ uri }}. At:_{{ access_location }}. 
+      {{ creatornames }} ({{date}}) |. <em>{{ title }}</em> [{{medium}}] ,_{{ edition }}_edition |.
+      {{ standardidentifier }}. {{ uri }}. At:_{{ access_location }}.
     TEMPLATE
-    expect(Iso690Render.new(template: template, lang: "en")
-      .render(input))
+    p = Iso690Parse
+      .new(template: { incollection: template },
+           nametemplate: ["{{surname}}, {{given}}",
+                          "{{surname}}, {{given}} & {{given2}} {{surname}}"],
+           lang: "en")
+    expect(p.render(input))
       .to be_equivalent_to output
   end
 end
