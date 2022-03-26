@@ -7,15 +7,33 @@ image:https://codeclimate.com/github/metanorma/iso690render/badges/gpa.svg["Code
 Gem that takes a https://github.com/relaton/relaton[Relaton] bibliographic description and 
 a configuration, and generates a https://www.metanorma.org[Metanorma] XML rendering of that description.
 
+== Calling
+
 [source,ruby]
 ----
 input = "<bibitem type='...'>....</bibitem>"
 
-Iso690Render.new(template: template, lang: "en").render(input)
+Iso690Render.new(template: ..., nametemplate: ..., seriestemplate: ..., language: "en", script: "Latn").render(input)
 ----
 
 The gem is intended to be inherited from by Metanorma flavours, which may specialise it with their own
 code. The templates are however intended to determine much of the rendering.
+
+Gems can provide their configurations in YAML files, and parse them before passing them to the call to Iso690Render.
+The built-in values for Iso690Render are given in `/lib/iso690render/config.yml`, and can be overridden by
+the parameters of initialising Iso690Render.
+
+The parameters are:
+
+`language`:: in ISO-639
+`script`:: in ISO-15124
+`template`:: templates for rendering different bibliographic types
+`nametemplate`:: templates for rendering personal names
+`seriestemplate`:: templates for rendering series
+
+== Configuration
+
+=== Templates
 
 There is one template provided for each of the bibliographic types recognised by Relaton, and a default template:
 
@@ -54,7 +72,8 @@ There is one template provided for each of the bibliographic types recognised by
 * misc (default)
 
 In Metanorma, not all types are used, but there are exemplars for all of these given on this site, following
-the human-readable style used in ISO 690.
+the human-readable style used in ISO 690. These can be overridden by supplying corresponding paramerers in the call
+to initialise Iso690Render.
 
 Each `template` is a string marked up with https://shopify.github.io/liquid/[Liquid Markup], with the following fields
 drawn from the bibliographic item:
@@ -72,14 +91,12 @@ drawn from the bibliographic item:
 | uri | ./uri[@type = 'doi' or @type = 'uri' or @type = 'src' or true] | | |
 | access_location | ./accessLocation | | Y |
 | extent | ./extent | Y | | Render with standard abbreviations for pp, vols, with n-dash, with delimiting of multiple locations
-| creatornames | ./contributor[role/@type = 'author'] \| ./contributor[role/@type = 'performer'] \| ./contributor[role/@type = 'adapter'] \| ./contributor[role/@type = 'translator'] \| ./contributor[role/@type = 'editor'] \| ./contributor[role/@type = 'publisher'] \| ./contributor[role/@type = 'distributor'] \| ./contributor | Y | | name_template applied to each name; joining template applied to multiple names
+| creatornames | ./contributor[role/@type = 'author'] \| ./contributor[role/@type = 'performer'] \| ./contributor[role/@type = 'adapter'] \| ./contributor[role/@type = 'translator'] \| ./contributor[role/@type = 'editor'] \| ./contributor[role/@type = 'publisher'] \| ./contributor[role/@type = 'distributor'] \| ./contributor | Y | | <<nametemplate,`nametemplate`>> applied to each name; joining template from internationalisation applied to multiple names
 | role | ./contributor[role/description] \| ./contributor[role/@type] | | | 
 | date | ./date[@type = 'issued'] \| ./date[@type = 'circulated'] \| ./date | | Y |
 | date_updated | ./date[@type = 'updated'] | | Y | 
-| series_title  | ./series[@type = 'main' or not(@type) or true]/name | | Y |
-| series_abbr  | ./series[@type = 'main' or not(@type) or true]/abbreviation | | Y |
-| series_num  | ./series[@type = 'main' or not(@type) or true]/number | | Y |
-| series_partnumber  | ./series[@type = 'main' or not(@type) or true]/partnumber | | Y |
+| date_accessed | ./date[@type = 'accessed'] | | Y | 
+| series | ./series[@type = 'main' or not(@type) or true] | | Y | <<seriestemplate,`seriestemplate`>> applies to series
 | host_creatornames | ./relation[@type = 'includedIn']/bibitem/contributor[role/@type = 'author'] | |  Y | Follows options for `creatornames`
 | host_title | ./relation[@type = 'includedIn']/bibitem/title | Y | Y | Follows options for `creatornames`
 | host_role | ./relation[@type = 'includedIn']/bibitem/contributor[role/description] \| ./relation[@type = 'includedIn']/bibitem/contributor[role/@type] | | Y | 
@@ -98,10 +115,13 @@ The Liquid template surrounds each field by preceding and following punctuation,
 For example:
 
 ....
-"{{ creatornames }} ({{date}}) |. <em>{{ title }}</em> [{{medium}}] ,_{{ edition }}_edition |."
+"{{ creatornames }} ({{date}}) |. <em>{{ title }}</em> [{{medium}}] ,_{{ edition }}_{{ labels['edition'] }} |."
 ....
 
-The `nametemplate` is also a Liquid template for the formatting of contributor names in particular positions. It
+[[nametemplate]]
+=== Name templates
+
+The `nametemplate` is a hash of Liquid templates for the formatting of contributor names in particular positions. It
 draws on the following fields drawn from the bibliographic item:
 
 |===
@@ -133,6 +153,22 @@ For example:
 
 In the case of `more`, the `(name)[1]` entries are repeated for all additional authors above 2 and before the final author.
 
+[[seriestemplate]]
+=== Series template
+
+The `seriestemplate` is a template for the rendering of series information. It draws on the following fields drawn from the bibliographic item:
+
+|===
+| Field  | Relaton XPath | Multiple | Can come from host | Note
+
+| series_title  | ./series[@type = 'main' or not(@type) or true]/name | | Y |
+| series_abbr  | ./series[@type = 'main' or not(@type) or true]/abbreviation | | Y |
+| series_num  | ./series[@type = 'main' or not(@type) or true]/number | | Y |
+| series_partnumber  | ./series[@type = 'main' or not(@type) or true]/partnumber | | Y |
+|===
+
+=== Other
 
 In addition, the stylesheet includes different configuration options for rendering:
+
 

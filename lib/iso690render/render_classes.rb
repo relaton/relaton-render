@@ -1,6 +1,6 @@
 class Iso690Render
   BIBTYPE =
-    %i(article book booklet manual proceedings presentation thesis techreport
+    %w(article book booklet manual proceedings presentation thesis techreport
        standard unpublished map electronic_resource audiovisual film video
        broadcast software graphic_work music patent inbook incollection
        inproceedings journal website webresource dataset archival social_media
@@ -10,7 +10,7 @@ class Iso690Render
   @descendants = {}
 
   def self.inherited(subclass) # rubocop:disable Lint/MissingSuper
-    Iso690Render.descendants[subclass.name.downcase.to_sym] = subclass
+    Iso690Render.descendants[subclass.name.downcase] = subclass
   end
 
   def self.subclass(type)

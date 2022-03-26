@@ -25,6 +25,12 @@ class Iso690Parse
     date1(x)
   end
 
+  def date_accessed(doc, host)
+    x = doc.at("./date[@type = 'accessed']") ||
+      host.at("./date[@type = 'accessed']") or return nil
+    date1(x)
+  end
+
   def year(date)
     return nil if date.nil?
 

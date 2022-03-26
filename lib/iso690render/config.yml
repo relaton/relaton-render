@@ -1,0 +1,13 @@
+nametemplate:
+  one: "{{surname[0] | upcase }}, {{initials[0]}}"
+  two: "{{surname[0] | upcase}}, {{initials[0]}} & {{initials[1]}} {{surname[1] | upcase}}"
+  more: "{{surname[0] | upcase}}, {{initials[0]}}, {{initials[1]}} {{surname[1] | upcase}} & {{initials[2]}} {{surname[2] | upcase}}"
+# disabled the following: they should be provided in inheriting calls
+# etal: "{{surname[0] | upcase}}, {{initials[0]}}, {{initials[1]}} {{surname[1] | upcase}} <em>et al.</em>"
+# etal_count: 5
+seriestemplate: "{% if series_abbr %}{{series_abbr}}{% else %}{{series_title}}{% endif %} {{series_num}} ({{series_partnumber}})"
+language: en
+script: Latn
+template:
+  book: "{{ creatornames }}, {{role}} |. <em>{{ title }}</em> [{{medium}}] ,_{{ edition }}_edition |. ({{ series }}) {{ uri }}. {{place}}: {{publisher}}. {{date}}. Updated:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. Accessed:_{{date_accessed}}."
+  incollection: "{{ creatornames }}, {{role}} |. {{ title }} [{{medium}}] ,_{{ edition }}_edition |. {{ labels['in'] | capitalize }}: {{ host_creatornames}} ,_{{ host_role}} : <em>{{host_title}}</em>. ({{ series }}) {{ uri }}. {{place}}: {{publisher}}. {{date}}. {{extent}}. Updated:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. Accessed:_{{date_accessed}}."

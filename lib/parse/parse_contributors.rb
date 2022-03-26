@@ -38,9 +38,10 @@ class Iso690Parse
   def contributor_role(contributors)
     return nil unless contributors.length.positive?
 
-    desc = contributors[0].at("role/description")&.text and return desc
+    desc = contributors[0].at("role/description")&.text
     type = contributors[0].at("role/@type")&.text
-    type = nil if %w(author publisher).include? type
+    return nil if %w(author publisher).include?(type) && desc.nil?
+
     type
   end
 

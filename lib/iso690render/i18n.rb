@@ -1,6 +1,5 @@
 require "yaml"
 require "isodoc-i18n"
-require_relative "function/utils"
 
 module IsoDoc
   class I18n
