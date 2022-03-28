@@ -13,15 +13,25 @@ class Iso690Render
     @parse ||= options["parse"]
     @i18n ||= options["i18n"]
     options["template"].is_a? String and
-      @template = Iso690Template.new(template: options["template"])
+      @template = Iso690Template.new(template: options["template"], i18n: @i18n)
   end
 
   def root_initalize(opt)
-    @i18n = i18n(opt["language"], opt["script"])
+    i18n_initialize(opt)
     @parse = Iso690Parse.new
-    @nametemplate = Iso690NameTemplate.new(template: opt["nametemplate"])
-    @seriestemplate = Iso690SeriesTemplate.new(template: opt["seriestemplate"])
+    @nametemplate = Iso690NameTemplate
+      .new(template: opt["nametemplate"], i18n: @i18n)
+    @seriestemplate = Iso690SeriesTemplate
+      .new(template: opt["seriestemplate"], i18n: @i18n)
     @render = renderers(opt)
+  end
+
+  def i18n_initialize(opt)
+    @lang = opt["language"]
+    @script = opt["script"]
+    @i18n = i18n(opt["language"], opt["script"])
+    @edition_number = opt["edition_number"] || @i18n.edition_number
+    @edition = opt["edition"] || @i18n.edition
   end
 
   def renderers(opt)
@@ -67,7 +77,7 @@ class Iso690Render
 
   def parse1(doc)
     r = @render[doc["type"]]
-    data = @parse.extract(doc).merge("labels" => @i18n.get)
+    data = @parse.extract(doc)
     data_liquid = compound_fields_format(data)
     @i18n.l10n(r.template.render(data_liquid))
   end
@@ -78,6 +88,7 @@ class Iso690Render
     hash[:host_creatornames] = nameformat(hash[:host_creators])
     hash[:host_role] = role_inflect(hash[:host_creators], hash[:host_role_raw])
     hash[:series] = seriesformat(hash)
+    hash[:edition] = editionformat(hash[:edition_raw])
     hash
   end
 
@@ -105,5 +116,13 @@ class Iso690Render
 
     number = contribs.size > 1 ? "pl" : "sg"
     @i18n.get[role][number] || role
+  end
+
+  def editionformat(edn)
+    return edn unless /^\d+$/.match?(edn)
+
+    num = edn.to_i.localize(@lang.to_sym)
+      .to_rbnf_s(*@edition_number)
+    @edition.sub(/%/, num)
   end
 end

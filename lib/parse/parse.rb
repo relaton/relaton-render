@@ -22,7 +22,7 @@ class Iso690Parse
   end
 
   def simple_or_host_xml2hash(doc, host)
-    { edition: edition(doc, host), medium: medium(doc, host),
+    { edition_raw: edition(doc, host), medium: medium(doc, host),
       place: place(doc, host), publisher: publisher(doc, host),
       access_location: access_location(doc, host),
       date: date(doc, host), date_updated: date_updated(doc, host),

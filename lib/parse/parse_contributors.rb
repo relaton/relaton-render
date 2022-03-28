@@ -6,24 +6,20 @@ class Iso690Parse
 
   def extract_personname(person)
     surname = person.at("./name/surname") || person.at("./name/completename")
-    given, middle = given_and_middle_name(person)
+    given, middle, initials = given_and_middle_name(person)
     { surname: surname&.text,
       given: given,
       middle: middle,
-      initials: initials(person) }
+      initials: initials }
   end
 
   def given_and_middle_name(person)
-    forenames = person.xpath("./name/forename")
-    forenames.empty? and return [nil, nil]
-    [forenames.first.text, forenames[1..-1]&.map(&:text)]
-  end
-
-  def initials(person)
-    initials = person&.xpath("./name/initial")&.map(&:text)
-    initials.empty? and
-      initials = person.xpath("./name/forename").map { |x| x.text.split.first }
-    initials
+    forenames = person.xpath("./name/forename")&.map(&:text)
+    initials = person.xpath("./name/initial")&.map(&:text)
+    forenames.empty? and initials.empty? and return [nil, nil, nil]
+    forenames.empty? and forenames = initials.dup
+    initials.empty? and initials = forenames.map { |x| x.split.first }
+    [forenames.first, forenames[1..-1], initials]
   end
 
   def extractname(contributor)

@@ -38,7 +38,8 @@ RSpec.describe Iso690Render do
               <person>
                 <name>
                   <surname>Pellegrini</surname>
-                  <initial>A. D.</initial>
+                  <forename>Anthony</forename>
+                  <forename>D.</forename>
                 </name>
               </person>
             </contributor>
@@ -47,7 +48,8 @@ RSpec.describe Iso690Render do
               <person>
                 <name>
                   <surname>Smith</surname>
-                  <initial>P. K.</initial>
+                  <forename>Peter</forename>
+                  <forename>K.</forename>
                 </name>
               </person>
             </contributor>
@@ -57,6 +59,11 @@ RSpec.describe Iso690Render do
                 <name>Guilford Press</name>
               </organization>
             </contributor>
+            <edition>3</edition>
+            <medium>
+              <form>electronic resource</form>
+              <size>8vo</size>
+            </medium>
             <place>New York, NY</place>
           </bibitem>
         </relation>
@@ -67,7 +74,7 @@ RSpec.describe Iso690Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>RAMSEY, J. K. and MCGREW, W. C.. Object play in great apes: Studies in nature and captivity. In: PELLEGRINI, A. D. and SMITH, P. K., <I>The nature of play: Great apes and humans</I>. New York, NY, 2005. pp. 89&ndash;112.</formattedref>
+      <<formattedref>RAMSEY, J. K. and W. C. MCGREW. Object play in great apes: Studies in nature and captivity. In: PELLEGRINI, Anthony D. and Peter K. SMITH (eds.): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. 3rd edition. New York, NY: Guilford Press. 2005. pp. 89&ndash;112.</formattedref>
     OUTPUT
     p = Iso690Render.new
     expect(p.render(input))

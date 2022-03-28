@@ -82,7 +82,7 @@ drawn from the bibliographic item:
 | Field   | Relaton XPath | Multiple | Can come from host | Note
 
 | title   | ./title | | |
-| edition | ./edition | | Y |
+| edition | ./edition | | Y | If numeric value, is given internationalised rendering of "nth edition", as set in edition_numbering. Otherwise, the textual content of the tag is given.
 | medium  | ./medium | | Y |
 | place   | ./place | | Y |
 | publisher | ./contributor[role/@type = 'publisher']/organization/name | | Y | 
@@ -106,16 +106,19 @@ drawn from the bibliographic item:
 
 Many fields are populated either by the description of the bibliographic item itself, or by the description of the item containing it (the _host_ item: `./relation[@type = 'includedIn']/bibitem`). For example, in a paper included in an edited volume, the edition will typically be given for the editor volume, rather than for the paper. Those fields are indicated by "Can come from host" in the table.
 
-The Liquid template surrounds each field by preceding and following punctuation, which is meant to be space delimited. 
+The Liquid template surrounds each field by preceding and following punctuation.
 
-* If the field is empty, its surrounding markup is also removed. 
-* Underscore is treated as space, attaching to the preceding or following field.
-* If punctuation is space delimited and preceded by `|`, it is inserted regardless of preceding content.
+* Fields are space-delimited. So `<em>{{ title }}</em> [{{medium}}]` are two separate fields.
+* If fields are not space-delimited, this is indicated by inserting `|`. So `{{ title }}|{{ medium}}` is two fields, rendered with no space separation.
+* If the field is empty, its surrounding markup is also removed. So if there is no medium, then `[{{medium}}]` is not rendered, and the brackets will be stripped.
+* Underscore is treated as space, attaching to the preceding or following field. So `,_{{ edition }}_{{ labels['edition'] }}` is treated as the one field.
+* If punctuation is space delimited, it is inserted regardless of preceding content. So `{{ creatornames }} ({{date}}) .` will insert the full stop whether or not the date is present.
+* Space between punctuation and before punctuation is automatically removed.
 
 For example:
 
 ....
-"{{ creatornames }} ({{date}}) |. <em>{{ title }}</em> [{{medium}}] ,_{{ edition }}_{{ labels['edition'] }} |."
+"{{ creatornames }} ({{date}}) . <em>{{ title }}</em> [{{medium}}] ,_{{ edition }}_{{ labels['edition'] }} ."
 ....
 
 [[nametemplate]]
@@ -130,9 +133,9 @@ draws on the following fields drawn from the bibliographic item:
 | surname[0] | ./contributor[1]/person/name/surname \| ./contributor[1]/person/name/completename \| ./contributor[1]/organization/name | | i.e. surname is the name default
 | surname[1] | ./contributor[2]/name/surname | |
 | surname[2] | ./contributor[3]/name/surname | |
-| initials[0] | ./contributor[1]/name/initial | |
+| initials[0] | ./contributor[1]/name/initial | | If not supplied, the first letter of each given name is used instead
 | initials[1] | ./contributor[2]/name/initial | |
-| given[0] | ./contributor[1]/name/forename[1] | |
+| given[0] | ./contributor[1]/name/forename[1] | | If not supplied, initials are used instead
 | given[1] |  ./contributor[2]/name/forename[1] | |
 | middle[0] | ./contributor[1]/name/forename[not(first())] | Y |
 | middle[1] | ./contributor[2]/name/forename[not(first())] | Y |
@@ -169,6 +172,10 @@ The `seriestemplate` is a template for the rendering of series information. It d
 
 === Other
 
-In addition, the stylesheet includes different configuration options for rendering:
+In addition, the configuration includes different configuration options for rendering:
 
-
+Edition rendering is set in the internationalisation file with the following two variables, which can be overridden in
+configuration parameters:
+* `edition_number`:: has following values corresponding to the rule-based number rules defined in https://github.com/twitter/twitter-cldr-rb[]
+for a language. For example, English _4th_ is defined as `["OrdinalRules", "digits-ordinal"]`, because under twitter-cldr, `4th` is generated as `4.localize(:en).to_rbnf_s("OrdinalRules", "digits-ordinal")`
+* `edition`:: is the localised expression for edition, with the edition number given as %. So _4th ed.` is generated with `edition` as `% ed.`.

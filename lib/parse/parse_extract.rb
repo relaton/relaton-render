@@ -6,7 +6,9 @@ class Iso690Parse
   def medium(doc, host)
     x = doc.at("./medium") || host&.at("./medium") or return nil
 
-    x.text
+    %w(content genre form carrier size scale).each_with_object([]) do |i, m|
+      m << x.at("./#{i}")&.text
+    end.compact.join(", ")
   end
 
   def blank?(text)
@@ -15,9 +17,8 @@ class Iso690Parse
 
   def edition(doc, host)
     x = doc.at("./edition") || host&.at("./edition") or return nil
-    return x.text unless /^\d+$/.match? x.text
 
-    x.text.to_i.localize.to_rbnf_s("SpelloutRules", "spellout-ordinal")
+    x.text
   end
 
   BIBLIO_PUBLISHER = "contributor[role/@type = 'publisher']/organization".freeze

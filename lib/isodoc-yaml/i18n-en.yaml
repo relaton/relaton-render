@@ -1,5 +1,10 @@
 in: in
 at: at
+and: and
+updated: updated
+viewed: viewed
+edition_number: ["OrdinalRules", "digits-ordinal"]
+edition: "% edition"
 editor:
-  sg: Ed.
-  pl: Eds.
+  sg: ed.
+  pl: eds.

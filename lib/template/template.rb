@@ -1,14 +1,14 @@
 class Iso690Template
   def initialize(opt = {})
     opt = sym_keys(opt)
+    @i18n = opt[:i18n]
     @template =
       case opt[:template]
       when Hash
         opt[:template].transform_values { |x| Liquid::Template.parse(x) }
       when Array
         opt[:template].map { |x| Liquid::Template.parse(x) }
-      else
-        { default: Liquid::Template.parse(opt[:template]) }
+      else { default: Liquid::Template.parse(opt[:template]) }
       end
   end
 
@@ -22,19 +22,22 @@ class Iso690Template
   end
 
   def render(hash)
-    template_clean(template_select(hash).render(liquid_hash(hash)))
+    template_clean(template_select(hash)
+      .render(liquid_hash(hash.merge("labels" => @i18n.get))))
   end
 
   def template_select(_hash)
     @template[:default]
   end
 
+  # use tab internally for non-spacing delimiter
   def template_clean(str)
-    str = str.gsub(/\S*#{EMPTYFIELD}\S*/o, "").gsub(/_/, " ")
-      .strip.sub(/^\s*\|./, "")
-      .gsub(/(\|\S\s*)+(\|\S)/, "\\2").gsub(/\s*\|/, "")
+    str = str.gsub(/\S*#{EMPTYFIELD}\S*/o, "")
+      .gsub(/_/, " ").gsub(/[\t\n]/, " ")
       .gsub(/([,.:]\s*)+([,.]\s)/, "\\2")
       .gsub(/(:\s+)(&\s)/, "\\2")
+      .gsub(/\s+([,.:])/, "\\1")
+      .gsub(/\t/, "").gsub(/\s+/, " ")
     str.strip
   end
 
