@@ -51,36 +51,8 @@ class Iso690Parse
     doc&.at("./partnumber")&.text
   end
 
-  def series(doc, type)
-    s = series_extract(doc)
-    return "" unless s
-
-    f = s.at("./formattedref") and return f.text
-    t = series_title(doc)
-    a = series_abbr(doc)
-    n = series_num(doc)
-    p = series_partnumber(doc)
-    dn = doc.at("./docnumber")
-    rev = doc&.at(".//edition")&.text&.sub(/^Revision /, "")
-    ret = ""
-    if t
-      title = if included(type)
-                wrap(t.text, " <em>",
-                     "</em>")
-              else
-                wrap(t.text, " ", "")
-              end
-      ret += title
-      ret += " (#{a.text.sub(/^NIST /, '')})" if a
-    end
-    if n || p
-      ret += " #{n.text}" if n
-      ret += ".#{p.text}" if p
-    elsif dn && nist?(doc)
-      ret += " #{dn.text}"
-      ret += " Rev. #{rev}" if rev
-    end
-    ret
+  def series_run(doc)
+    doc&.at("./run")&.text
   end
 
   def standardidentifier(doc)

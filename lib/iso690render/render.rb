@@ -23,6 +23,8 @@ class Iso690Render
       .new(template: opt["nametemplate"], i18n: @i18n)
     @seriestemplate = Iso690SeriesTemplate
       .new(template: opt["seriestemplate"], i18n: @i18n)
+    @journaltemplate = Iso690SeriesTemplate
+      .new(template: opt["journaltemplate"], i18n: @i18n)
     @render = renderers(opt)
   end
 
@@ -93,14 +95,17 @@ class Iso690Render
   end
 
   def seriesformat(hash)
-    parts = %i(series_title series_abbr series_num series_partnumber)
+    parts = %i(series_title series_abbr series_num series_partnumber series_run)
     series_out = parts.each_with_object({}) do |i, m|
       m[i] = hash[i]
     end
-    @seriestemplate.render(series_out)
+    t = hash[:type] == "article" ? @journaltemplate : @seriestemplate
+    t.render(series_out)
   end
 
   def nameformat(names)
+    return names if names.nil?
+
     parts = %i(surname initials given middle)
     names_out = names.each_with_object({}) do |n, m|
       parts.each do |i|

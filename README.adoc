@@ -30,6 +30,9 @@ The parameters are:
 `template`:: templates for rendering different bibliographic types
 `nametemplate`:: templates for rendering personal names
 `seriestemplate`:: templates for rendering series
+`journaltemplate`:: templates for rendering journals in article citations
+`edition_number`:: override formatting of edition number
+`edition`:: override formatting of edition 
 
 == Configuration
 
@@ -168,7 +171,22 @@ The `seriestemplate` is a template for the rendering of series information. It d
 | series_abbr  | ./series[@type = 'main' or not(@type) or true]/abbreviation | | Y |
 | series_num  | ./series[@type = 'main' or not(@type) or true]/number | | Y |
 | series_partnumber  | ./series[@type = 'main' or not(@type) or true]/partnumber | | Y |
+| series_run  | ./series[@type = 'main' or not(@type) or true]/run | | Y |
 |===
+
+For example: `{% if series_abbr %}{{series_abbr}}{% else %}{{series_title}}{% endif %} ,_({{series_run}}) {{series_num}}|({{series_partnumber}})`
+
+=== Journal template
+
+The `journaltemplate` is a template for the rendering of series information, when they relate to articles in a journal. The template is distinct because of longstanding practice of rendering journal information differently from monograph series information. The template draws on the same fields as the `seriestemplate`, but because the journal title is typically italicised and the numeration is not, any italicisation needs to occur within the template.
+
+For example, the recommended practice in the current edition of ISO 690 is to give explicit volume labels:
+
+`<em>{% if series_abbr %}{{series_abbr}}{% else %}{{series_title}}{% endif %}</em> {{ labels['volume'] }}_{{series_num}} {{ labels['part'] }}_{{series_partnumber}}`
+
+A common template that drops those labels is:
+
+`<em>{% if series_abbr %}{{series_abbr}}{% else %}{{series_title}}{% endif %}</em> {{series_num}}|({{series_partnumber}})`
 
 === Other
 

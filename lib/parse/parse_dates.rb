@@ -13,21 +13,21 @@ class Iso690Parse
     x = doc.at("./date[@type = 'issued']") ||
       doc.at("./date[@type = 'circulated']") ||
       doc.at("./date") ||
-      host.at("./date[@type = 'issued']") ||
-      host.at("./date[@type = 'circulated']") ||
-      host.at("./date") or return nil
+      host&.at("./date[@type = 'issued']") ||
+      host&.at("./date[@type = 'circulated']") ||
+      host&.at("./date") or return nil
     date1(x)
   end
 
   def date_updated(doc, host)
     x = doc.at("./date[@type = 'updated']") ||
-      host.at("./date[@type = 'updated']") or return nil
+      host&.at("./date[@type = 'updated']") or return nil
     date1(x)
   end
 
   def date_accessed(doc, host)
     x = doc.at("./date[@type = 'accessed']") ||
-      host.at("./date[@type = 'accessed']") or return nil
+      host&.at("./date[@type = 'accessed']") or return nil
     date1(x)
   end
 

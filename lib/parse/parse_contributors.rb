@@ -18,7 +18,7 @@ class Iso690Parse
     initials = person.xpath("./name/initial")&.map(&:text)
     forenames.empty? and initials.empty? and return [nil, nil, nil]
     forenames.empty? and forenames = initials.dup
-    initials.empty? and initials = forenames.map { |x| x.split.first }
+    initials.empty? and initials = forenames.map { |x| x.chars.first }
     [forenames.first, forenames[1..-1], initials]
   end
 
@@ -49,6 +49,8 @@ class Iso690Parse
 
   def creatornames1(doc)
     cr = []
+    return cr if doc.nil?
+
     %w(author performer adapter translator editor publisher distributor)
       .each do |r|
         add = doc.xpath("./contributor[role/@type = '#{r}']")

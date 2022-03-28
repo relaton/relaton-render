@@ -5,10 +5,10 @@ class Iso690Template
     @template =
       case opt[:template]
       when Hash
-        opt[:template].transform_values { |x| Liquid::Template.parse(x) }
+        opt[:template].transform_values { |x| template_process(x) }
       when Array
-        opt[:template].map { |x| Liquid::Template.parse(x) }
-      else { default: Liquid::Template.parse(opt[:template]) }
+        opt[:template].map { |x| template_process(x) }
+      else { default: template_process(opt[:template]) }
       end
   end
 
@@ -19,6 +19,23 @@ class Iso690Template
     when Array then hash.map { |n| sym_keys(n) }
     else hash
     end
+  end
+
+  # denote start and end of field,
+  # so that we can detect empty fields in postprocessing
+  FIELD_DELIM = "\u0018".freeze
+
+  # use tab internally for non-spacing delimiter
+  NON_SPACING_DELIM = "\t".freeze
+
+  def template_process(template)
+    t = template.gsub(/\{\{/, "#{FIELD_DELIM}{{")
+      .gsub(/\}\}/, "}}#{FIELD_DELIM}")
+      .gsub(/\t/, " ")
+    t1 = t.split(/(\{\{.+?\}\})/).map do |n|
+      n.include?("{{") ? n : n.gsub(/(?<!\\)\|/, "\t")
+    end.join
+    Liquid::Template.parse(t1)
   end
 
   def render(hash)
@@ -32,27 +49,26 @@ class Iso690Template
 
   # use tab internally for non-spacing delimiter
   def template_clean(str)
-    str = str.gsub(/\S*#{EMPTYFIELD}\S*/o, "")
-      .gsub(/_/, " ").gsub(/[\t\n]/, " ")
+    str = str.gsub(/\S*#{FIELD_DELIM}#{FIELD_DELIM}\S*/o, "")
+      .gsub(/#{FIELD_DELIM}/o, "")
+      .gsub(/_/, " ")
       .gsub(/([,.:]\s*)+([,.]\s)/, "\\2")
       .gsub(/(:\s+)(&\s)/, "\\2")
       .gsub(/\s+([,.:])/, "\\1")
-      .gsub(/\t/, "").gsub(/\s+/, " ")
+      .gsub(/#{NON_SPACING_DELIM}/o, "").gsub(/\s+/, " ")
     str.strip
   end
 
-  # \u0018 signals empty field
-  EMPTYFIELD = "\u0018".freeze
-
   def liquid_hash(hash)
-    hash.map { |k, v| [k.to_s, empty2nil(v)] }.to_h
-  end
-
-  def empty2nil(str)
-    return EMPTYFIELD if str.nil? || (str.is_a?(String) && str.empty?)
-    return [EMPTYFIELD] if str.is_a?(Array) && str.empty?
-
-    str
+    case hash
+    when Hash
+      hash.map { |k, v| [k.to_s, liquid_hash(v)] }.to_h
+    when Array
+      hash.map { |v| liquid_hash(v) }
+    when String
+      hash.empty? ? nil : hash
+    else hash
+    end
   end
 end
 
@@ -84,11 +100,10 @@ class Iso690NameTemplate < Iso690Template
   # ...[0], ...[1], ...[2]
   def expand_nametemplate(template, size)
     t = nametemplate_split(template)
-    mid = (1..size - 2).each_with_object([]) do |i, m|
+    mid = (1..size - 1).each_with_object([]) do |i, m|
       m << t[1].gsub(/\[1\]/, "[#{i}]")
     end
-    Liquid::Template
-      .parse(t[0] + mid.join + t[2].gsub(/\[2\]/, "[#{size - 1}]"))
+    template_process(t[0] + mid.join + t[2].gsub(/\[2\]/, "[#{size}]"))
   end
 
   def nametemplate_split(template)
@@ -104,8 +119,8 @@ class Iso690NameTemplate < Iso690Template
   end
 
   def nametemplate_split1(elem, acc, curr, prec)
-    if match = /^\{\{.+?\[(\d)\]/.match(elem)
-      curr += 1 if match[0].to_i > curr
+    if match = /\{\{.+?\[(\d)\]/.match(elem)
+      curr += 1 if match[1].to_i > curr
       acc[curr] += prec
       prec = ""
       acc[curr] += elem

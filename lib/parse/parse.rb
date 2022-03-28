@@ -36,9 +36,11 @@ class Iso690Parse
 
   def series_xml2hash(doc, host)
     series = doc.at("./series[@type = 'main']") ||
-      doc.at("./series[not(@type)]") || doc.at("./series") ||
-      host.at("./series[@type = 'main']") ||
-      host.at("./series[not(@type)]") || host.at("./series")
+      doc.at("./series[not(@type)]") || doc.at("./series")
+    host and series ||=
+               host.at("./series[@type = 'main']") ||
+               host.at("./series[not(@type)]") || host.at("./series")
+
     series_xml2hash1(series)
   end
 
@@ -46,7 +48,7 @@ class Iso690Parse
     return {} unless series
 
     { series_title: series_title(series), series_abbr: series_abbr(series),
-      series_num: series_num(series),
+      series_run: series_run(series), series_num: series_num(series),
       series_partnumber: series_partnumber(series) }
   end
 end
