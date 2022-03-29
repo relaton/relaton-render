@@ -16,7 +16,7 @@ class Iso690Parse
 
   def simple_xml2hash(doc)
     creators, role = creatornames(doc)
-    { type: type(doc), title: title(doc), extent: extent(doc),
+    { type: type(doc), title: title(doc), extent_raw: extent(doc),
       standardidentifier: standardidentifier(doc), uri: uri(doc),
       status: status(doc), creators: creators, role_raw: role }
   end

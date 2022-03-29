@@ -6,14 +6,18 @@ nametemplate:
 # etal: "{{surname[0] | upcase}}, {{given[0]}} {{middle[0]}}, {{given[1]}} {{middle[1]}} {{surname[1] | upcase}} <em>et al.</em>"
 # etal_count: 5
 seriestemplate: "{% if series_abbr %}{{series_abbr}}{% else %}{{series_title}}{% endif %} ({{series_run}}) {{series_num}}|({{series_partnumber}})"
-journaltemplate: "<em>{% if series_abbr %}{{series_abbr}}{% else %}{{series_title}}{% endif %}</em> <em>{% if series_abbr %}{{series_abbr}}{% else %}{{series_title}}{% endif %}</em> ({{series_run}}) {{ labels['volume'] }}_{{series_num}} {{ labels['part'] }}_{{series_partnumber}}"
+journaltemplate: "<em>{% if series_abbr %}{{series_abbr}}{% else %}{{series_title}}{% endif %}</em> ({{series_run}}) {{ labels['volume'] }}_{{series_num}} {{ labels['part'] }}_{{series_partnumber}}"
+extenttemplate:
+  book: "{{ volume }}_{{ labels['extent']['volume'] }}, {{ page }}_{{ labels['extent']['page'] }}"
+  inbook: "{{ volume }}: {{ page }}"
+  misc: "{{ labels['extent']['volume'] }}_{{ volume }}, {{ labels['extent']['page'] }}_{{ page }}"
 language: en
 script: Latn
 template:
-  book: "{{ creatornames }} ({{role}}) . <em>{{ title }}</em> [{{medium}}] . {{ edition | capitalize }}. ({{ series }}.) {{place}}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]."
+  book: "{{ creatornames }} ({{role}}) . <em>{{ title }}</em> [{{medium}}] . {{ edition | capitalize }}. ({{ series }}.) {{place}}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]. {{extent}}."
     # TODO: omitted: author ids, subsidiary titles, subsidiary creators, rights metadata, distributor, item attributes, relationships
-  booklet: "{{ creatornames }} ({{role}}) . <em>{{ title }}</em> [{{medium}}] . {{ edition | capitalize }}. ({{ series }}.) {{place}}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]."
-  manual: "{{ creatornames }} ({{role}}) . <em>{{ title }}</em> [{{medium}}] . {{ edition | capitalize }}. ({{ series }}.) {{place}}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]."
+  booklet: "{{ creatornames }} ({{role}}) . <em>{{ title }}</em> [{{medium}}] . {{ edition | capitalize }}. ({{ series }}.) {{place}}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]. {{extent}}."
+  manual: "{{ creatornames }} ({{role}}) . <em>{{ title }}</em> [{{medium}}] . {{ edition | capitalize }}. ({{ series }}.) {{place}}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]. {{extent}}."
   inbook: "{{ creatornames }} ({{role}}) . {{ title }} . {{ labels['in'] | capitalize }}: {{ host_creatornames}} ({{ host_role}}) : <em>{{host_title}}</em> [{{medium}}] . {{ edition | capitalize }}. ({{ series }}.) {{place}}: {{publisher}}. {{date}}. {{extent}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]."
   incollection: "{{ creatornames }} ({{role}}) . {{ title }} . {{ labels['in'] | capitalize }}: {{ host_creatornames}} ({{ host_role}}) : <em>{{host_title}}</em> [{{medium}}] . {{ edition | capitalize }}. ({{ series }}.) {{place}}: {{publisher}}. {{date}}. {{extent}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]."
     # TODO: omitted: author ids, additional info for component part, subsidiary titles of host resource, rights metadata, distributor, relationships

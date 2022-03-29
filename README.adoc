@@ -29,8 +29,9 @@ The parameters are:
 `script`:: in ISO-15124
 `template`:: templates for rendering different bibliographic types
 `nametemplate`:: templates for rendering personal names
-`seriestemplate`:: templates for rendering series
-`journaltemplate`:: templates for rendering journals in article citations
+`seriestemplate`:: template for rendering series
+`journaltemplate`:: template for rendering journals in article citations
+`extenttemplate`:: templates for rendering extents
 `edition_number`:: override formatting of edition number
 `edition`:: override formatting of edition 
 
@@ -101,8 +102,8 @@ drawn from the bibliographic item:
 | date_accessed | ./date[@type = 'accessed'] | | Y | 
 | series | ./series[@type = 'main' or not(@type) or true] | | Y | <<seriestemplate,`seriestemplate`>> applies to series
 | host_creatornames | ./relation[@type = 'includedIn']/bibitem/contributor[role/@type = 'author'] | |  Y | Follows options for `creatornames`
-| host_title | ./relation[@type = 'includedIn']/bibitem/title | Y | Y | Follows options for `creatornames`
-| host_role | ./relation[@type = 'includedIn']/bibitem/contributor[role/description] \| ./relation[@type = 'includedIn']/bibitem/contributor[role/@type] | | Y | 
+| host_title | ./relation[@type = 'includedIn']/ bibitem/title | Y | Y | Follows options for `creatornames`
+| host_role | ./relation[@type = 'includedIn']/ bibitem/contributor[role/description] \| ./relation[@type = 'includedIn']/ bibitem/contributor[role/@type] | | Y | 
 | type | ./@type | |
 | labels | | | text to be looked up in internationalisation configuration files: "edition", "In", "At", "Vol", "Vols", "p.", "pp" 
 |===
@@ -188,12 +189,35 @@ A common template that drops those labels is:
 
 `<em>{% if series_abbr %}{{series_abbr}}{% else %}{{series_title}}{% endif %}</em> {{series_num}}|({{series_partnumber}})`
 
+=== Extent template
+
+The extent of a reference can be expressed differently depending on the type of bibliographic item. For example, the extent of a book is its page count, and is typically expressed as something like _59 pp._ On the other hand, the extent of an article is expressed as _pp. 9–20_, or just _9–20_. 
+
+To capture this, a separate template is supplied under `extenttemplate` for each bibliographic item type. For those types where none is supplied, the template given for `misc` is used as the default. 
+
+The template draws on the defined types of locality of extents; the most common of these is `page` and `volume`. Locality types are the fields used in the Liquid templates; for example:
+
+....
+{
+  book: "{{ volume }}_{{ label['extent']['volume'] }}, {{ page }}_{{ label['extent']['page'] }}"
+  inbook: "{{ volume }}: {{ page }}"
+  misc: "{{ label['extent']['volume'] }}_{{ volume }}, {{ label['extent']['page'] }}_{{ page }}"
+}
+....
+
+The internationalisation files define a singular and a plural version of the locality types, under `labels['extent']`
+
+* The plural is always used if the extent is a range (with a `<from>` and `<to>`). 
+* In a host type of bibliographic item, the extent is singular only if the value is `1`, else it is plural (_1 p._, _2 pp._)
+* In an included item (`inbook`, `incollection`, `inproceedings`, `article`, or any item with an `includedIn` relation), 
+the singular is used if the extent is not a range (_pp. 2–4_ vs. _p. 3_)..
+
 === Other
 
 In addition, the configuration includes different configuration options for rendering:
 
 Edition rendering is set in the internationalisation file with the following two variables, which can be overridden in
 configuration parameters:
-* `edition_number`:: has following values corresponding to the rule-based number rules defined in https://github.com/twitter/twitter-cldr-rb[]
+`edition_number`:: has following values corresponding to the rule-based number rules defined in https://github.com/twitter/twitter-cldr-rb[]
 for a language. For example, English _4th_ is defined as `["OrdinalRules", "digits-ordinal"]`, because under twitter-cldr, `4th` is generated as `4.localize(:en).to_rbnf_s("OrdinalRules", "digits-ordinal")`
-* `edition`:: is the localised expression for edition, with the edition number given as %. So _4th ed.` is generated with `edition` as `% ed.`.
+`edition`:: is the localised expression for edition, with the edition number given as %. So _4th ed.` is generated with `edition` as `% ed.`.

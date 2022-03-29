@@ -2,12 +2,12 @@ class Iso690Template
   def initialize(opt = {})
     opt = sym_keys(opt)
     @i18n = opt[:i18n]
+    @template_raw = opt[:template].dup
     @template =
       case opt[:template]
       when Hash
         opt[:template].transform_values { |x| template_process(x) }
-      when Array
-        opt[:template].map { |x| template_process(x) }
+      when Array then opt[:template].map { |x| template_process(x) }
       else { default: template_process(opt[:template]) }
       end
   end
@@ -52,9 +52,10 @@ class Iso690Template
     str = str.gsub(/\S*#{FIELD_DELIM}#{FIELD_DELIM}\S*/o, "")
       .gsub(/#{FIELD_DELIM}/o, "")
       .gsub(/_/, " ")
-      .gsub(/([,.:]\s*)+([,.]\s)/, "\\2")
+      .gsub(/([,:;]\s*)+([,:;](\s|$))/, "\\2")
+      .gsub(/([,.:;]\s*)+([.](\s|$))/, "\\2")
       .gsub(/(:\s+)(&\s)/, "\\2")
-      .gsub(/\s+([,.:])/, "\\1")
+      .gsub(/\s+([,.:;])/, "\\1")
       .gsub(/#{NON_SPACING_DELIM}/o, "").gsub(/\s+/, " ")
     str.strip
   end
@@ -75,10 +76,35 @@ end
 class Iso690SeriesTemplate < Iso690Template
 end
 
+class Iso690ExtentTemplate < Iso690Template
+  def template_select(hash)
+    t = @template_raw[hash[:type].to_sym]
+    hash.each do |k, _v|
+      next unless hash[:orig][k].is_a?(Hash)
+
+      num = number(hash[:type], hash[:orig][k])
+      t = t.gsub(/labels\[['"]extent['"]\]\[['"]#{k}['"]\]/, "\\0['#{num}']")
+    end
+    t = t.gsub(/labels\[['"]extent['"]\]\[['"][^\]'"]+['"]\](?!\[)/, "\\0['sg']")
+    template_process(t)
+  end
+
+  def number(type, value)
+    return "pl" if value[:to]
+    return "sg" if %w(article incollection inproceedings inbook)
+      .include?(type) || value[:host_title]
+
+    value[:from] == "1" ? "sg" : "pl"
+  end
+
+  def render(hash)
+    super
+  end
+end
+
 class Iso690NameTemplate < Iso690Template
   def initialize(opt = {})
     @etal_count = opt[:template]["etal_count"]
-    @nametemplate_more = opt[:template]["more"]
     opt[:template].delete("etal_count")
     super
   end
@@ -91,7 +117,7 @@ class Iso690NameTemplate < Iso690Template
     else
       if @etal_count && names.size >= @etal_count
         @template[:etal]
-      else expand_nametemplate(@nametemplate_more, names.size)
+      else expand_nametemplate(@template_raw[:more], names.size)
       end
     end
   end

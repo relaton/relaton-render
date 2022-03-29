@@ -25,6 +25,7 @@ class Iso690Render
       .new(template: opt["seriestemplate"], i18n: @i18n)
     @journaltemplate = Iso690SeriesTemplate
       .new(template: opt["journaltemplate"], i18n: @i18n)
+    @extenttemplate = extentrenderers(opt)
     @render = renderers(opt)
   end
 
@@ -36,13 +37,23 @@ class Iso690Render
     @edition = opt["edition"] || @i18n.edition
   end
 
-  def renderers(opt)
+  def template_hash_fill(templates)
     Iso690Render::BIBTYPE.each_with_object({}) do |type, m|
-      template = opt["template"][type] || opt["template"]["misc"] ||
-        default_template
-      m[type] = Iso690Render.subclass(type)
-        .new(template: template, parse: @parse, i18n: @i18n)
+      template = templates[type] || templates["misc"] || default_template
+      m[type] = template
     end
+  end
+
+  def renderers(opt)
+    template_hash_fill(opt["template"]).each_with_object({}) do |(k, v), m|
+      m[k] = Iso690Render.subclass(k)
+        .new(template: v, parse: @parse, i18n: @i18n)
+    end
+  end
+
+  def extentrenderers(opt)
+    Iso690ExtentTemplate
+      .new(template: template_hash_fill(opt["extenttemplate"]), i18n: @i18n)
   end
 
   def default_template
@@ -91,6 +102,7 @@ class Iso690Render
     hash[:host_role] = role_inflect(hash[:host_creators], hash[:host_role_raw])
     hash[:series] = seriesformat(hash)
     hash[:edition] = editionformat(hash[:edition_raw])
+    hash[:extent] = extentformat(hash[:extent_raw], hash)
     hash
   end
 
@@ -129,5 +141,28 @@ class Iso690Render
     num = edn.to_i.localize(@lang.to_sym)
       .to_rbnf_s(*@edition_number)
     @edition.sub(/%/, num)
+  end
+
+  def extentformat(extent, hash)
+    extent.map do |e|
+      extent_out = e.merge(type: hash[:type], host_title: hash[:host_title])
+        .transform_values do |v|
+          case v
+          when Hash then range(v)
+          else v
+          end
+        end
+      @extenttemplate.render(extent_out.merge(orig: e))
+    end.join("; ")
+  end
+
+  def range(hash)
+    if hash.has_key?(:from) && hash[:from].nil? then nil
+    elsif hash[:from]
+      if hash[:to] then "#{hash[:from]}&#x2013;#{hash[:to]}"
+      else hash[:from]
+      end
+    else hash
+    end
   end
 end

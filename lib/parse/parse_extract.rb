@@ -102,27 +102,30 @@ class Iso690Parse
   end
 
   def extent1(localities)
-    ret = []
-    localities.each do |l|
-      ret << extent2(l["type"] || "page",
-                     l.at("./referenceFrom"), l.at("./referenceTo"))
+    localities.each_with_object({}) do |l, ret|
+      ret[(l["type"] || "page").to_sym] = {
+        from: l.at("./referenceFrom")&.text,
+        to: l.at("./referenceTo")&.text,
+      }
     end
-    ret.join(", ")
   end
 
   def extent(doc)
-    ret = []
-    ret1 = ""
-    doc.xpath("./extent").each do |l|
-      if %w(localityStack).include? l.name
-        ret << ret1
-        ret1 = ""
-        ret << extent1(l.children)
-      else ret1 += extent1([l])
+    ret1 = {}
+    ret = doc.xpath("./extent").each_with_object([]) do |e, m|
+      e.elements.each do |l|
+        if l.name == "localityStack"
+          m << ret1
+          ret1 = {}
+          m << extent1(l.elements)
+        elsif l.name == "locality"
+          ret1.merge!(extent1(l.elements))
+        else ret1.merge!(extent1([l]))
+        end
       end
     end
     ret << ret1
-    ret.reject(&:empty?).join("; ")
+    ret.reject(&:empty?)
   end
 
   def draft(doc)

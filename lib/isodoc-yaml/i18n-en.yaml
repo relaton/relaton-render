@@ -8,3 +8,10 @@ edition: "% edition"
 editor:
   sg: ed.
   pl: eds.
+extent:
+  page:
+    sg: p.
+    pl: pp.
+  volume:
+    sg: vol.
+    pl: vols.
