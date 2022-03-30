@@ -212,6 +212,80 @@ RSpec.describe Iso690Render do
       .to be_equivalent_to output
   end
 
+  it "renders incollection, two authors, with Russian internationalisation" do
+    input = <<~INPUT
+      <bibitem type="incollection">
+        <title>Object play in great apes: Studies in nature and captivity</title>
+        <date type="published"><on>2005</on></date>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name>
+              <surname>Ramsey</surname>
+              <initial>J. K.</initial>
+            </name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name>
+              <surname>McGrew</surname>
+              <initial>W. C.</initial>
+            </name>
+          </person>
+        </contributor>
+        <relation type="includedIn">
+          <bibitem>
+            <title>The nature of play: Great apes and humans</title>
+            <contributor>
+              <role type="editor"/>
+              <person>
+                <name>
+                  <surname>Pellegrini</surname>
+                  <forename>Anthony</forename>
+                  <forename>D.</forename>
+                </name>
+              </person>
+            </contributor>
+            <contributor>
+              <role type="editor"/>
+              <person>
+                <name>
+                  <surname>Smith</surname>
+                  <forename>Peter</forename>
+                  <forename>K.</forename>
+                </name>
+              </person>
+            </contributor>
+            <contributor>
+              <role type="publisher"/>
+              <organization>
+                <name>Guilford Press</name>
+              </organization>
+            </contributor>
+            <edition>3</edition>
+            <medium>
+              <form>electronic resource</form>
+              <size>8vo</size>
+            </medium>
+            <place>New York, NY</place>
+          </bibitem>
+        </relation>
+        <extent type="page">
+          <referenceFrom>89</referenceFrom>
+          <referenceTo>112</referenceTo>
+        </extent>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>RAMSEY, J. K. &#x438; W. C. MCGREW. Object play in great apes: Studies in nature and captivity. &#x432: PELLEGRINI, Anthony D. &#x438; Peter K. SMITH (&#x438;&#x437;&#x434;.): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. Третье &#x438;&#x437;&#x434;&#x430;&#x43d;&#x438;&#x435. New York, NY: Guilford Press. 2005. &#x441;&#x442;&#x440. 89&#x2013;112.</formattedref>
+    OUTPUT
+    p = Iso690Render.new(language: "ru")
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
   it "renders journal" do
     input = <<~INPUT
       <bibitem type="journal">

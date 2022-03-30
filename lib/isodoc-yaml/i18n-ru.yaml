@@ -1,2 +1,19 @@
 in: в
 at: в
+and: и
+updated: обновлен
+viewed: просмотрено
+version: версия
+edition_number: ["SpelloutRules", "spellout-ordinal-neuter"]
+edition: "% издание"
+editor:
+  sg: изд.
+  pl: изд.
+extent:
+  page:
+    sg: стр.
+    pl: стр.
+  volume:
+    sg: т.
+    pl: тт.
+
