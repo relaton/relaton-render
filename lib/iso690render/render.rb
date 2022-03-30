@@ -40,6 +40,7 @@ class Iso690Render
   def template_hash_fill(templates)
     Iso690Render::BIBTYPE.each_with_object({}) do |type, m|
       template = templates[type] || templates["misc"] || default_template
+      Iso690Render::BIBTYPE.include?(template) and template = templates[template]
       m[type] = template
     end
   end

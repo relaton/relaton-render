@@ -134,6 +134,14 @@ For example:
 "{{ creatornames }} ({{date}}) . <em>{{ title }}</em> [{{medium}}] ,_{{ edition }}_{{ labels['edition'] }} ."
 ....
 
+If a type uses another type's template, the type is mapped to the other type's name; e.g.
+
+....
+template:
+  book: ...
+  booklet:  book
+....
+
 [[nametemplate]]
 === Name templates
 
