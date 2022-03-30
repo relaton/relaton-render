@@ -89,18 +89,6 @@ class Iso690Parse
     "book"
   end
 
-  def extent2(type, from, upto)
-    ret = ""
-    case type
-    when "page" then type = upto ? "pp." : "p."
-    when "volume" then type = upto ? "Vols." : "Vol."
-    end
-    ret += "#{type} "
-    ret += from.text if from
-    ret += "&ndash;#{upto.text}" if upto
-    ret
-  end
-
   def extent1(localities)
     localities.each_with_object({}) do |l, ret|
       ret[(l["type"] || "page").to_sym] = {
@@ -110,18 +98,24 @@ class Iso690Parse
     end
   end
 
+  def extent0(elem, acc, ret1)
+    case elem.name
+    when "localityStack"
+      acc << ret1
+      ret1 = {}
+      acc << extent1(elem.elements)
+    when "locality" then ret1.merge!(extent1([elem]))
+    when "referenceFrom" then ret1.merge!(extent1([elem.parent]))
+    end
+    [acc, ret1]
+  end
+
   def extent(doc)
     ret1 = {}
-    ret = doc.xpath("./extent").each_with_object([]) do |e, m|
+    ret = doc.xpath("./extent").each_with_object([]) do |e, acc|
       e.elements.each do |l|
-        if l.name == "localityStack"
-          m << ret1
-          ret1 = {}
-          m << extent1(l.elements)
-        elsif l.name == "locality"
-          ret1.merge!(extent1(l.elements))
-        else ret1.merge!(extent1([l]))
-        end
+        acc, ret1 = extent0(l, acc, ret1)
+        break if l.name == "referenceFrom"
       end
     end
     ret << ret1

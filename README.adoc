@@ -101,7 +101,7 @@ drawn from the bibliographic item:
 | date_updated | ./date[@type = 'updated'] | | Y | 
 | date_accessed | ./date[@type = 'accessed'] | | Y | 
 | series | ./series[@type = 'main' or not(@type) or true] | | Y | <<seriestemplate,`seriestemplate`>> applies to series
-| host_creatornames | ./relation[@type = 'includedIn']/bibitem/contributor[role/@type = 'author'] | |  Y | Follows options for `creatornames`
+| host_creatornames | ./relation[@type = 'includedIn']/ bibitem/contributor[role/@type = 'author'] | |  Y | Follows options for `creatornames`
 | host_title | ./relation[@type = 'includedIn']/ bibitem/title | Y | Y | Follows options for `creatornames`
 | host_role | ./relation[@type = 'includedIn']/ bibitem/contributor[role/description] \| ./relation[@type = 'includedIn']/ bibitem/contributor[role/@type] | | Y | 
 | type | ./@type | |
