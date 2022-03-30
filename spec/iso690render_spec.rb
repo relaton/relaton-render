@@ -290,7 +290,177 @@ RSpec.describe Iso690Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-    <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. <em>London Mathematical Society Lecture Note Series</em> (N.S.). 1st edition. pp. 89&#x2013;112. Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831.</formattedref>
+      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. <em>London Mathematical Society Lecture Note Series</em> (N.S.). 1st edition. pp. 89&#x2013;112. Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831.</formattedref>
+    OUTPUT
+    p = Iso690Render.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
+  it "renders software" do
+    input = <<~INPUT
+      <bibitem type="software">
+        <title>metanorma-standoc</title>
+        <uri>https://github.com/metanorma/metanorma-standoc</uri>
+        <date type="published"><on>2019-09-04</on></date>
+        <contributor>
+          <role type="author"/>
+          <organization>
+            <name>Ribose Inc.</name>
+          </organization>
+        </contributor>
+        <contributor>
+          <role type="distributor"/>
+          <organization>
+            <name>GitHub</name>
+          </organization>
+        </contributor>
+        <edition>1.3.1</edition>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>RIBOSE INC. <em>metanorma-standoc</em>. Version 1.3.1. September 04, 2019. https://github.com/metanorma/metanorma-standoc.</formattedref>
+    OUTPUT
+    p = Iso690Render.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
+  it "renders standard" do
+    input = <<~INPUT
+      <bibitem type="standard">
+        <title>Intellectual Property Rights in IETF technology</title>
+        <uri>https://www.ietf.org/rfc/rfc3979.txt</uri>
+        <docidentifier type="RFC">RFC 3979</docidentifier>
+        <date type="published"><on>2005</on></date>
+        <date type="accessed"><on>2012-06-18</on></date>
+        <contributor>
+          <role type="author"/>
+          <organization>
+            <name>Internet Engineering Task Force</name>
+            <abbreviation>IETF</abbreviation>
+          </organization>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Bradner</surname><initials>S.</initials></name>
+          </person>
+        </contributor>
+        <medium>
+          <carrier>Online</carrier>
+        </medium>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>INTERNET ENGINEERING TASK FORCE. <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. RFC 3979. https://www.ietf.org/rfc/rfc3979.txt. [viewed: June 18, 2012].</formattedref>
+    OUTPUT
+    p = Iso690Render.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
+  it "renders dataset" do
+    input = <<~INPUT
+      <bibitem type="dataset">
+        <title>Children of Immigrants. Longitudinal Sudy (CILS) 1991–2006 ICPSR20520</title>
+        <uri>https://doi.org/10.3886/ICPSR20520.v2</uri>
+        <date type="published"><on>2012-01-23</on></date>
+        <date type="accessed"><on>2018-05-06</on></date>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Portes</surname><forename>Alejandro</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Rumbaut</surname><forename>Rubén</forename><forename>G.</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="distributor"/>
+          <organization>
+            <name>Inter-University Consortium for Political and Social Research</name>
+          </organization>
+        </contributor>
+        <edition>2</edition>
+        <medium>
+          <genre>dataset</genre>
+        </medium>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>PORTES, Alejandro and Rubén G. RUMBAUT. <em>Children of Immigrants. Longitudinal Sudy (CILS) 1991–2006 ICPSR20520</em>. Version 2. Dataset. January 23, 2012. https://doi.org/10.3886/ICPSR20520.v2. [viewed: May 06, 2018].</formattedref>
+    OUTPUT
+    p = Iso690Render.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
+  it "renders website" do
+    input = <<~INPUT
+      <bibitem type="website">
+        <title>Language Log</title>
+        <uri>https://languagelog.ldc.upenn.edu/nll/</uri>
+        <date type="published"><from>2003</from></date>
+        <date type="accessed"><on>2019-09-03</on></date>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Liberman</surname><forename>Mark</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Pullum</surname><forename>Geoffrey</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="publisher"/>
+          <organization>
+            <name>University of Pennsylvania</name>
+          </organization>
+        </contributor>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>LIBERMAN, Mark and Geoffrey PULLUM. <em>Language Log</em>. University of Pennsylvania. 2003&ndash. https://languagelog.ldc.upenn.edu/nll/. [viewed: September 03, 2019].</formattedref>
+
+    OUTPUT
+    p = Iso690Render.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
+  it "renders unpublished" do
+    input = <<~INPUT
+      <bibitem type="unpublished">
+        <title>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</title>
+        <uri>https://eprints.soton.ac.uk/338797/</uri>
+        <date type="created"><on>2012</on></date>
+        <date type="accessed"><on>2020-06-24</on></date>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Jenkins</surname><initials>S.</initials></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Ruostekoski</surname><forename>Janne</forename></name>
+          </person>
+        </contributor>
+        <medium>
+          <genre>preprint</genre>
+        </medium>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>JENKINS, and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em>. Preprint. 2012. https://eprints.soton.ac.uk/338797/. [viewed: June 24, 2020].</formattedref>
     OUTPUT
     p = Iso690Render.new
     expect(p.render(input))

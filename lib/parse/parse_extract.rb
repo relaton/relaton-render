@@ -21,8 +21,6 @@ class Iso690Parse
     x.text
   end
 
-  BIBLIO_PUBLISHER = "contributor[role/@type = 'publisher']/organization".freeze
-
   def place(doc, host)
     x = doc.at("./place") || host&.at("./place") or return nil
 
@@ -30,8 +28,16 @@ class Iso690Parse
   end
 
   def publisher(doc, host)
-    x = doc.at("./#{BIBLIO_PUBLISHER}/name") ||
-      host&.at("./#{BIBLIO_PUBLISHER}/name") or return nil
+    x = doc.at("./contributor[role/@type = 'publisher']/organization/name") ||
+      host&.at("./contributor[role/@type = 'publisher']/organization/name") or
+      return nil
+    x.text
+  end
+
+  def distributor(doc, host)
+    x = doc.at("./contributor[role/@type = 'distributor']/organization/name") ||
+      host&.at("./contributor[role/@type = 'distributor']/organization/name") or
+      return nil
     x.text
   end
 
@@ -57,7 +63,7 @@ class Iso690Parse
 
   def standardidentifier(doc)
     doc.xpath("./docidentifier").each_with_object([]) do |id, ret|
-      ret << id.text unless %w(metanorma ordinal).include? id["type"]
+      ret << id.text unless %w(metanorma metanorma-ordinal).include? id["type"]
     end
   end
 

@@ -3,6 +3,7 @@ at: at
 and: and
 updated: updated
 viewed: viewed
+version: version
 edition_number: ["OrdinalRules", "digits-ordinal"]
 edition: "% edition"
 editor:

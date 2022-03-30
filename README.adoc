@@ -41,6 +41,8 @@ The parameters are:
 
 There is one template provided for each of the bibliographic types recognised by Relaton, and a default template:
 
+Currently supported:
+
 * article 
 * book 
 * booklet 
@@ -51,16 +53,7 @@ There is one template provided for each of the bibliographic types recognised by
 * techreport 
 * standard 
 * unpublished 
-* map 
 * electronic resource 
-* audiovisual 
-* film 
-* video 
-* broadcast 
-* software 
-* graphic_work 
-* music 
-* patent 
 * inbook 
 * incollection 
 * inproceedings 
@@ -68,12 +61,26 @@ There is one template provided for each of the bibliographic types recognised by
 * website
 * webresource
 * dataset
+
+Not currently supported:
+
+* map 
+* audiovisual 
+* film 
+* video 
+* broadcast 
+* software 
+* graphic_work 
+* music 
+* performance 
+* patent 
 * archival 
 * social_media 
 * alert 
 * message 
 * conversation 
 * misc (default)
+
 
 In Metanorma, not all types are used, but there are exemplars for all of these given on this site, following
 the human-readable style used in ISO 690. These can be overridden by supplying corresponding paramerers in the call
@@ -87,9 +94,11 @@ drawn from the bibliographic item:
 
 | title   | ./title | | |
 | edition | ./edition | | Y | If numeric value, is given internationalised rendering of "nth edition", as set in edition_numbering. Otherwise, the textual content of the tag is given.
+| edition_raw | ./edition | | Y | The strict textual content of the tag is given.
 | medium  | ./medium | | Y |
 | place   | ./place | | Y |
 | publisher | ./contributor[role/@type = 'publisher']/organization/name | | Y | 
+| distributor | ./contributor[role/@type = 'distributor']/organization/name | | Y | 
 | standardidentifier | ./docidentifier[not(@type = 'metanorma' or @type = 'ordinal')] | Y | |
 | status | ./status | | | Rendering varies by flavour
 | uri | ./uri[@type = 'doi' or @type = 'uri' or @type = 'src' or true] | | |

@@ -4,7 +4,7 @@ class Iso690Parse
     from = date.at("./from")
     to = date.at("./to")
     return MMMddyyyy(on.text) if on
-    return "#{MMMddyyyy(from.text)}&ndash;#{MMMddyyyy(to.text)}" if from
+    return "#{MMMddyyyy(from.text)}&ndash;#{MMMddyyyy(to&.text)}" if from
 
     nil
   end
