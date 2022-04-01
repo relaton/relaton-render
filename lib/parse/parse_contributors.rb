@@ -61,4 +61,36 @@ class Iso690Parse
     cr.empty? and cr = doc.xpath("./contributor")
     cr
   end
+
+  def date1(date)
+    on = date.at("./on")
+    from = date.at("./from")
+    to = date.at("./to")
+    return { on: on.text } if on
+    return { from: from.text, to: to&.text } if from
+
+    nil
+  end
+
+  def date(doc, host)
+    x = doc.at("./date[@type = 'issued']") ||
+      doc.at("./date[@type = 'circulated']") ||
+      doc.at("./date") ||
+      host&.at("./date[@type = 'issued']") ||
+      host&.at("./date[@type = 'circulated']") ||
+      host&.at("./date") or return nil
+    date1(x)
+  end
+
+  def date_updated(doc, host)
+    x = doc.at("./date[@type = 'updated']") ||
+      host&.at("./date[@type = 'updated']") or return nil
+    date1(x)
+  end
+
+  def date_accessed(doc, host)
+    x = doc.at("./date[@type = 'accessed']") ||
+      host&.at("./date[@type = 'accessed']") or return nil
+    date1(x)
+  end
 end

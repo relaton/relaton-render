@@ -1,7 +1,7 @@
 require "simplecov"
 SimpleCov.start
 require "bundler/setup"
-require "iso690render"
+require "relaton-render"
 require "rspec/matchers"
 require "equivalent-xml"
 

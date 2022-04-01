@@ -1,7 +1,6 @@
 require "nokogiri"
 require "twitter_cldr"
 require_relative "parse_contributors"
-require_relative "parse_dates"
 require_relative "parse_extract"
 
 class Iso690Parse

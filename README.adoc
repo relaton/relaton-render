@@ -13,7 +13,7 @@ a configuration, and generates a https://www.metanorma.org[Metanorma] XML render
 ----
 input = "<bibitem type='...'>....</bibitem>"
 
-Iso690Render.new(template: ..., nametemplate: ..., seriestemplate: ..., language: "en", script: "Latn").render(input)
+Relaton::Render::General.new(template: ..., nametemplate: ..., seriestemplate: ..., language: "en", script: "Latn").render(input)
 ----
 
 The gem is intended to be inherited from by Metanorma flavours, which may specialise it with their own
@@ -34,12 +34,13 @@ The parameters are:
 `extenttemplate`:: templates for rendering extents
 `edition_number`:: override formatting of edition number
 `edition`:: override formatting of edition 
+`date`:: default date format (from Twitter CLDR)
 
 == Configuration
 
 === Templates
 
-There is one template provided for each of the bibliographic types recognised by Relaton, and a default template:
+There is one template provided for each of the bibliographic types recognised by Relaton (`/bibitem/@type`), and a default template:
 
 Currently supported:
 
@@ -233,8 +234,8 @@ the singular is used if the extent is not a range (_pp. 2–4_ vs. _p. 3_)..
 
 In addition, the configuration includes different configuration options for rendering:
 
-Edition rendering is set in the internationalisation file with the following two variables, which can be overridden in
-configuration parameters:
-`edition_number`:: has following values corresponding to the rule-based number rules defined in https://github.com/twitter/twitter-cldr-rb[]
-for a language. For example, English _4th_ is defined as `["OrdinalRules", "digits-ordinal"]`, because under twitter-cldr, `4th` is generated as `4.localize(:en).to_rbnf_s("OrdinalRules", "digits-ordinal")`
+The internationalisation file sets the following variables, which can be overridden in configuration parameters:
+`edition_number`:: has following values corresponding to the rule-based number rules defined in https://github.com/twitter/twitter-cldr-rb[Twitter CLDR]
+for a language. For example, English _4th_ is defined as `["OrdinalRules", "digits-ordinal"]`, because under twitter-cldr, `4th` is generated as `4.localize(:en).to_rbnf_s("OrdinalRules", "digits-ordinal")`.
 `edition`:: is the localised expression for edition, with the edition number given as %. So _4th ed.` is generated with `edition` as `% ed.`.
+`date`:: date format default, taken from https://github.com/twitter/twitter-cldr-rb[Twitter CLDR]: `to_full_s`, `to_long_s`, `to_medium_s`, `to_short_s`, or one of the `to_additional_s` formats. One value is given for each of "month_year", "day_month_year", and "date_time"; e.g. `{ month_year: to_long_s, day_month_year: to_long_s, date_time: to_long_s }`.

@@ -2,12 +2,12 @@
 
 require "spec_helper"
 
-RSpec.describe Iso690Render do
+RSpec.describe Relaton::Render do
   it "has a version number" do
-    expect(Iso690Render::VERSION).not_to be nil
+    expect(Relaton::Render::VERSION).not_to be nil
   end
 
-  it "renders book, five editors" do
+  it "renders book, five editors with generic class" do
     input = <<~INPUT
       <bibitem type="book">
         <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
@@ -62,9 +62,127 @@ RSpec.describe Iso690Render do
     output = <<~OUTPUT
       <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831. 1 vol.</formattedref>
     OUTPUT
-    p = Iso690Render.new
+    p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to output
+  end
+
+  it "renders book, five editors with specific class" do
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <docidentifier type="ISBN">9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+          </person>
+        </contributor>
+                <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Anderson</surname><forename>David</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Hering</surname><forename>Milena</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Mustaţă</surname><forename>Mircea</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Payne</surname><forename>Sam</forename></name>
+          </person>
+        </contributor>
+        <edition>1</edition>
+        <series>
+        <title>London Mathematical Society Lecture Note Series</title>
+        <number>472</number>
+        </series>
+            <contributor>
+              <role type="publisher"/>
+              <organization>
+                <name>Cambridge University Press</name>
+              </organization>
+            </contributor>
+            <place>Cambridge, UK</place>
+            <extent><localityStack><locality type="volume"><referenceFrom>1</referenceFrom></locality></localityStack></extent>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831. 1 vol.</formattedref>
+    OUTPUT
+    p = Relaton::Render::Book.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
+  it "renders book, five editors with mismatched specific class" do
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <docidentifier type="ISBN">9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+          </person>
+        </contributor>
+                <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Anderson</surname><forename>David</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Hering</surname><forename>Milena</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Mustaţă</surname><forename>Mircea</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Payne</surname><forename>Sam</forename></name>
+          </person>
+        </contributor>
+        <edition>1</edition>
+        <series>
+        <title>London Mathematical Society Lecture Note Series</title>
+        <number>472</number>
+        </series>
+            <contributor>
+              <role type="publisher"/>
+              <organization>
+                <name>Cambridge University Press</name>
+              </organization>
+            </contributor>
+            <place>Cambridge, UK</place>
+            <extent><localityStack><locality type="volume"><referenceFrom>1</referenceFrom></locality></localityStack></extent>
+      </bibitem>
+    INPUT
+    p = Relaton::Render::Booklet.new
+    expect(p.render(input))
+      .to raise_error(RuntimeError)
+  rescue SystemExit, RuntimeError
   end
 
   it "renders book, five editors with manual configuration, et al. rendering, convert forenames to initials" do
@@ -74,6 +192,7 @@ RSpec.describe Iso690Render do
         <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
         <docidentifier type="ISBN">9781108877831</docidentifier>
         <date type="published"><on>2022</on></date>
+        <date type="accessed"><on>2022-04-02</on></date>
         <contributor>
           <role type="editor"/>
           <person>
@@ -129,11 +248,12 @@ RSpec.describe Iso690Render do
     etal = <<~TEMPLATE
       {{surname[0] }}, {{initials[0] | join: ". " | append: "." }}, {{initials[1]  | join: ". " | append: "." }} {{surname[1] }}, {{initials[2]  | join: ". " | append: "." }} {{surname[2] }} <em>et al.</em>
     TEMPLATE
-    p = Iso690Render
+    p = Relaton::Render::General
       .new(template: { book: template },
            nametemplate: { etal_count: 3, etal: etal },
            lang: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
-           edition: "% edition")
+           edition: "% edition",
+           date: { month_year: "MMMd", day_month_year: "yMMMd", date_time: "to_long_s" } )
     expect(p.render(input))
       .to be_equivalent_to output
   end
@@ -200,7 +320,7 @@ RSpec.describe Iso690Render do
     etal = <<~TEMPLATE
       {{surname[0] }}, {{initials[0] | join: ". " | append: "." }}, {{initials[1]  | join: ". " | append: "." }} {{surname[1] }}, {{initials[2]  | join: ". " | append: "." }} {{surname[2] }} <em>et al.</em>
     TEMPLATE
-    p = Iso690Render
+    p = Relaton::Render::General
       .new(template: { booklet: template, book: "booklet" },
            nametemplate: { etal_count: 3, etal: etal },
            lang: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
@@ -214,6 +334,7 @@ RSpec.describe Iso690Render do
       <bibitem type="incollection">
         <title>Object play in great apes: Studies in nature and captivity</title>
         <date type="published"><on>2005</on></date>
+        <date type="accessed"><on>2019-09-03</on></date>
         <contributor>
           <role type="author"/>
           <person>
@@ -276,9 +397,9 @@ RSpec.describe Iso690Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>RAMSEY, J. K. and W. C. MCGREW. Object play in great apes: Studies in nature and captivity. In: PELLEGRINI, Anthony D. and Peter K. SMITH (eds.): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. 3rd edition. New York, NY: Guilford Press. 2005. pp. 89&#x2013;112.</formattedref>
+      <formattedref>RAMSEY, J. K. and W. C. MCGREW. Object play in great apes: Studies in nature and captivity. In: PELLEGRINI, Anthony D. and Peter K. SMITH (eds.): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. 3rd edition. New York, NY: Guilford Press. 2005. pp. 89&#x2013;112. [viewed: September 3, 2019].</formattedref>
     OUTPUT
-    p = Iso690Render.new
+    p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to output
   end
@@ -288,6 +409,7 @@ RSpec.describe Iso690Render do
       <bibitem type="incollection">
         <title>Object play in great apes: Studies in nature and captivity</title>
         <date type="published"><on>2005</on></date>
+        <date type="accessed"><on>2019-09-03</on></date>
         <contributor>
           <role type="author"/>
           <person>
@@ -350,9 +472,9 @@ RSpec.describe Iso690Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>RAMSEY, J. K. &#x438; W. C. MCGREW. Object play in great apes: Studies in nature and captivity. &#x432: PELLEGRINI, Anthony D. &#x438; Peter K. SMITH (&#x438;&#x437;&#x434;.): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. Третье &#x438;&#x437;&#x434;&#x430;&#x43d;&#x438;&#x435. New York, NY: Guilford Press. 2005. &#x441;&#x442;&#x440. 89&#x2013;112.</formattedref>
+      <formattedref>RAMSEY, J. K. &#x438; W. C. MCGREW. Object play in great apes: Studies in nature and captivity. &#x432: PELLEGRINI, Anthony D. &#x438; Peter K. SMITH (eds.): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. Третье &#x438;&#x437;&#x434;&#x430;&#x43d;&#x438;&#x435. New York, NY: Guilford Press. 2005. &#x441;&#x442;&#x440. 89&#x2013;112. [&#x43f;&#x440;&#x43e;&#x441;&#x43c;&#x43e;&#x442;&#x440;&#x435;&#x43d;&#x43e: 3 сентября 2019 г.].</formattedref>
     OUTPUT
-    p = Iso690Render.new(language: "ru")
+    p = Relaton::Render::General.new(language: "ru")
     expect(p.render(input))
       .to be_equivalent_to output
   end
@@ -365,9 +487,9 @@ RSpec.describe Iso690Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref><em>Nature</em>. 2005&ndash;2009.</formattedref>
+      <formattedref><em>Nature</em>. 2005&#x2013;2009.</formattedref>
     OUTPUT
-    p = Iso690Render.new
+    p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to output
   end
@@ -437,7 +559,7 @@ RSpec.describe Iso690Render do
     output = <<~OUTPUT
       <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. <em>London Mathematical Society Lecture Note Series</em> (N.S.). 1st edition. pp. 89&#x2013;112. Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831.</formattedref>
     OUTPUT
-    p = Iso690Render.new
+    p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to output
   end
@@ -464,9 +586,9 @@ RSpec.describe Iso690Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>RIBOSE INC. <em>metanorma-standoc</em>. Version 1.3.1. September 04, 2019. https://github.com/metanorma/metanorma-standoc.</formattedref>
+      <formattedref>RIBOSE INC. <em>metanorma-standoc</em>. Version 1.3.1. September 4, 2019. https://github.com/metanorma/metanorma-standoc.</formattedref>
     OUTPUT
-    p = Iso690Render.new
+    p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to output
   end
@@ -500,7 +622,7 @@ RSpec.describe Iso690Render do
     output = <<~OUTPUT
       <formattedref>INTERNET ENGINEERING TASK FORCE. <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. RFC 3979. https://www.ietf.org/rfc/rfc3979.txt. [viewed: June 18, 2012].</formattedref>
     OUTPUT
-    p = Iso690Render.new
+    p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to output
   end
@@ -537,9 +659,9 @@ RSpec.describe Iso690Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>PORTES, Alejandro and Rubén G. RUMBAUT. <em>Children of Immigrants. Longitudinal Sudy (CILS) 1991–2006 ICPSR20520</em>. Version 2. Dataset. January 23, 2012. https://doi.org/10.3886/ICPSR20520.v2. [viewed: May 06, 2018].</formattedref>
+      <formattedref>PORTES, Alejandro and Rubén G. RUMBAUT. <em>Children of Immigrants. Longitudinal Sudy (CILS) 1991–2006 ICPSR20520</em>. Version 2. Dataset. January 23, 2012. https://doi.org/10.3886/ICPSR20520.v2. [viewed: May 6, 2018].</formattedref>
     OUTPUT
-    p = Iso690Render.new
+    p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to output
   end
@@ -572,10 +694,10 @@ RSpec.describe Iso690Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>LIBERMAN, Mark and Geoffrey PULLUM. <em>Language Log</em>. University of Pennsylvania. 2003&ndash. https://languagelog.ldc.upenn.edu/nll/. [viewed: September 03, 2019].</formattedref>
+      <formattedref>LIBERMAN, Mark and Geoffrey PULLUM. <em>Language Log</em>. University of Pennsylvania. 2003&#x2013. https://languagelog.ldc.upenn.edu/nll/. [viewed: September 3, 2019].</formattedref>
 
     OUTPUT
-    p = Iso690Render.new
+    p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to output
   end
@@ -607,7 +729,7 @@ RSpec.describe Iso690Render do
     output = <<~OUTPUT
       <formattedref>JENKINS, and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em>. Preprint. 2012. https://eprints.soton.ac.uk/338797/. [viewed: June 24, 2020].</formattedref>
     OUTPUT
-    p = Iso690Render.new
+    p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to output
   end

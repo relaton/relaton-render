@@ -1,16 +1,16 @@
 lib = File.expand_path("lib", __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "iso690render/version"
+require "relaton/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "iso690render"
-  spec.version       = Iso690Render::VERSION
+  spec.name          = "relaton-render"
+  spec.version       = Relaton::Render::VERSION
   spec.authors       = ["Ribose Inc."]
   spec.email         = ["open.source@ribose.com"]
 
   spec.summary       = "Rendering of ISO 690 XML"
   spec.description   = "Rendering of ISO 690 XML"
-  spec.homepage      = "https://github.com/riboseinc/iso690render"
+  spec.homepage      = "https://github.com/relaton/relaton-render"
   spec.license       = "BSD-2-Clause"
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
