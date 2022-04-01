@@ -32,5 +32,4 @@ Gem::Specification.new do |spec|
   spec.add_dependency "liquid", "~> 4"
   spec.add_dependency "nokogiri"
   spec.add_dependency "twitter_cldr"
-  spec.metadata["rubygems_mfa_required"] = "true"
 end
