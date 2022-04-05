@@ -56,7 +56,7 @@ RSpec.describe Relaton::Render do
               </organization>
             </contributor>
             <place>Cambridge, UK</place>
-            <extent><localityStack><locality type="volume"><referenceFrom>1</referenceFrom></locality></localityStack></extent>
+          <size><value type="volume">1</value></size>
       </bibitem>
     INPUT
     output = <<~OUTPUT
@@ -116,7 +116,7 @@ RSpec.describe Relaton::Render do
               </organization>
             </contributor>
             <place>Cambridge, UK</place>
-            <extent><localityStack><locality type="volume"><referenceFrom>1</referenceFrom></locality></localityStack></extent>
+          <size><value type="volume">1</value></size>
       </bibitem>
     INPUT
     output = <<~OUTPUT
@@ -176,7 +176,7 @@ RSpec.describe Relaton::Render do
               </organization>
             </contributor>
             <place>Cambridge, UK</place>
-            <extent><localityStack><locality type="volume"><referenceFrom>1</referenceFrom></locality></localityStack></extent>
+          <size><value type="volume">1</value></size>
       </bibitem>
     INPUT
     p = Relaton::Render::Booklet.new
@@ -235,7 +235,7 @@ RSpec.describe Relaton::Render do
               </organization>
             </contributor>
             <place>Cambridge, UK</place>
-            <extent><localityStack><locality type="page">500</locality></localityStack></extent>
+          <size><value type="page">lxii</value><value type="page">500</value></size>
       </bibitem>
     INPUT
     output = <<~OUTPUT
@@ -251,6 +251,7 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General
       .new(template: { book: template },
            nametemplate: { etal_count: 3, etal: etal },
+           sizetemplate: "{{ page_raw }} pages",
            lang: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
            edition: "% edition",
            date: { month_year: "MMMd", day_month_year: "yMMMd", date_time: "to_long_s" } )
@@ -307,7 +308,7 @@ RSpec.describe Relaton::Render do
               </organization>
             </contributor>
             <place>Cambridge, UK</place>
-            <extent><localityStack><locality type="page">500</locality></localityStack></extent>
+          <size><value type="page">500</value></size>
       </bibitem>
     INPUT
     output = <<~OUTPUT
@@ -323,6 +324,7 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General
       .new(template: { booklet: template, book: "booklet" },
            nametemplate: { etal_count: 3, etal: etal },
+           sizetemplate: "{{ page_raw }} pages",
            lang: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
            edition: "% edition")
     expect(p.render(input))
@@ -400,81 +402,6 @@ RSpec.describe Relaton::Render do
       <formattedref>RAMSEY, J. K. and W. C. MCGREW. Object play in great apes: Studies in nature and captivity. In: PELLEGRINI, Anthony D. and Peter K. SMITH (eds.): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. 3rd edition. New York, NY: Guilford Press. 2005. pp. 89&#x2013;112. [viewed: September 3, 2019].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
-    expect(p.render(input))
-      .to be_equivalent_to output
-  end
-
-  it "renders incollection, two authors, with Russian internationalisation" do
-    input = <<~INPUT
-      <bibitem type="incollection">
-        <title>Object play in great apes: Studies in nature and captivity</title>
-        <date type="published"><on>2005</on></date>
-        <date type="accessed"><on>2019-09-03</on></date>
-        <contributor>
-          <role type="author"/>
-          <person>
-            <name>
-              <surname>Ramsey</surname>
-              <initial>J. K.</initial>
-            </name>
-          </person>
-        </contributor>
-        <contributor>
-          <role type="author"/>
-          <person>
-            <name>
-              <surname>McGrew</surname>
-              <initial>W. C.</initial>
-            </name>
-          </person>
-        </contributor>
-        <relation type="includedIn">
-          <bibitem>
-            <title>The nature of play: Great apes and humans</title>
-            <contributor>
-              <role type="editor"/>
-              <person>
-                <name>
-                  <surname>Pellegrini</surname>
-                  <forename>Anthony</forename>
-                  <forename>D.</forename>
-                </name>
-              </person>
-            </contributor>
-            <contributor>
-              <role type="editor"/>
-              <person>
-                <name>
-                  <surname>Smith</surname>
-                  <forename>Peter</forename>
-                  <forename>K.</forename>
-                </name>
-              </person>
-            </contributor>
-            <contributor>
-              <role type="publisher"/>
-              <organization>
-                <name>Guilford Press</name>
-              </organization>
-            </contributor>
-            <edition>3</edition>
-            <medium>
-              <form>electronic resource</form>
-              <size>8vo</size>
-            </medium>
-            <place>New York, NY</place>
-          </bibitem>
-        </relation>
-        <extent type="page">
-          <referenceFrom>89</referenceFrom>
-          <referenceTo>112</referenceTo>
-        </extent>
-      </bibitem>
-    INPUT
-    output = <<~OUTPUT
-      <formattedref>RAMSEY, J. K. &#x438; W. C. MCGREW. Object play in great apes: Studies in nature and captivity. &#x432: PELLEGRINI, Anthony D. &#x438; Peter K. SMITH (eds.): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. Третье &#x438;&#x437;&#x434;&#x430;&#x43d;&#x438;&#x435. New York, NY: Guilford Press. 2005. &#x441;&#x442;&#x440. 89&#x2013;112. [&#x43f;&#x440;&#x43e;&#x441;&#x43c;&#x43e;&#x442;&#x440;&#x435;&#x43d;&#x43e: 3 сентября 2019 г.].</formattedref>
-    OUTPUT
-    p = Relaton::Render::General.new(language: "ru")
     expect(p.render(input))
       .to be_equivalent_to output
   end
@@ -656,10 +583,13 @@ RSpec.describe Relaton::Render do
         <medium>
           <genre>dataset</genre>
         </medium>
+          <size>
+            <value type="data">501 GB</value>
+          </size>
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>PORTES, Alejandro and Rubén G. RUMBAUT. <em>Children of Immigrants. Longitudinal Sudy (CILS) 1991–2006 ICPSR20520</em>. Version 2. Dataset. January 23, 2012. https://doi.org/10.3886/ICPSR20520.v2. [viewed: May 6, 2018].</formattedref>
+      <formattedref>PORTES, Alejandro and Rubén G. RUMBAUT. <em>Children of Immigrants. Longitudinal Sudy (CILS) 1991–2006 ICPSR20520</em>. Version 2. Dataset. January 23, 2012. https://doi.org/10.3886/ICPSR20520.v2. 501 GB. [viewed: May 6, 2018].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -694,7 +624,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>LIBERMAN, Mark and Geoffrey PULLUM. <em>Language Log</em>. University of Pennsylvania. 2003&#x2013. https://languagelog.ldc.upenn.edu/nll/. [viewed: September 3, 2019].</formattedref>
+      <formattedref>LIBERMAN, Mark and Geoffrey PULLUM. <em>Language Log</em>. University of Pennsylvania. 2003&#x2013;. https://languagelog.ldc.upenn.edu/nll/. [viewed: September 3, 2019].</formattedref>
 
     OUTPUT
     p = Relaton::Render::General.new

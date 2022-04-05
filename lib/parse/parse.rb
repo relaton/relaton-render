@@ -16,12 +16,13 @@ class Iso690Parse
   def simple_xml2hash(doc)
     creators, role = creatornames(doc)
     { type: type(doc), title: title(doc), extent_raw: extent(doc),
+      size_raw: size(doc),
       standardidentifier: standardidentifier(doc), uri: uri(doc),
       status: status(doc), creators: creators, role_raw: role }
   end
 
   def simple_or_host_xml2hash(doc, host)
-    { edition_raw: edition(doc, host), medium: medium(doc, host),
+    { edition_raw: edition(doc, host), medium_raw: medium(doc, host),
       place: place(doc, host), publisher: publisher(doc, host),
       distributor: distributor(doc, host),
       access_location: access_location(doc, host),

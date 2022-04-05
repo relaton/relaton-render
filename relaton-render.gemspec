@@ -32,4 +32,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "liquid", "~> 4"
   spec.add_dependency "nokogiri"
   spec.add_dependency "twitter_cldr"
+  spec.add_dependency "tzinfo-data" # we need this for windows only
 end

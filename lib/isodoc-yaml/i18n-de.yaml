@@ -1,2 +1,28 @@
 in: in
 at: bei
+and: und
+updated: aktualisiert
+viewed: angesehen
+version: Version
+date:
+  month_year: to_long_s
+  day_month_year: to_long_s
+  date_time: to_long_s
+edition: "% Aufl."
+editor:
+  sg: Hrsg.
+  pl: Hrsg.
+extent:
+  page:
+    sg: "S. %"
+    pl: "S. %"
+  volume:
+    sg: "Bd. %"
+    pl: "Bde. %"
+size:
+  page:
+    sg: "% S."
+    pl: "% S."
+  volume:
+    sg: "% Bd."
+    pl: "% Bde."

@@ -15,8 +15,16 @@ editor:
   pl: eds.
 extent:
   page:
-    sg: p.
-    pl: pp.
+    sg: "p. %"
+    pl: "pp. %"
   volume:
-    sg: vol.
-    pl: vols.
+    sg: "vol. %"
+    pl: "vols. %"
+size:
+  page:
+    sg: "% p."
+    pl: "% pp."
+  volume:
+    sg: "% vol."
+    pl: "% vols."
+

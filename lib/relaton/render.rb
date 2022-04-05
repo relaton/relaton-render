@@ -9,8 +9,8 @@ module Relaton
   module Render
     class General
       attr_reader :template, :journaltemplate, :seriestemplate, :nametemplate,
-                  :extenttemplate, :lang, :script, :edition, :edition_number,
-                  :date
+                  :extenttemplate, :sizetemplate, :lang, :script, :i18n,
+                  :edition, :edition_number, :date
 
       def initialize(opt = {})
         options = YAML.load_file(File.join(File.dirname(__FILE__),
@@ -33,12 +33,13 @@ module Relaton
         @journaltemplate = Iso690SeriesTemplate
           .new(template: opt["journaltemplate"], i18n: @i18n)
         @extenttemplate = extentrenderers(opt)
+        @sizetemplate = sizerenderers(opt)
       end
 
       def i18n_initialize(opt)
         @lang = opt["language"]
         @script = opt["script"]
-        @i18n = i18n(opt["language"], opt["script"])
+        @i18n = i18n_klass(opt["language"], opt["script"])
         @edition_number = opt["edition_number"] || @i18n.edition_number
         @edition = opt["edition"] || @i18n.edition
         @date = opt["date"] || @i18n.date
@@ -68,12 +69,17 @@ module Relaton
           .new(template: template_hash_fill(opt["extenttemplate"]), i18n: @i18n)
       end
 
+      def sizerenderers(opt)
+        Iso690SizeTemplate
+          .new(template: template_hash_fill(opt["sizetemplate"]), i18n: @i18n)
+      end
+
       def default_template
         "{{creatornames}}. {{title}}. {{date}}."
       end
 
-      def i18n(lang = "en", script = "Latn")
-        ::IsoDoc::I18n.new(lang, script)
+      def i18n_klass(lang = "en", script = "Latn")
+        ::IsoDoc::RelatonRenderI18n.new(lang, script)
       end
 
       def render(bib, embedded: false)

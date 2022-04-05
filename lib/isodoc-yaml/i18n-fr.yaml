@@ -1,2 +1,29 @@
 in: dans
 at: à
+and: et
+updated: mise à jour
+viewed: vu
+version: version
+date:
+  month_year: to_long_s
+  day_month_year: to_long_s
+  date_time: to_long_s
+edition_number: ["OrdinalRules", "digits-ordinal-feminine"]
+edition: "% édition"
+editor:
+  sg: éd.
+  pl: éd.
+extent:
+  page:
+    sg: "p. %"
+    pl: "p. %"
+  volume:
+    sg: "vol. %"
+    pl: "vol. %"
+size:
+  page:
+    sg: "% p."
+    pl: "% p."
+  volume:
+    sg: "% vol."
+    pl: "% vol."

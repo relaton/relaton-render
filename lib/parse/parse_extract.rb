@@ -6,9 +6,17 @@ class Iso690Parse
   def medium(doc, host)
     x = doc.at("./medium") || host&.at("./medium") or return nil
 
-    %w(content genre form carrier size scale).each_with_object([]) do |i, m|
-      m << x.at("./#{i}")&.text
-    end.compact.join(", ")
+    %w(content genre form carrier size scale).each_with_object({}) do |i, m|
+      m[i] = x.at("./#{i}")&.text
+    end.compact
+  end
+
+  def size(doc)
+    x = doc.at("./size") or return nil
+    x.xpath("./value").each_with_object({}) do |v, m|
+      m[v["type"]] ||= []
+      m[v["type"]] << v.text
+    end
   end
 
   def blank?(text)

@@ -25,8 +25,10 @@ module Relaton
 
       def misc_fields_format(hash)
         hash[:series] = seriesformat(hash)
+        hash[:medium] = mediumformat(hash[:medium_raw])
         hash[:edition] = editionformat(hash[:edition_raw])
         hash[:extent] = extentformat(hash[:extent_raw], hash)
+        hash[:size] = sizeformat(hash[:size_raw], hash)
         hash
       end
 
@@ -34,6 +36,16 @@ module Relaton
         hash[:date] = dateformat(hash[:date], hash)
         hash[:date_updated] = dateformat(hash[:date_updated], hash)
         hash[:date_accessed] = dateformat(hash[:date_accessed], hash)
+      end
+
+      # TODO is not being i18n-alised
+      def mediumformat(hash)
+        return nil if hash.nil?
+
+        %w(content genre form carrier size scale).each_with_object([]) do |i, m|
+          m << hash[i] if hash[i]
+          m
+        end.compact.join(", ")
       end
 
       def seriesformat(hash)
@@ -69,20 +81,28 @@ module Relaton
       def editionformat(edn)
         return edn unless /^\d+$/.match?(edn)
 
-        num = edn.to_i.localize(@r.lang.to_sym)
+        num = edn
+        @r.edition_number and num = edn.to_i.localize(tw_cldr_lang)
           .to_rbnf_s(*@r.edition_number)
         @r.edition.sub(/%/, num)
       end
 
       def extentformat(extent, hash)
         extent.map do |e|
-          extent_out = e.merge(type: hash[:type],
-                               host_title: hash[:host_title])
-            .transform_values do |v|
-              v.is_a?(Hash) ? range(v) : v
-            end
-          @r.extenttemplate.render(extent_out.merge(orig: e))
+          e1 = e.transform_values { |v| v.is_a?(Hash) ? range(v) : v }
+          ret = e.each_with_object({}) do |(k, v), m|
+            extentformat1(k, v, m, e1)
+            m
+          end
+          @r.extenttemplate.render(ret.merge(type: hash[:type]))
         end.join("; ")
+      end
+
+      def extentformat1(key, val, hash, norm_hash)
+        if %i(volume page).include?(key)
+          hash["#{key}_raw".to_sym] = norm_hash[key]
+          hash[key] = pagevolformat(norm_hash[key], val, key.to_s, false)
+        end
       end
 
       def range(hash)
@@ -92,6 +112,43 @@ module Relaton
           hash[:to] ? "#{hash[:from]}&#x2013;#{hash[:to]}" : hash[:from]
         else hash
         end
+      end
+
+      def sizeformat(size, hash)
+        return nil unless size
+
+        ret = size.transform_values { |v| @r.i18n.l10n(v.join(" + ")) }
+          .each_with_object({}) do |(k, v), m|
+            sizeformat1(k, v, m)
+            m
+          end
+        @r.sizetemplate.render(ret.merge(type: hash[:type]))
+      end
+
+      def sizeformat1(key, val, hash)
+        case key
+        when "volume"
+          hash[:volume_raw] = val
+          hash[:volume] = pagevolformat(val, nil, "volume", true)
+        when "page"
+          hash[:page_raw] = val
+          hash[:page] = pagevolformat(val, nil, "page", true)
+        when "data" then hash[:data] = val
+        when "duration" then hash[:duration] = val
+        end
+      end
+
+      def pagevolformat(value, value_raw, type, is_size)
+        return nil if value.nil?
+
+        num = "pl"
+        if is_size
+          value == "1" and num = "sg"
+        else
+          value_raw[:to] or num = "sg"
+        end
+        @r.i18n.l10n(@r.i18n.get[is_size ? "size" : "extent"][type][num]
+          .sub(/%/, value))
       end
 
       def date_range(hash)
@@ -127,6 +184,16 @@ module Relaton
       end
 
       private
+
+      def tw_cldr_lang
+        if @r.lang != "zh"
+          @r.lang.to_sym
+        elsif @r.script == "Hant"
+          :"zh-tw"
+        else
+          :"zh-cn"
+        end
+      end
 
       def dategranularity(date)
         case date

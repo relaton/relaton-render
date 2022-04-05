@@ -1,2 +1,30 @@
 in:  في
 at: في
+and: و
+updated: محدث
+viewed: ينظر
+version: الإصدار
+date:
+  month_year: to_long_s
+  day_month_year: to_long_s
+  date_time: to_long_s
+edition_number: ["OrdinalRules", "digits-ordinal"]
+edition: "الطبعة؜ %؜"
+editor:
+  sg: محرر
+  pl: محرران
+extent:
+  page:
+    sg: "% ص"
+    pl: "% ص"
+  volume:
+    sg: "% المجلد"
+    pl: "% المجلدين"
+size:
+  page:
+    sg: "ص؜ %"
+    pl: "ص؜ %"
+  volume:
+    sg: "المجلد %"
+    pl: "المجلدين %"
+

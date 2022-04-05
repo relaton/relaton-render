@@ -15,9 +15,16 @@ editor:
   pl: изд.
 extent:
   page:
-    sg: стр.
-    pl: стр.
+    sg: "стр. %"
+    pl: "стр. %"
   volume:
-    sg: т.
-    pl: тт.
+    sg: "т. %"
+    pl: "тт. %"
+size:
+  page:
+    sg: "% стр."
+    pl: "% стр."
+  volume:
+    sg: "% т."
+    pl: "% тт."
 

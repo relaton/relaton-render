@@ -4,6 +4,7 @@ module Relaton
   module Render
     class Iso690Template
       def initialize(opt = {})
+        @htmlentities = HTMLEntities.new
         opt = Utils::sym_keys(opt)
         @i18n = opt[:i18n]
         @template_raw = opt[:template].dup
@@ -19,6 +20,10 @@ module Relaton
       # denote start and end of field,
       # so that we can detect empty fields in postprocessing
       FIELD_DELIM = "\u0018".freeze
+
+      # escape < >
+      LT_DELIM = "\u0019".freeze
+      GT_DELIM = "\u001a".freeze
 
       # use tab internally for non-spacing delimiter
       NON_SPACING_DELIM = "\t".freeze
@@ -42,19 +47,28 @@ module Relaton
         @template[:default]
       end
 
-      # use tab internally for non-spacing delimiter
       def template_clean(str)
-        str = str.gsub(/\S*#{FIELD_DELIM}#{FIELD_DELIM}\S*/o, "")
+        str = str.gsub(/&#x3c;/i, LT_DELIM).gsub(/&#x3e;/i, GT_DELIM)
+        str = template_clean1(@htmlentities.decode(str))
+        str.strip.gsub(/#{LT_DELIM}/o, "&#x3c;").gsub(/#{GT_DELIM}/o, "&#x3e;")
+          .gsub(/&(?!#\S+?;)/, "&#x26;")
+      end
+
+      # use tab internally for non-spacing delimiter
+      def template_clean1(str)
+        str.gsub(/\S*#{FIELD_DELIM}#{FIELD_DELIM}\S*/o, "")
           .gsub(/#{FIELD_DELIM}/o, "")
-          .gsub(/_/, " ")
           .gsub(/([,:;]\s*)+([,:;](\s|$))/, "\\2")
           .gsub(/([,.:;]\s*)+([.](\s|$))/, "\\2")
           .gsub(/(:\s+)(&\s)/, "\\2")
           .gsub(/\s+([,.:;])/, "\\1")
+          .gsub(/_/, " ")
           .gsub(/#{NON_SPACING_DELIM}/o, "").gsub(/\s+/, " ")
-        str.strip
       end
 
+      # need non-breaking spaces in fields: "Updated:_nil" ---
+      # we want the "Updated:" deleted,
+      # even if it's multiple words, as in French Mise_à_jour.
       def liquid_hash(hash)
         case hash
         when Hash
@@ -62,7 +76,7 @@ module Relaton
         when Array
           hash.map { |v| liquid_hash(v) }
         when String
-          hash.empty? ? nil : hash
+          hash.empty? ? nil : hash.gsub(/ /, "_")
         else hash
         end
       end
@@ -73,25 +87,13 @@ module Relaton
 
     class Iso690ExtentTemplate < Iso690Template
       def template_select(hash)
-        t = @template_raw[hash[:type].to_sym]
-        hash.each do |k, _v|
-          next unless hash[:orig][k].is_a?(Hash)
-
-          num = number(hash[:type], hash[:orig][k])
-          t = t.gsub(/labels\[['"]extent['"]\]\[['"]#{k}['"]\]/,
-                     "\\0['#{num}']")
-        end
-        t = t.gsub(/labels\[['"]extent['"]\]\[['"][^\]'"]+['"]\](?!\[)/,
-                   "\\0['sg']")
-        template_process(t)
+        @template[hash[:type].to_sym]
       end
+    end
 
-      def number(type, value)
-        return "pl" if value[:to]
-        return "sg" if %w(article incollection inproceedings inbook)
-          .include?(type) || value[:host_title]
-
-        value[:from] == "1" ? "sg" : "pl"
+    class Iso690SizeTemplate < Iso690Template
+      def template_select(hash)
+        @template[hash[:type].to_sym]
       end
     end
 

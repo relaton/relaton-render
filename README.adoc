@@ -32,6 +32,7 @@ The parameters are:
 `seriestemplate`:: template for rendering series
 `journaltemplate`:: template for rendering journals in article citations
 `extenttemplate`:: templates for rendering extents
+`sizetemplate`:: templates for rendering sizes
 `edition_number`:: override formatting of edition number
 `edition`:: override formatting of edition 
 `date`:: default date format (from Twitter CLDR)
@@ -209,7 +210,7 @@ A common template that drops those labels is:
 
 === Extent template
 
-The extent of a reference can be expressed differently depending on the type of bibliographic item. For example, the extent of a book is its page count, and is typically expressed as something like _59 pp._ On the other hand, the extent of an article is expressed as _pp. 9–20_, or just _9–20_. 
+The extent of a bibliographic item may be expressed differently depending on the type of bibliographic item. For example, the extent of a book chapter may be expressed as _pp. 9–20_, while the extent of an article may be expressed as just _9–20_. 
 
 To capture this, a separate template is supplied under `extenttemplate` for each bibliographic item type. For those types where none is supplied, the template given for `misc` is used as the default. 
 
@@ -217,25 +218,61 @@ The template draws on the defined types of locality of extents; the most common 
 
 ....
 {
-  book: "{{ volume }}_{{ label['extent']['volume'] }}, {{ page }}_{{ label['extent']['page'] }}"
-  inbook: "{{ volume }}: {{ page }}"
-  misc: "{{ label['extent']['volume'] }}_{{ volume }}, {{ label['extent']['page'] }}_{{ page }}"
+  article: "{{ volume_raw }}: {{ page_raw }}"
+  misc: "{{ volume }}, {{ page }}"
 }
 ....
 
-The internationalisation files define a singular and a plural version of the locality types, under `labels['extent']`
+The internationalisation files define a singular and a plural version of the locality types, under `labels['extent']`.
 
-* The plural is always used if the extent is a range (with a `<from>` and `<to>`). 
-* In a host type of bibliographic item, the extent is singular only if the value is `1`, else it is plural (_1 p._, _2 pp._)
-* In an included item (`inbook`, `incollection`, `inproceedings`, `article`, or any item with an `includedIn` relation), 
-the singular is used if the extent is not a range (_pp. 2–4_ vs. _p. 3_)..
+* The plural label is always used if the extent is a range (with a `<from>` and `<to>`). 
+* The singular label is used if the extent is not a range (_pp. 2–4_ vs. _p. 3_).
+* The internationalisation files include a slot where the number or number range is inserted, indicated by `%`, since this varies by language. (For instance, English has `pp. %`,  whereas Chinese has `第%页`.) 
+* The number of the volume or page, without accompanying labels, is given in `volume_raw` and `page_raw`.
+
+=== Size template
+
+The size of a bibliographic item is distinct from the extent: the size is how large the item is (e.g. how many pages are in the book), whereas the extent is how much of the host item the item covers (e.g. which pages of the book are in the current chapter.) They can be displayed quite differently from extent; for example, while extent pages is given in English as _pp. 9–20_ or _p. 3_, size pages is given as _3 pp._.
+
+To capture this, a separate template is supplied under `sizetemplate` for each bibliographic item type. Again, for those types where none is supplied, the template given for `misc` is used as the default.
+
+The template draws on the defined types of locality of extents; the following are currently recognised:
+
+|===
+| Field  | Relaton XPath | Note
+
+| volume  | ./medium/size[@type = 'volume'] | With internationalisation of label
+| volume_raw  | ./medium/size[@type = 'volume'] |
+| page  | ./medium/size[@type = 'page'] | With internationalisation of label
+| page_raw  | ./medium/size[@type = 'page'] |
+| data  | ./medium/size[@type = 'data'] | Unit of size is included in value
+| duration  | ./medium/size[@type = 'time'] | Expressed in ISO 8601 duration
+|===
+
+
+Locality types are the fields used in the Liquid templates; for example:
+
+....
+{
+  dataset: "{{ data }}"
+  misc: "{{ volume }}, {{ page }}, {{ data }}, {{ duration }}"
+}
+....
+
+The internationalisation files define a singular and a plural version of the locality types, under `labels['size']`.
+
+* The plural label is always used if the extent is a range (with a `<from>` and `<to>`).
+* The label is singular only if the value is `1`, else it is plural (_1 p._, _2 pp._)
+* Again, the internationalisation files include a slot where the number or number range is inserted, since this varies by language. 
+* The number of volumes or pages, without accompanying labels, is given in `volume_raw` and `page_raw`.
+* Multiple spans of the same type are joined by `+`; e.g. _xlii + 76 pp._.
 
 === Other
 
 In addition, the configuration includes different configuration options for rendering:
 
 The internationalisation file sets the following variables, which can be overridden in configuration parameters:
-`edition_number`:: has following values corresponding to the rule-based number rules defined in https://github.com/twitter/twitter-cldr-rb[Twitter CLDR]
-for a language. For example, English _4th_ is defined as `["OrdinalRules", "digits-ordinal"]`, because under twitter-cldr, `4th` is generated as `4.localize(:en).to_rbnf_s("OrdinalRules", "digits-ordinal")`.
+`edition_number`:: has following values corresponding to the rule-based number rules defined in https://github.com/twitter/twitter-cldr-rb[Twitter CLDR]. 
+for a language. For example, English _4th_ is defined as `["OrdinalRules", "digits-ordinal"]`, because under twitter-cldr, `4th` is generated as `4.localize(:en).to_rbnf_s("OrdinalRules", "digits-ordinal")`. If missing, the raw number is given.
 `edition`:: is the localised expression for edition, with the edition number given as %. So _4th ed.` is generated with `edition` as `% ed.`.
 `date`:: date format default, taken from https://github.com/twitter/twitter-cldr-rb[Twitter CLDR]: `to_full_s`, `to_long_s`, `to_medium_s`, `to_short_s`, or one of the `to_additional_s` formats. One value is given for each of "month_year", "day_month_year", and "date_time"; e.g. `{ month_year: to_long_s, day_month_year: to_long_s, date_time: to_long_s }`.
