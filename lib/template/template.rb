@@ -1,10 +1,16 @@
 require_relative "../utils/utils"
+require_relative "liquid"
 
 module Relaton
   module Render
     class Iso690Template
       def initialize(opt = {})
         @htmlentities = HTMLEntities.new
+        customise_liquid
+        parse_options(opt)
+      end
+
+      def parse_options(opt)
         opt = Utils::sym_keys(opt)
         @i18n = opt[:i18n]
         @template_raw = opt[:template].dup
@@ -15,6 +21,11 @@ module Relaton
           when Array then opt[:template].map { |x| template_process(x) }
           else { default: template_process(opt[:template]) }
           end
+      end
+
+      def customise_liquid
+        ::Liquid::Template
+          .register_filter(::Relaton::Render::Liquid::CapitalizeFirst)
       end
 
       # denote start and end of field,
@@ -35,7 +46,7 @@ module Relaton
         t1 = t.split(/(\{\{.+?\}\})/).map do |n|
           n.include?("{{") ? n : n.gsub(/(?<!\\)\|/, "\t")
         end.join
-        Liquid::Template.parse(t1)
+        ::Liquid::Template.parse(t1)
       end
 
       def render(hash)

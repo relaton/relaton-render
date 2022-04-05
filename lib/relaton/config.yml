@@ -24,23 +24,23 @@ sizetemplate:
 language: en
 script: Latn
 template:
-  book: "{{ creatornames }} ({{role}}) . <em>{{ title }}</em> [{{medium}}] . {{ edition | capitalize }}. ({{ series }}.) {{place}}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]. {{size}}. {{extent}}."
+  book: "{{ creatornames }} ({{role}}) . <em>{{ title }}</em> [{{medium}}] . {{ edition | capitalize_first }}. ({{ series }}.) {{place}}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]. {{size}}. {{extent}}."
     # TODO: omitted: author ids, subsidiary titles, subsidiary creators, rights metadata, distributor, item attributes, relationships
   booklet: book
   manual: book
   proceedings: book
-  inbook: "{{ creatornames }} ({{role}}) . {{ title }} . {{ labels['in'] | capitalize }}: {{ host_creatornames}} ({{ host_role}}) : <em>{{host_title}}</em> [{{medium}}] . {{ edition | capitalize }}. ({{ series }}.) {{place}}: {{publisher}}. {{date}}. {{size}}. {{extent}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]."
+  inbook: "{{ creatornames }} ({{role}}) . {{ title }} . {{ labels['in'] | capitalize }}: {{ host_creatornames}} ({{ host_role}}) : <em>{{host_title}}</em> [{{medium}}] . {{ edition | capitalize_first }}. ({{ series }}.) {{place}}: {{publisher}}. {{date}}. {{size}}. {{extent}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]."
   inproceedings: inbook
   incollection: inbook
     # TODO: omitted: author ids, additional info for component part, subsidiary titles of host resource, rights metadata, distributor, relationships
-  journal: "<em>{{ title}}</em> [{{medium}}] . {{ edition | capitalize }}. {{place}}: {{publisher}}. {{date}}. {{size}}. {{extent}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]."
+  journal: "<em>{{ title}}</em> [{{medium}}] . {{ edition | capitalize_first }}. {{place}}: {{publisher}}. {{date}}. {{size}}. {{extent}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]."
     # TODO subsidiary titles, rights metadata, item attributes, relationships
-  article: "{{ creatornames }} ({{role}}) . {{ title }}. {{ series }} [{{medium}}] . {{ edition | capitalize }}. {{size}}. {{ extent }}. {{place}}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]."
+  article: "{{ creatornames }} ({{role}}) . {{ title }}. {{ series }} [{{medium}}] . {{ edition | capitalize_first }}. {{size}}. {{ extent }}. {{place}}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]."
     # TODO: omitted: author ids, subsidiary titles, rights metadata, distributor, item attributes, relationships; newspapers
   software: "{{ creatornames }} ({{ role}}) . <em>{{ title }}</em> . {{ labels['version'] | capitalize }}_{{ edition_raw }}. {{medium | capitalize}}. {{place}}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{size}}. {{ extent}}. [{{ labels['viewed'] }}:_{{date_accessed}}]. "
     # TODO: omitted: author ids, subsidiary titles, subsidiary creators, copyright, license, distributor, system requirements, relationships
   electronic resource:  software
-  standard: "{{ creatornames }} ({{ role}}) . <em>{{ title }}</em> . {{ labels['in'] | capitalize }}:_{{ series_title }}. {{ medium | capitalize }}. {{ edition | capitalize }}. {{place}}: {{publisher}}. {{date}}. {{size}}. {{ extent }}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]."
+  standard: "{{ creatornames }} ({{ role}}) . <em>{{ title }}</em> . {{ labels['in'] | capitalize }}:_{{ series_title }}. {{ medium | capitalize }}. {{ edition | capitalize_first }}. {{place}}: {{publisher}}. {{date}}. {{size}}. {{ extent }}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]."
     # TODO: omitted: author ids, subsidiary titles, rights metadata, distributor, persistent identifier, item attributes, relationships
   techreport: standard
   dataset: "{{ creatornames }} ({{ role }}) . <em>{{ title }}</em> . {{ labels['version'] | capitalize }}_{{ edition_raw }}. {{medium | capitalize }}. {{ labels['in'] | capitalize }}:_{{series}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ size }}. {{ extent}}. [{{ labels['viewed'] }}:_{{date_accessed}}]. "

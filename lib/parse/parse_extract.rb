@@ -1,4 +1,8 @@
 class Iso690Parse
+  def host(doc)
+    doc.at("./relation[@type = 'includedIn']/bibitem")
+  end
+
   def title(doc)
     doc&.at("./title")&.text
   end
@@ -47,6 +51,11 @@ class Iso690Parse
       host&.at("./contributor[role/@type = 'distributor']/organization/name") or
       return nil
     x.text
+  end
+
+  def series(doc)
+    doc.at("./series[@type = 'main']") ||
+      doc.at("./series[not(@type)]") || doc.at("./series")
   end
 
   def series_title(doc)

@@ -7,7 +7,7 @@ class Iso690Parse
   def initialize; end
 
   def extract(doc)
-    host = doc.at("./relation[@type = 'includedIn']/bibitem")
+    host = host(doc)
     simple_xml2hash(doc).merge(simple_or_host_xml2hash(doc, host))
       .merge(host_xml2hash(host))
       .merge(series_xml2hash(doc, host))
@@ -36,12 +36,8 @@ class Iso690Parse
   end
 
   def series_xml2hash(doc, host)
-    series = doc.at("./series[@type = 'main']") ||
-      doc.at("./series[not(@type)]") || doc.at("./series")
-    host and series ||=
-               host.at("./series[@type = 'main']") ||
-               host.at("./series[not(@type)]") || host.at("./series")
-
+    series = series(doc)
+    host and series ||= series(host)
     series_xml2hash1(series)
   end
 

@@ -13,7 +13,7 @@ a configuration, and generates a https://www.metanorma.org[Metanorma] XML render
 ----
 input = "<bibitem type='...'>....</bibitem>"
 
-Relaton::Render::General.new(template: ..., nametemplate: ..., seriestemplate: ..., language: "en", script: "Latn").render(input)
+Relaton::Render::General.new(template: ..., nametemplate: ..., seriestemplate: ..., language: "en", script: "Latn", input: "relaton").render(input)
 ----
 
 The gem is intended to be inherited from by Metanorma flavours, which may specialise it with their own
@@ -25,6 +25,7 @@ the parameters of initialising Iso690Render.
 
 The parameters are:
 
+`input`:: input format parsed
 `language`:: in ISO-639
 `script`:: in ISO-15124
 `template`:: templates for rendering different bibliographic types
@@ -38,6 +39,11 @@ The parameters are:
 `date`:: default date format (from Twitter CLDR)
 
 == Configuration
+
+=== Input
+
+Relaton Render by default processed Relaton XML. The format of documents it processes is specified with `input`,
+and can be either `XML` (Relaton XML) or `Relaton` (Relaton classes, native format of Relaton gems).
 
 === Templates
 
@@ -120,6 +126,10 @@ drawn from the bibliographic item:
 |===
 
 Many fields are populated either by the description of the bibliographic item itself, or by the description of the item containing it (the _host_ item: `./relation[@type = 'includedIn']/bibitem`). For example, in a paper included in an edited volume, the edition will typically be given for the editor volume, rather than for the paper. Those fields are indicated by "Can come from host" in the table.
+
+The Liquid templates use the filters defined in Liquid, such as `upcase`. We have defined some custom filters:
+
+* `capitalize_first` capitalises only the first word in a string, and does not lowercase other words in the string. So "third edition" becomes "Third edition", but "3. Aufl." does not become "3. aufl."
 
 The Liquid template surrounds each field by preceding and following punctuation.
 
