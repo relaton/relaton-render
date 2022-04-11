@@ -7,6 +7,72 @@ RSpec.describe Relaton::Render do
     expect(Relaton::Render::VERSION).not_to be nil
   end
 
+  it "returns formattedref" do
+    input = <<~INPUT
+      <bibitem type="book">
+      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831. 1 vol.</formattedref>
+        <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <docidentifier type="ISBN">9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+          </person>
+        </contributor>
+                <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Anderson</surname><forename>David</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Hering</surname><forename>Milena</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Mustaţă</surname><forename>Mircea</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Payne</surname><forename>Sam</forename></name>
+          </person>
+        </contributor>
+        <edition>1</edition>
+        <series>
+        <title>London Mathematical Society Lecture Note Series</title>
+        <number>472</number>
+        </series>
+            <contributor>
+              <role type="publisher"/>
+              <organization>
+                <name>Cambridge University Press</name>
+              </organization>
+            </contributor>
+            <place>Cambridge, UK</place>
+          <size><value type="volume">1</value></size>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831. 1 vol.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+    expect(p.render(input, embedded: false))
+      .to be_equivalent_to output
+    expect(p.render(input, embedded: true))
+      .to be_equivalent_to output.gsub("<formattedref>", "")
+        .gsub("</formattedref>", "")
+  end
+
   it "renders book, five editors with generic class" do
     input = <<~INPUT
       <bibitem type="book">
@@ -250,11 +316,11 @@ RSpec.describe Relaton::Render do
     TEMPLATE
     p = Relaton::Render::General
       .new(template: { book: template },
-           nametemplate: { etal_count: 3, etal: etal },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3, etal: etal },
            sizetemplate: "{{ page_raw }} pages",
            lang: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
            edition: "% edition",
-           date: { month_year: "MMMd", day_month_year: "yMMMd", date_time: "to_long_s" } )
+           date: { month_year: "MMMd", day_month_year: "yMMMd", date_time: "to_long_s" })
     expect(p.render(input))
       .to be_equivalent_to output
   end
@@ -323,7 +389,7 @@ RSpec.describe Relaton::Render do
     TEMPLATE
     p = Relaton::Render::General
       .new(template: { booklet: template, book: "booklet" },
-           nametemplate: { etal_count: 3, etal: etal },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3, etal: etal },
            sizetemplate: "{{ page_raw }} pages",
            lang: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
            edition: "% edition")
@@ -392,9 +458,11 @@ RSpec.describe Relaton::Render do
             <place>New York, NY</place>
           </bibitem>
         </relation>
-        <extent type="page">
+        <extent>
+          <locality type="page">
           <referenceFrom>89</referenceFrom>
           <referenceTo>112</referenceTo>
+          </locality>
         </extent>
       </bibitem>
     INPUT
@@ -474,7 +542,7 @@ RSpec.describe Relaton::Render do
             <place>Cambridge, UK</place>
             <extent>
                 <localityStack>
-                  <locality type="volume">1</locality>
+                  <locality type="volume"><referenceFrom>1</referenceFrom></locality>
         <locality type="page">
           <referenceFrom>89</referenceFrom>
           <referenceTo>112</referenceTo>
@@ -484,7 +552,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. <em>London Mathematical Society Lecture Note Series</em> (N.S.). 1st edition. pp. 89&#x2013;112. Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831.</formattedref>
+      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. <em>London Mathematical Society Lecture Note Series</em> (N.S.). 1st edition. vol. 1, pp. 89–112. Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -513,7 +581,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>RIBOSE INC. <em>metanorma-standoc</em>. Version 1.3.1. September 4, 2019. https://github.com/metanorma/metanorma-standoc.</formattedref>
+      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. September 4, 2019. https://github.com/metanorma/metanorma-standoc.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -547,7 +615,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>INTERNET ENGINEERING TASK FORCE. <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. RFC 3979. https://www.ietf.org/rfc/rfc3979.txt. [viewed: June 18, 2012].</formattedref>
+      <formattedref>Internet Engineering Task Force. <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. RFC 3979. https://www.ietf.org/rfc/rfc3979.txt. [viewed: June 18, 2012].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))

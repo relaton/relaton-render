@@ -1,9 +1,9 @@
 nametemplate:
-  one: "{{surname[0] | upcase }}, {{given[0]}} {{middle[0}}"
-  two: "{{surname[0] | upcase}}, {{given[0]}} {{middle[0]}} {{ labels['and'] }} {{given[1]}} {{middle[1]}} {{surname[1] | upcase}}"
-  more: "{{surname[0] | upcase}}, {{given[0]}} {{middle[0}} , {{given[1]}} {{middle[1]}} {{surname[1] | upcase}} {{ labels['and'] }} {{given[2]}} {{middle[2]}} {{surname[2] | upcase}}"
+  one: "{% if nonpersonal[0] %}{{ nonpersonal[0] }}{% else %}{{surname[0] | upcase }}, {{given[0]}} {{middle[0]}}{% endif %}"
+  two: "{% if nonpersonal[0] %}{{ nonpersonal[0] }}{% else %}{{surname[0] | upcase}}, {{given[0]}} {{middle[0]}}{% endif %} {{ labels['and'] }} {% if nonpersonal[1] %}{{ nonpersonal[1] }}{% else %}{{ given[1]}} {{middle[1]}} {{surname[1] | upcase}}{% endif %}"
+  more: "{% if nonpersonal[0] %}{{ nonpersonal[0] }}{% else %}{{surname[0] | upcase}}, {{given[0]}} {{middle[0]}}{% endif %} , {% if nonpersonal[1] %}{{ nonpersonal[1] }}{% else %}{{ given[1]}} {{middle[1]}} {{surname[1] | upcase}}{% endif %} {{ labels['and'] }} {% if nonpersonal[2] %}{{ nonpersonal[2] }}{% else %}{{given[2]}} {{middle[2]}} {{surname[2] | upcase}}{% endif %}"
 # disabled the following: they should be provided in inheriting calls
-# etal: "{{surname[0] | upcase}}, {{given[0]}} {{middle[0]}}, {{given[1]}} {{middle[1]}} {{surname[1] | upcase}} <em>et al.</em>"
+# etal: "{% if nonpersonal[0] %}{{ nonpersonal[0] }}{% else %}{{surname[0] | upcase}}, {{given[0]}} {{middle[0]}}{% endif %}, {% if nonpersonal[1] %}{{ nonpersonal[1] }}{% else %}{{ given[1]}} {{middle[1]}} {{surname[1] | upcase}}{% endif %} <em>et al.</em>"
 # etal_count: 5
 seriestemplate: "{% if series_abbr %}{{series_abbr}}{% else %}{{series_title}}{% endif %} ({{series_run}}) {{series_num}}|({{series_partnumber}})"
 journaltemplate: "<em>{% if series_abbr %}{{series_abbr}}{% else %}{{series_title}}{% endif %}</em> ({{series_run}}) {{ labels['volume'] }}_{{series_num}} {{ labels['part'] }}_{{series_partnumber}}"

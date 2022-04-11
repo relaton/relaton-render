@@ -64,9 +64,11 @@ RSpec.describe Relaton::Render do
             <place>New York, NY</place>
           </bibitem>
         </relation>
-        <extent type="page">
+        <extent>
+         <locality type="page">
           <referenceFrom>89</referenceFrom>
           <referenceTo>112</referenceTo>
+          </locality>
         </extent>
       </bibitem>
     INPUT
@@ -139,9 +141,11 @@ RSpec.describe Relaton::Render do
             <place>New York, NY</place>
           </bibitem>
         </relation>
-        <extent type="page">
+        <extent>
+          <locality type="page">
           <referenceFrom>89</referenceFrom>
           <referenceTo>112</referenceTo>
+          </locality>
         </extent>
       </bibitem>
     INPUT
@@ -214,9 +218,11 @@ RSpec.describe Relaton::Render do
             <place>New York, NY</place>
           </bibitem>
         </relation>
-        <extent type="page">
+                <extent>
+          <locality type="page">
           <referenceFrom>89</referenceFrom>
           <referenceTo>112</referenceTo>
+          </locality>
         </extent>
       </bibitem>
     INPUT
@@ -289,9 +295,11 @@ RSpec.describe Relaton::Render do
             <place>New York, NY</place>
           </bibitem>
         </relation>
-        <extent type="page">
+                <extent>
+          <locality type="page">
           <referenceFrom>89</referenceFrom>
           <referenceTo>112</referenceTo>
+          </locality>
         </extent>
       </bibitem>
     INPUT
@@ -364,9 +372,11 @@ RSpec.describe Relaton::Render do
             <place>New York, NY</place>
           </bibitem>
         </relation>
-        <extent type="page">
+                <extent>
+          <locality type="page">
           <referenceFrom>89</referenceFrom>
           <referenceTo>112</referenceTo>
+          </locality>
         </extent>
       </bibitem>
     INPUT
@@ -439,9 +449,11 @@ RSpec.describe Relaton::Render do
             <place>New York, NY</place>
           </bibitem>
         </relation>
-        <extent type="page">
+                <extent>
+          <locality type="page">
           <referenceFrom>89</referenceFrom>
           <referenceTo>112</referenceTo>
+          </locality>
         </extent>
       </bibitem>
     INPUT

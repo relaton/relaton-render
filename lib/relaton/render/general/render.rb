@@ -1,9 +1,8 @@
 require_relative "render_classes"
-require_relative "render_fields"
 require "yaml"
 require "liquid"
-require_relative "../isodoc/i18n"
-require_relative "../utils/utils"
+require "relaton_bib"
+require_relative "../template/template"
 
 module Relaton
   module Render
@@ -25,12 +24,12 @@ module Relaton
 
       def root_initalize(opt)
         i18n_initialize(opt)
-        @parse = Iso690Parse.new
-        @nametemplate = Iso690NameTemplate
+        @parse = Parse.new
+        @nametemplate = Relaton::Render::Template::Name
           .new(template: opt["nametemplate"], i18n: @i18n)
-        @seriestemplate = Iso690SeriesTemplate
+        @seriestemplate = Relaton::Render::Template::Series
           .new(template: opt["seriestemplate"], i18n: @i18n)
-        @journaltemplate = Iso690SeriesTemplate
+        @journaltemplate = Relaton::Render::Template::Series
           .new(template: opt["journaltemplate"], i18n: @i18n)
         @extenttemplate = extentrenderers(opt)
         @sizetemplate = sizerenderers(opt)
@@ -48,8 +47,8 @@ module Relaton
       def render_initialize(opt)
         case opt["template"]
         when String
-          @template = Iso690Template.new(template: opt["template"],
-                                         i18n: @i18n)
+          @template = Relaton::Render::Template::General
+            .new(template: opt["template"], i18n: @i18n)
         when Hash
           @render = renderers(opt)
         end
@@ -65,12 +64,12 @@ module Relaton
       end
 
       def extentrenderers(opt)
-        Iso690ExtentTemplate
+        Relaton::Render::Template::Extent
           .new(template: template_hash_fill(opt["extenttemplate"]), i18n: @i18n)
       end
 
       def sizerenderers(opt)
-        Iso690SizeTemplate
+        Relaton::Render::Template::Size
           .new(template: template_hash_fill(opt["sizetemplate"]), i18n: @i18n)
       end
 
@@ -83,13 +82,14 @@ module Relaton
       end
 
       def render(bib, embedded: false)
-        docxml = Nokogiri::XML(bib)
-        docxml.remove_namespaces!
-        parse(docxml.root, embedded: embedded)
+        if bib.is_a?(String) && Nokogiri::XML(bib).errors.empty?
+          bib = RelatonBib::XMLParser.from_xml bib
+        end
+        parse(bib, embedded: embedded)
       end
 
       def parse(doc, embedded: false)
-        f = doc.at("./formattedref") and
+        f = doc.formattedref and
           return embedded ? f.children.to_xml : doc.to_xml
 
         ret = parse1(doc)
@@ -98,11 +98,11 @@ module Relaton
       end
 
       def renderer(doc)
-        unless ret = @template || @render[doc["type"]]&.template
-          raise "No renderer defined for #{doc['type']}"
+        unless ret = @template || @render[doc.type]&.template
+          raise "No renderer defined for #{doc.type}"
         end
-        unless @type == "general" || @type == doc["type"]
-          raise "No renderer defined for #{doc['type']}"
+        unless @type == "general" || @type == doc.type
+          raise "No renderer defined for #{doc.type}"
         end
 
         ret

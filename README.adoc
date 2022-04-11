@@ -13,8 +13,10 @@ a configuration, and generates a https://www.metanorma.org[Metanorma] XML render
 ----
 input = "<bibitem type='...'>....</bibitem>"
 
-Relaton::Render::General.new(template: ..., nametemplate: ..., seriestemplate: ..., language: "en", script: "Latn", input: "relaton").render(input)
+Relaton::Render::General.new(template: ..., nametemplate: ..., seriestemplate: ..., language: "en", script: "Latn").render(input)
 ----
+
+The gem processes either Relaton XML, or native Relaton classes.
 
 The gem is intended to be inherited from by Metanorma flavours, which may specialise it with their own
 code. The templates are however intended to determine much of the rendering.
@@ -25,7 +27,6 @@ the parameters of initialising Iso690Render.
 
 The parameters are:
 
-`input`:: input format parsed
 `language`:: in ISO-639
 `script`:: in ISO-15124
 `template`:: templates for rendering different bibliographic types
@@ -39,11 +40,6 @@ The parameters are:
 `date`:: default date format (from Twitter CLDR)
 
 == Configuration
-
-=== Input
-
-Relaton Render by default processed Relaton XML. The format of documents it processes is specified with `input`,
-and can be either `XML` (Relaton XML) or `Relaton` (Relaton classes, native format of Relaton gems).
 
 === Templates
 
@@ -163,7 +159,7 @@ draws on the following fields drawn from the bibliographic item:
 |===
 | Field  | Relaton XPath | Multiple | Note
 
-| surname[0] | ./contributor[1]/person/name/surname \| ./contributor[1]/person/name/completename \| ./contributor[1]/organization/name | | i.e. surname is the name default
+| surname[0] | ./contributor[1]/person/name/surname \| ./contributor[1]/person/name/completename | | i.e. surname is the name default
 | surname[1] | ./contributor[2]/name/surname | |
 | surname[2] | ./contributor[3]/name/surname | |
 | initials[0] | ./contributor[1]/name/initial | | If not supplied, the first letter of each given name is used instead
@@ -172,6 +168,8 @@ draws on the following fields drawn from the bibliographic item:
 | given[1] |  ./contributor[2]/name/forename[1] | |
 | middle[0] | ./contributor[1]/name/forename[not(first())] | Y |
 | middle[1] | ./contributor[2]/name/forename[not(first())] | Y |
+| nonpersonal[0] |./contributor[1]/organization/name | Y |
+| nonpersonal[1] |./contributor[2]/organization/name | Y |
 |===
 
 There are at least three distinct `nametemplate` instances that need to be provided, one for a single contributor (`one:`), one for two contributors (`two:`), one for three or more (`more:`), and optionally one for "et al." (`etal:`). The number of contributors for which "et al." starts being used is indicated by `etal_count`.
@@ -179,10 +177,10 @@ There are at least three distinct `nametemplate` instances that need to be provi
 For example:
 ....
 {
-  one: "{{ surname[0] }}, {{ given[0] }} {{ middle[0] | slice : 0 }}",
-  two: "{{ surname[0] }}, {{ given[0] }} {{ middle[0] | slice : 0 }} &amp; {{ given[1] }} {{ middle[1] | slice : 0 }} {{ surname[1] }}",
-  more: "{{ surname[0] }}, {{ given[0] }} {{ middle[0] | slice : 0 }}, {{ given[1] }} {{ middle[1] | slice : 0 }} {{ surname[1] }} &amp; {{ given[2] }} {{ middle[2] | slice : 0 }} {{ surname[2] }}",
-  etal: "{{ surname[0] }}, {{ given[0] }} {{ middle[0] | slice : 0 }}, {{ given[1] }} {{ middle[1] | slice : 0 }} {{ surname[1] }} <em>et al.</em>",
+  one: "{% if nonpersonal[0] %}{{ nonpersonal[0] }}{% else %}{{ surname[0] }}, {{ given[0] }} {{ middle[0] | slice : 0 }}{% endif %}",
+  two: "{% if nonpersonal[0] %}{{ nonpersonal[0] }}{% else %}{{ surname[0] }}, {{ given[0] }} {{ middle[0] | slice : 0 }}{% endif %} &amp; {% if nonpersonal[1] %}{{ nonpersonal[1] }}{% else %}{{ given[1] }} {{ middle[1] | slice : 0 }} {{ surname[1] }}{% endif %}",
+  more: "{% if nonpersonal[0] %}{{ nonpersonal[0] }}{% else %}{{ surname[0] }}, {{ given[0] }} {{ middle[0] | slice : 0 }}{% endif %}, {% if nonpersonal[1] %}{{ nonpersonal[1] }}{% else %}{{ given[1] }} {{ middle[1] | slice : 0 }} {{ surname[1] }}{% endif %} &amp; {% if nonpersonal[2] %}{{ nonpersonal[2] }}{% else %}{{ given[2] }} {{ middle[2] | slice : 0 }} {{ surname[2] }}{% endif %}",
+  etal: "{% if nonpersonal[0] %}{{ nonpersonal[0] }}{% else %}{{ surname[0] }}, {{ given[0] }} {{ middle[0] | slice : 0 }}{% endif %}, {% if nonpersonal[1] %}{{ nonpersonal[1] }}{% else %}{{ given[1] }} {{ middle[1] | slice : 0 }} {{ surname[1] }}{% endif %} <em>et al.</em>",
   etal_count: 6
 }
 ....

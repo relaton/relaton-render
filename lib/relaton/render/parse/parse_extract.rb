@@ -1,172 +1,175 @@
-class Iso690Parse
-  def host(doc)
-    doc.at("./relation[@type = 'includedIn']/bibitem")
-  end
+module Relaton
+  module Render
+    class Parse
+      def host(doc)
+        doc.relation.detect { |r| r.type == "includedIn" }&.bibitem
+      end
 
-  def title(doc)
-    doc&.at("./title")&.text
-  end
+      def title(doc)
+        return nil if doc.nil?
 
-  def medium(doc, host)
-    x = doc.at("./medium") || host&.at("./medium") or return nil
+        doc.title.first.title.content
+      end
 
-    %w(content genre form carrier size scale).each_with_object({}) do |i, m|
-      m[i] = x.at("./#{i}")&.text
-    end.compact
-  end
+      def medium(doc, host)
+        x = doc.medium || host&.medium or return nil
 
-  def size(doc)
-    x = doc.at("./size") or return nil
-    x.xpath("./value").each_with_object({}) do |v, m|
-      m[v["type"]] ||= []
-      m[v["type"]] << v.text
-    end
-  end
+        %w(content genre form carrier size scale).each_with_object({}) do |i, m|
+          m[i] = x.send i
+        end.compact
+      end
 
-  def blank?(text)
-    text.nil? || text.empty?
-  end
+      def size(doc)
+        x = doc.size or return nil
+        x.size.each_with_object({}) do |v, m|
+          m[v.type] ||= []
+          m[v.type] << v.value
+        end
+      end
 
-  def edition(doc, host)
-    x = doc.at("./edition") || host&.at("./edition") or return nil
+      def edition(doc, host)
+        doc.edition || host&.edition
+      end
 
-    x.text
-  end
+      def place(doc, host)
+        x = doc.place
+        x.empty? && host and x = host.place
+        x.empty? and return x
+        x.map(&:name)
+      end
 
-  def place(doc, host)
-    x = doc.at("./place") || host&.at("./place") or return nil
+      def publisher(doc, host)
+        x = pick_contributor(doc, "publisher")
+        host and x ||= pick_contributor(host, "publisher")
+        x.nil? and return nil
+        x.map { |c| extractname(c) }
+      end
 
-    x.text
-  end
+      def distributor(doc, host)
+        x = pick_contributor(doc, "distributor")
+        host and x ||= pick_contributor(host, "distributor")
+        x.nil? and return nil
+        x.map { |c| extractname(c) }
+      end
 
-  def publisher(doc, host)
-    x = doc.at("./contributor[role/@type = 'publisher']/organization/name") ||
-      host&.at("./contributor[role/@type = 'publisher']/organization/name") or
-      return nil
-    x.text
-  end
+      def series(doc)
+        doc.series.detect { |s| s.type == "main" } ||
+          doc.series.detect { |s| s.type.nil? } ||
+          doc.series.first
+      end
 
-  def distributor(doc, host)
-    x = doc.at("./contributor[role/@type = 'distributor']/organization/name") ||
-      host&.at("./contributor[role/@type = 'distributor']/organization/name") or
-      return nil
-    x.text
-  end
+      def series_title(doc)
+        doc.title.title.content || doc.formattedref
+      end
 
-  def series(doc)
-    doc.at("./series[@type = 'main']") ||
-      doc.at("./series[not(@type)]") || doc.at("./series")
-  end
+      def series_abbr(doc)
+        doc.abbreviation
+      end
 
-  def series_title(doc)
-    doc&.at("./title")&.text || doc&.at("./formattedref")&.text
-  end
+      def series_num(doc)
+        doc.number
+      end
 
-  def series_abbr(doc)
-    doc&.at("./abbreviation")&.text
-  end
+      def series_partnumber(doc)
+        doc.partnumber
+      end
 
-  def series_num(doc)
-    doc&.at("./number")&.text
-  end
+      def series_run(doc)
+        doc.run
+      end
 
-  def series_partnumber(doc)
-    doc&.at("./partnumber")&.text
-  end
+      def standardidentifier(doc)
+        doc.docidentifier.each_with_object([]) do |id, ret|
+          ret << id.id unless %w(metanorma metanorma-ordinal).include? id.type
+        end
+      end
 
-  def series_run(doc)
-    doc&.at("./run")&.text
-  end
+      def uri(doc)
+        uri = nil
+        %i(doi uri src).each do |t|
+          uri = doc.link.detect { |u| u.type == t } and break
+        end
+        uri ||= doc.link.first
+        return nil unless uri
 
-  def standardidentifier(doc)
-    doc.xpath("./docidentifier").each_with_object([]) do |id, ret|
-      ret << id.text unless %w(metanorma metanorma-ordinal).include? id["type"]
-    end
-  end
+        uri.content.to_s
+      end
 
-  def uri(doc)
-    uri = doc.at("./uri[@type = 'doi']") || doc.at("./uri[@type = 'uri']") ||
-      doc.at("./uri[@type = 'src']") || doc.at("./uri")
-    uri&.text
-  end
+      def access_location(doc, host)
+        x = doc.accesslocation || host&.accesslocation or
+          return nil
+        x.first
+      end
 
-  def access_location(doc, host)
-    x = doc.at("./accessLocation") || host&.at("./accessLocation") or
-      return nil
-    x.text
-  end
+      def included(type)
+        ["article", "inbook", "incollection", "inproceedings"].include? type
+      end
 
-  def included(type)
-    ["article", "inbook", "incollection", "inproceedings"].include? type
-  end
+      def type(doc)
+        type = doc.type and return type
+        doc.relation.any? { |r| r.type == "includedIn" } and return "inbook"
+        "book"
+      end
 
-  def wrap(text, startdelim = " ", enddelim = ".")
-    return "" if blank?(text)
+      def extent1(localities)
+        localities.each_with_object({}) do |l, ret|
+          ret[(l.type || "page").to_sym] = {
+            from: localized_string_or_text(l.reference_from),
+            to: localized_string_or_text(l.reference_to),
+          }
+        end
+      end
 
-    "#{startdelim}#{text}#{enddelim}"
-  end
+      def extent(doc)
+        doc.extent.each_with_object([]) do |e, acc|
+          case e
+          when RelatonBib::LocalityStack
+            acc << extent1(e.locality)
+          when RelatonBib::Locality
+            acc << extent1(Array(e))
+          end
+        end
+      end
 
-  def type(doc)
-    type = doc.at("./@type") and return type&.text
-    doc.at("./relation[@type = 'includedIn']") and return "inbook"
-    "book"
-  end
+      def draft(doc)
+        dr = doc.status&.first&.stage&.first&.value
 
-  def extent1(localities)
-    localities.each_with_object({}) do |l, ret|
-      ret[(l["type"] || "page").to_sym] = {
-        from: l.at("./referenceFrom")&.text,
-        to: l.at("./referenceTo")&.text,
-      }
-    end
-  end
+        { iteration: iter_ordinal(doc), status: dr }
+      end
 
-  def extent0(elem, acc, ret1)
-    case elem.name
-    when "localityStack"
-      acc << ret1
-      ret1 = {}
-      acc << extent1(elem.elements)
-    when "locality" then ret1.merge!(extent1([elem]))
-    when "referenceFrom" then ret1.merge!(extent1([elem.parent]))
-    end
-    [acc, ret1]
-  end
+      def iter_ordinal(doc)
+        return nil unless iter = doc.status.detect(&:iteration)
 
-  def extent(doc)
-    ret1 = {}
-    ret = doc.xpath("./extent").each_with_object([]) do |e, acc|
-      e.elements.each do |l|
-        acc, ret1 = extent0(l, acc, ret1)
-        break if l.name == "referenceFrom"
+        iter
+        # iter.to_i.localize.to_rbnf_s("SpelloutRules",
+        #                             "spellout-ordinal").capitalize
+      end
+
+      def status(doc)
+        doc.status&.first&.stage&.first&.value
+      end
+
+      private
+
+      def blank?(text)
+        text.nil? || text.empty?
+      end
+
+      def pick_contributor(doc, role)
+        ret = doc.contributor.select do |c|
+          c.role.any? { |r| r.type == role }
+        end
+        ret.empty? ? nil : ret
+      end
+
+      def localized_string_or_text(str)
+        case str
+        when RelatonBib::LocalizedString
+          str.content
+        when String
+          str
+        end
       end
     end
-    ret << ret1
-    ret.reject(&:empty?)
-  end
-
-  def draft(doc)
-    dr = doc&.at("./status/stage")&.text
-
-    iterord = iter_ordinal(doc)
-    status = status_print(dr)
-    status = "#{iterord} #{status}" if iterord
-    status
-  end
-
-  def iter_ordinal(isoxml)
-    return nil unless isoxml.at(("./status/iteration"))
-
-    iter = isoxml.at(("./status/iteration"))&.text || "1"
-    iter.to_i.localize.to_rbnf_s("SpelloutRules",
-                                 "spellout-ordinal").capitalize
-  end
-
-  def status_print(status)
-    status
-  end
-
-  def status(doc)
-    doc&.at("./status/stage")&.text
   end
 end

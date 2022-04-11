@@ -1,6 +1,6 @@
 lib = File.expand_path("lib", __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "relaton/version"
+require "relaton/render/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "relaton-render"
@@ -31,6 +31,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency "isodoc-i18n"
   spec.add_dependency "liquid", "~> 4"
   spec.add_dependency "nokogiri"
+  spec.add_dependency "relaton-bib", ">= 1.11.0"
   spec.add_dependency "twitter_cldr"
   spec.add_dependency "tzinfo-data" # we need this for windows only
+  spec.metadata["rubygems_mfa_required"] = "true"
 end

@@ -15,6 +15,9 @@ module Relaton
       def name_fields_format(hash)
         hash[:creatornames] = nameformat(hash[:creators])
         hash[:host_creatornames] = nameformat(hash[:host_creators])
+        hash[:place] = nameformat(hash[:place_raw].map { |x| { nonpersonal: x } })
+        hash[:publisher] = nameformat(hash[:publisher_raw])
+        hash[:distributor] = nameformat(hash[:distributor_raw])
       end
 
       def role_fields_format(hash)
@@ -61,7 +64,7 @@ module Relaton
       def nameformat(names)
         return names if names.nil?
 
-        parts = %i(surname initials given middle)
+        parts = %i(surname initials given middle nonpersonal)
         names_out = names.each_with_object({}) do |n, m|
           parts.each do |i|
             m[i] ||= []
@@ -72,7 +75,8 @@ module Relaton
       end
 
       def role_inflect(contribs, role)
-        return nil if role.nil? || contribs.size.zero?
+        return nil if role.nil? || contribs.size.zero? ||
+          %w(author publisher).include?(role)
 
         number = contribs.size > 1 ? "pl" : "sg"
         @r.i18n.get[role][number] || role

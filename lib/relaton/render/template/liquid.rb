@@ -1,6 +1,6 @@
 module Relaton
   module Render
-    module Liquid
+    module Template
       module CapitalizeFirst
         def capitalize_first(words)
           return nil if words.nil?
