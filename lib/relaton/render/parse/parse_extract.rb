@@ -58,29 +58,29 @@ module Relaton
           doc.series.first
       end
 
-      def series_title(doc)
-        t = doc.title
-        if t&.respond_to?("titles")
-          doc.title.titles.first.title.content
+      def series_title(series, doc)
+        t = series.title
+        if t.respond_to?(:titles)
+          series.title.titles.first.title.content
         else
-          doc.title&.title&.content || doc.formattedref
+          series.title&.title&.content || doc.formattedref&.content
         end
       end
 
-      def series_abbr(doc)
-        doc.abbreviation&.content
+      def series_abbr(series, _doc)
+        series.abbreviation&.content
       end
 
-      def series_num(doc)
-        doc.number
+      def series_num(series, _doc)
+        series.number
       end
 
-      def series_partnumber(doc)
-        doc.partnumber
+      def series_partnumber(series, _doc)
+        series.partnumber
       end
 
-      def series_run(doc)
-        doc.run
+      def series_run(series, _doc)
+        series.run
       end
 
       def standardidentifier(doc)

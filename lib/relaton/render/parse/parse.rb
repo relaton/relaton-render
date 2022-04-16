@@ -41,15 +41,15 @@ module Relaton
       def series_xml2hash(doc, host)
         series = series(doc)
         host and series ||= series(host)
-        series_xml2hash1(series)
+        series_xml2hash1(series, doc)
       end
 
-      def series_xml2hash1(series)
+      def series_xml2hash1(series, doc)
         return {} unless series
 
-        { series_title: series_title(series), series_abbr: series_abbr(series),
-          series_run: series_run(series), series_num: series_num(series),
-          series_partnumber: series_partnumber(series) }
+        { series_title: series_title(series, doc), series_abbr: series_abbr(series, doc),
+          series_run: series_run(series, doc), series_num: series_num(series, doc),
+          series_partnumber: series_partnumber(series, doc) }
       end
     end
   end
