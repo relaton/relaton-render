@@ -725,7 +725,39 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>JENKINS, and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em>. Preprint. 2012. https://eprints.soton.ac.uk/338797/. [viewed: June 24, 2020].</formattedref>
+      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em>. Preprint. 2012. https://eprints.soton.ac.uk/338797/. [viewed: June 24, 2020].</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
+  it "renders untyped" do
+    input = <<~INPUT
+      <bibitem>
+        <title>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</title>
+        <uri>https://eprints.soton.ac.uk/338797/</uri>
+        <date type="created"><on>2012</on></date>
+        <date type="accessed"><on>2020-06-24</on></date>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Jenkins</surname><initials>S.</initials></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Ruostekoski</surname><forename>Janne</forename></name>
+          </person>
+        </contributor>
+        <medium>
+          <genre>preprint</genre>
+        </medium>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>JENKINS and Janne RUOSTEKOSKI. Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice. 2012.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
