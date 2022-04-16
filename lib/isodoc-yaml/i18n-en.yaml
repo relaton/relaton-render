@@ -5,7 +5,7 @@ updated: updated
 viewed: viewed
 version: version
 date:
-  month_year: to_long_s
+  month_year: yMMMM
   day_month_year: to_long_s
   date_time: to_long_s
 edition_number: ["OrdinalRules", "digits-ordinal"]

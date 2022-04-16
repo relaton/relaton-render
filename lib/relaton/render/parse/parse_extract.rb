@@ -59,7 +59,7 @@ module Relaton
       end
 
       def series_title(doc)
-        doc.title.title.content || doc.formattedref
+        doc.title&.title&.content || doc.formattedref
       end
 
       def series_abbr(doc)
@@ -132,7 +132,7 @@ module Relaton
       end
 
       def draft(doc)
-        dr = doc.status&.first&.stage&.first&.value
+        dr = doc.status&.stage&.value
 
         { iteration: iter_ordinal(doc), status: dr }
       end
@@ -146,7 +146,7 @@ module Relaton
       end
 
       def status(doc)
-        doc.status&.first&.stage&.first&.value
+        doc.status&.stage&.value
       end
 
       private

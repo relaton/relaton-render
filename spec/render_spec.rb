@@ -763,4 +763,35 @@ RSpec.describe Relaton::Render do
     expect(p.render(input))
       .to be_equivalent_to output
   end
+
+  it "renders month-year dates" do
+    input = <<~INPUT
+      <bibitem type="unpublished">
+        <title>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</title>
+        <uri>https://eprints.soton.ac.uk/338797/</uri>
+        <date type="accessed"><on>2020-06</on></date>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Jenkins</surname><initials>S.</initials></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Ruostekoski</surname><forename>Janne</forename></name>
+          </person>
+        </contributor>
+        <medium>
+          <genre>preprint</genre>
+        </medium>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em>. Preprint. June 2020. https://eprints.soton.ac.uk/338797/. [viewed: June 2020].</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
 end

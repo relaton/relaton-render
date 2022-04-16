@@ -1,3 +1,5 @@
+require_relative "date"
+
 module Relaton
   module Render
     class Fields
@@ -162,29 +164,13 @@ module Relaton
         end
       end
 
-      def dateformat(date, hash)
+      def dateformat(date, _hash)
         return nil if date.nil?
 
         %i(from to on).each do |k|
-          date[k] = daterender(date[k], hash)
+          date[k] = ::Relaton::Render::Date.new(date[k], renderer: @r).render
         end
         date_range(date)
-      end
-
-      def daterender(date, _hash)
-        return date if date.nil? || /^\d+$/.match?(date)
-
-        daterender1(date, dategranularity(date), hash)
-      end
-
-      def daterender1(date, format, _hash)
-        datef = dateparse(date, format, @r.lang.to_sym)
-        case @r.date[format]
-        when "to_full_s", "to_long_s", "to_medium_s", "to_short_s"
-          datef.send @r.date[format]
-        else
-          datef.to_additional_s(@r.date[format])
-        end
       end
 
       private
@@ -196,25 +182,6 @@ module Relaton
           :"zh-tw"
         else
           :"zh-cn"
-        end
-      end
-
-      def dategranularity(date)
-        case date
-        when /^\d+-\d+$/ then "month_year"
-        when /^\d+-\d+-\d+$/ then "day_month_year"
-        else "date_time"
-        end
-      end
-
-      def dateparse(date, format, lang)
-        case format
-        when "date_time" then DateTime.parse(date)
-          .localize(lang, timezone: "Zulu")
-        when "day_month_year" then DateTime.parse(date)
-          .localize(lang, timezone: "Zulu").to_date
-        when "month_year" then Date.parse(date)
-          .localize(lang, timezone: "Zulu").to_date
         end
       end
     end
