@@ -59,7 +59,12 @@ module Relaton
       end
 
       def series_title(doc)
-        doc.title&.title&.content || doc.formattedref
+        t = doc.title
+        if t&.respond_to?("titles")
+          doc.title.titles.first.title.content
+        else
+          doc.title&.title&.content || doc.formattedref
+        end
       end
 
       def series_abbr(doc)
