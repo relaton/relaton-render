@@ -10,6 +10,7 @@ date:
   date_time: to_long_s
 edition_number: ["OrdinalRules", "digits-ordinal-feminine"]
 edition: "% ed."
+draft: "borrador %"
 editor:
   sg: ed.
   pl: eds.

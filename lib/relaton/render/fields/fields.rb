@@ -17,7 +17,9 @@ module Relaton
       def name_fields_format(hash)
         hash[:creatornames] = nameformat(hash[:creators])
         hash[:host_creatornames] = nameformat(hash[:host_creators])
-        hash[:place] = nameformat(hash[:place_raw].map { |x| { nonpersonal: x } })
+        hash[:place] = nameformat(hash[:place_raw].map do |x|
+                                    { nonpersonal: x }
+                                  end)
         hash[:publisher] = nameformat(hash[:publisher_raw])
         hash[:distributor] = nameformat(hash[:distributor_raw])
       end
@@ -32,6 +34,7 @@ module Relaton
         hash[:series] = seriesformat(hash)
         hash[:medium] = mediumformat(hash[:medium_raw])
         hash[:edition] = editionformat(hash[:edition_raw])
+        hash[:draft] = draftformat(hash[:draft_raw], hash)
         hash[:extent] = extentformat(hash[:extent_raw], hash)
         hash[:size] = sizeformat(hash[:size_raw], hash)
         hash
@@ -91,6 +94,12 @@ module Relaton
         @r.edition_number and num = edn.to_i.localize(tw_cldr_lang)
           .to_rbnf_s(*@r.edition_number)
         @r.edition.sub(/%/, num)
+      end
+
+      def draftformat(num, _hash)
+        return num unless num
+
+        @r.i18n.draft.sub(/%/, num)
       end
 
       def extentformat(extent, hash)

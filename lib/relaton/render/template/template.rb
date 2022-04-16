@@ -165,6 +165,10 @@ module Relaton
             acc[curr] += prec
             prec = ""
             acc[curr] += elem
+          elsif /\{%\s*endif/.match?(elem)
+            acc[curr] += prec
+            prec = ""
+            acc[curr] += elem
           else prec += elem
           end
           [acc, curr, prec]

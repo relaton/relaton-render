@@ -26,7 +26,7 @@ module Relaton
       def simple_or_host_xml2hash(doc, host)
         { edition_raw: edition(doc, host), medium_raw: medium(doc, host),
           place_raw: place(doc, host), publisher_raw: publisher(doc, host),
-          distributor_raw: distributor(doc, host),
+          distributor_raw: distributor(doc, host), draft_raw: draft(doc, host),
           access_location: access_location(doc, host),
           date: date(doc, host), date_updated: date_updated(doc, host),
           date_accessed: date_accessed(doc, host) }

@@ -131,14 +131,14 @@ module Relaton
         end
       end
 
-      def draft(doc)
-        dr = doc.status&.stage&.value
+      def draft(doc, host)
+        dr = doc.status&.stage&.value || host&.status&.stage&.value
 
-        { iteration: iter_ordinal(doc), status: dr }
+        { iteration: iter_ordinal(doc) || iter_ordinal(host), status: dr }
       end
 
       def iter_ordinal(doc)
-        return nil unless iter = doc.status.detect(&:iteration)
+        return nil unless iter = doc&.status&.detect(&:iteration)
 
         iter
         # iter.to_i.localize.to_rbnf_s("SpelloutRules",

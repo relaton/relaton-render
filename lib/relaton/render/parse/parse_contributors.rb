@@ -17,8 +17,8 @@ module Relaton
       def given_and_middle_name(person)
         forenames = person.name.forename.map(&:content)
         initials = person.name.initial.map(&:content)
+          .map { |x| x.sub(/\.$/, "") }
         forenames.empty? and initials.empty? and return [nil, nil, nil]
-        forenames.empty? and forenames = initials.dup
         initials.empty? and initials = forenames.map { |x| x[0] }
         [forenames.first, forenames[1..-1], initials]
       end

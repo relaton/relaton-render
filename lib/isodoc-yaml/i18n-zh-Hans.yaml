@@ -10,6 +10,7 @@ date:
   date_time: to_long_s
 edition_number: ["OrdinalRules", "digits-ordinal"]
 edition: "第%版"
+draft: "草案%"
 editor:
   sg: 编辑
   pl: 编辑
