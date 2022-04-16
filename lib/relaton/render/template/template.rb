@@ -73,8 +73,9 @@ module Relaton
             .gsub(/#{FIELD_DELIM}/o, "")
             .gsub(/([,:;]\s*)+([,:;](\s|$))/, "\\2")
             .gsub(/([,.:;]\s*)+([.](\s|$))/, "\\2")
+            .gsub(/([,:;]\s*)+(,(\s|$))/, "\\2")
             .gsub(/(:\s+)(&\s)/, "\\2")
-            .gsub(/\s+([,.:;])/, "\\1")
+            .gsub(/\s+([,.:;)])/, "\\1")
             .gsub(/_/, " ")
             .gsub(/#{NON_SPACING_DELIM}/o, "").gsub(/\s+/, " ")
         end

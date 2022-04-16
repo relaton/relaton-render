@@ -58,13 +58,16 @@ module Relaton
           doc.series.first
       end
 
-      def series_title(series, doc)
-        t = series.title
-        if t.respond_to?(:titles)
-          series.title.titles.first.title.content
-        else
-          series.title&.title&.content || doc.formattedref&.content
-        end
+      def series_title(series, _doc)
+        return nil if series.nil?
+
+        series.title.respond_to?(:titles) and
+          return series.title.titles.first.title.content
+        series.title&.title&.content || series.formattedref&.content
+      end
+
+      def series_formatted(series, _doc)
+        series.formattedref&.content
       end
 
       def series_abbr(series, _doc)
@@ -85,8 +88,12 @@ module Relaton
 
       def standardidentifier(doc)
         doc.docidentifier.each_with_object([]) do |id, ret|
-          ret << id.id unless %w(metanorma metanorma-ordinal).include? id.type
+          ret << id.id unless standardidentifier_exclude.include? id.type
         end
+      end
+
+      def standardidentifier_exclude
+        %w(metanorma metanorma-ordinal)
       end
 
       def uri(doc)

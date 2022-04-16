@@ -47,8 +47,11 @@ module Relaton
       def series_xml2hash1(series, doc)
         return {} unless series
 
-        { series_title: series_title(series, doc), series_abbr: series_abbr(series, doc),
-          series_run: series_run(series, doc), series_num: series_num(series, doc),
+        { series_formatted: series_formatted(series, doc),
+          series_title: series_title(series, doc),
+          series_abbr: series_abbr(series, doc),
+          series_run: series_run(series, doc),
+          series_num: series_num(series, doc),
           series_partnumber: series_partnumber(series, doc) }
       end
     end

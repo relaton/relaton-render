@@ -17,7 +17,7 @@ module Relaton
       def name_fields_format(hash)
         hash[:creatornames] = nameformat(hash[:creators])
         hash[:host_creatornames] = nameformat(hash[:host_creators])
-        hash[:place] = nameformat(hash[:place_raw].map do |x|
+        hash[:place] = nameformat(hash[:place_raw]&.map do |x|
                                     { nonpersonal: x }
                                   end)
         hash[:publisher] = nameformat(hash[:publisher_raw])
@@ -58,7 +58,7 @@ module Relaton
 
       def seriesformat(hash)
         parts = %i(series_title series_abbr series_num series_partnumber
-                   series_run)
+                   series_run series_formatted)
         series_out = parts.each_with_object({}) do |i, m|
           m[i] = hash[i]
         end
