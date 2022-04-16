@@ -63,7 +63,7 @@ module Relaton
       end
 
       def series_abbr(doc)
-        doc.abbreviation
+        doc.abbreviation&.content
       end
 
       def series_num(doc)
@@ -138,7 +138,7 @@ module Relaton
       end
 
       def iter_ordinal(doc)
-        return nil unless iter = doc&.status&.detect(&:iteration)
+        return nil unless iter = doc&.status&.iteration
 
         iter
         # iter.to_i.localize.to_rbnf_s("SpelloutRules",

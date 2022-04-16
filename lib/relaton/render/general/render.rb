@@ -33,11 +33,12 @@ module Relaton
         @sizetemplateklass = Relaton::Render::Template::Size
         @generaltemplateklass = Relaton::Render::Template::General
         @fieldsklass = Relaton::Render::Fields
+        @parseklass = Relaton::Render::Parse
       end
 
       def root_initalize(opt)
         i18n_initialize(opt)
-        @parse = Parse.new
+        @parse = @parseklass.new
         @nametemplate = @nametemplateklass
           .new(template: opt["nametemplate"], i18n: @i18n)
         @seriestemplate = @seriestemplateklass

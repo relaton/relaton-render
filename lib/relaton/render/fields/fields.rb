@@ -97,7 +97,8 @@ module Relaton
       end
 
       def draftformat(num, _hash)
-        return num unless num
+        return nil if num.nil?
+        return nil if num.is_a?(Hash) && num[:status].nil? && num[:iteration].nil?
 
         @r.i18n.draft.sub(/%/, num)
       end
