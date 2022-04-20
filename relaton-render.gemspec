@@ -34,5 +34,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "relaton-bib", ">= 1.11.0"
   spec.add_dependency "twitter_cldr"
   spec.add_dependency "tzinfo-data" # we need this for windows only
-  spec.metadata["rubygems_mfa_required"] = "true"
+  #spec.metadata["rubygems_mfa_required"] = "true"
 end
