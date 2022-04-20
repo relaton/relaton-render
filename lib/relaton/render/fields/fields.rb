@@ -11,17 +11,19 @@ module Relaton
         name_fields_format(hash)
         role_fields_format(hash)
         date_fields_format(hash)
+        edition_fields_format(hash)
         misc_fields_format(hash)
       end
 
       def name_fields_format(hash)
-        hash[:creatornames] = nameformat(hash[:creators])
-        hash[:host_creatornames] = nameformat(hash[:host_creators])
         hash[:place] = nameformat(hash[:place_raw]&.map do |x|
                                     { nonpersonal: x }
                                   end)
-        hash[:publisher] = nameformat(hash[:publisher_raw])
-        hash[:distributor] = nameformat(hash[:distributor_raw])
+        [%i(creatornames creators), %i(host_creatornames host_creators),
+         %i(publisher publisher_raw), %i(distributor distributor_raw)]
+          .each do |k|
+          hash[k[0]] = nameformat(hash[k[1]])
+        end
       end
 
       def role_fields_format(hash)
@@ -30,20 +32,25 @@ module Relaton
           role_inflect(hash[:host_creators], hash[:host_role_raw])
       end
 
+      def edition_fields_format(hash)
+        hash[:edition] = editionformat(hash[:edition_raw])
+        hash[:draft] = draftformat(hash[:draft_raw], hash)
+      end
+
       def misc_fields_format(hash)
         hash[:series] = seriesformat(hash)
         hash[:medium] = mediumformat(hash[:medium_raw])
-        hash[:edition] = editionformat(hash[:edition_raw])
-        hash[:draft] = draftformat(hash[:draft_raw], hash)
         hash[:extent] = extentformat(hash[:extent_raw], hash)
         hash[:size] = sizeformat(hash[:size_raw], hash)
+        hash[:uri] = uriformat(hash[:uri_raw])
         hash
       end
 
       def date_fields_format(hash)
-        hash[:date] = dateformat(hash[:date], hash)
-        hash[:date_updated] = dateformat(hash[:date_updated], hash)
-        hash[:date_accessed] = dateformat(hash[:date_accessed], hash)
+        [%i(date date), %i(date_updated date_updated),
+         %i(date_accessed date_accessed)].each do |k|
+          hash[k[0]] = dateformat(hash[k[1]], hash)
+        end
       end
 
       # TODO is not being i18n-alised
@@ -181,6 +188,12 @@ module Relaton
           date[k] = ::Relaton::Render::Date.new(date[k], renderer: @r).render
         end
         date_range(date)
+      end
+
+      def uriformat(uri)
+        return nil if uri.nil? || uri.empty?
+
+        "<link target='#{uri}'>#{uri}</link>"
       end
 
       private

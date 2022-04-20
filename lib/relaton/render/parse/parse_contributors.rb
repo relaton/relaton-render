@@ -2,7 +2,7 @@ module Relaton
   module Render
     class Parse
       def extract_orgname(org)
-        org.name.first.content
+        org.name&.first&.content
       end
 
       def extract_personname(person)

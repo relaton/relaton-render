@@ -53,19 +53,20 @@ template:
     # TODO: omitted: author ids, subsidiary titles, subsidiary creators, host archive, item attributes, relationships
   presentation: unpublished
   thesis: "{{ creatornames }} ({{ role }}) . <em>{{ title }}</em> . {{ medium | capitalize }}. {{ place }}: {{ publisher }}. {{ date }}. {{ labels['at'] | capitalize}}:_{{ access_location }}.  {{ standardidentifier | first }}. {{ uri }}. [{{ labels['viewed'] }}:_{{date_accessed}}]."
-  # unsupported types:
-  # map: ""
-  # audiovisual: ""
-  # film: ""
-  # video: ""
-  # broadcast: ""
-  # graphic_work: ""
-  # music: ""
-  # performance: "" (not in Relaton)
-  # patent: ""
-  # archival: ""
-  # social_media: ""
-  # alert: ""
-  # message: ""
-  # conversation: ""
-  # misc: ""
+  misc:  "{{ creatornames }} ({{ role }}) . <em>{{ title }}</em> . {{ date }}."
+  # following are # unsupported types:
+  map: misc
+  audiovisual: misc
+  film: misc
+  video: misc
+  broadcast: misc
+  graphic_work: misc
+  music: misc
+  performance: misc
+  patent: misc
+  archival: misc
+  social_media: misc
+  alert: misc
+  message: misc
+  conversation: misc
+  internal: misc

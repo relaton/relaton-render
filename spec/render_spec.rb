@@ -318,7 +318,7 @@ RSpec.describe Relaton::Render do
       .new(template: { book: template },
            nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3, etal: etal },
            sizetemplate: "{{ page_raw }} pages",
-           lang: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
+           language: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
            edition: "% edition",
            date: { month_year: "MMMd", day_month_year: "yMMMd", date_time: "to_long_s" })
     expect(p.render(input))
@@ -391,7 +391,7 @@ RSpec.describe Relaton::Render do
       .new(template: { booklet: template, book: "booklet" },
            nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3, etal: etal },
            sizetemplate: "{{ page_raw }} pages",
-           lang: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
+           language: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
            edition: "% edition")
     expect(p.render(input))
       .to be_equivalent_to output
@@ -581,7 +581,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. September 4, 2019. https://github.com/metanorma/metanorma-standoc.</formattedref>
+      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. September 4, 2019. <link target="https://github.com/metanorma/metanorma-standoc">https://github.com/metanorma/metanorma-standoc</link>.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -615,7 +615,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>Internet Engineering Task Force. <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. RFC 3979. https://www.ietf.org/rfc/rfc3979.txt. [viewed: June 18, 2012].</formattedref>
+      <formattedref>Internet Engineering Task Force. <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. RFC 3979. <link target="https://www.ietf.org/rfc/rfc3979.txt">https://www.ietf.org/rfc/rfc3979.txt</link>. [viewed: June 18, 2012].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -657,7 +657,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>PORTES, Alejandro and Rubén G. RUMBAUT. <em>Children of Immigrants. Longitudinal Sudy (CILS) 1991–2006 ICPSR20520</em>. Version 2. Dataset. January 23, 2012. https://doi.org/10.3886/ICPSR20520.v2. 501 GB. [viewed: May 6, 2018].</formattedref>
+      <formattedref>PORTES, Alejandro and Rubén G. RUMBAUT. <em>Children of Immigrants. Longitudinal Sudy (CILS) 1991–2006 ICPSR20520</em>. Version 2. Dataset. January 23, 2012. <link target="https://doi.org/10.3886/ICPSR20520.v2">https://doi.org/10.3886/ICPSR20520.v2</link>. 501 GB. [viewed: May 6, 2018].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -692,7 +692,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>LIBERMAN, Mark and Geoffrey PULLUM. <em>Language Log</em>. University of Pennsylvania. 2003&#x2013;. https://languagelog.ldc.upenn.edu/nll/. [viewed: September 3, 2019].</formattedref>
+      <formattedref>LIBERMAN, Mark and Geoffrey PULLUM. <em>Language Log</em>. University of Pennsylvania. 2003&#x2013;. <link target="https://languagelog.ldc.upenn.edu/nll/">https://languagelog.ldc.upenn.edu/nll/</link>. [viewed: September 3, 2019].</formattedref>
 
     OUTPUT
     p = Relaton::Render::General.new
@@ -725,7 +725,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em>. Preprint. 2012. https://eprints.soton.ac.uk/338797/. [viewed: June 24, 2020].</formattedref>
+      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em>. Preprint. 2012. <link target="https://eprints.soton.ac.uk/338797/">https://eprints.soton.ac.uk/338797/</link>. [viewed: June 24, 2020].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -757,7 +757,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>JENKINS and Janne RUOSTEKOSKI. Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice. 2012.</formattedref>
+      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em>. 2012.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -788,9 +788,59 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em>. Preprint. June 2020. https://eprints.soton.ac.uk/338797/. [viewed: June 2020].</formattedref>
+      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em>. Preprint. June 2020. <link target="https://eprints.soton.ac.uk/338797/">https://eprints.soton.ac.uk/338797/</link>. [viewed: June 2020].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
+  it "renders empty reference" do
+    input = <<~INPUT
+      <bibitem type="misc">
+        <medium>
+          <genre>preprint</genre>
+        </medium>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+    OUTPUT
+    p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
+  it "remove initial full stop" do
+    input = <<~INPUT
+      <bibitem type="misc">
+        <title format='text/plain'>Cereals and cereal products</title>
+        <medium>
+          <genre>preprint</genre>
+        </medium>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref><em>Cereals and cereal products</em>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
+  it "picks right language for title" do
+    input = <<~INPUT
+      <bibitem type="misc">
+        <title format='text/plain' language="fr">Céréales et production céréalière</title>
+        <title format='text/plain' language="de">Getreide und Getreideproduktion</title>
+        <medium>
+          <genre>preprint</genre>
+        </medium>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref><em>Getreide und Getreideproduktion</em>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new(language: "de")
     expect(p.render(input))
       .to be_equivalent_to output
   end

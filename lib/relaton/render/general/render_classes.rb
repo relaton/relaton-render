@@ -5,7 +5,7 @@ module Relaton
          standard unpublished map electronic_resource audiovisual film video
          broadcast software graphic_work music patent inbook incollection
          inproceedings journal website webresource dataset archival social_media
-         alert message conversation misc).freeze
+         alert message conversation misc internal).freeze
 
     class General
       singleton_class.send(:attr_reader, :descendants)
@@ -121,6 +121,9 @@ module Relaton
     end
 
     class Misc < General
+    end
+
+    class Internal < General
     end
   end
 end

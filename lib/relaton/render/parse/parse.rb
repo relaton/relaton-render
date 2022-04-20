@@ -6,7 +6,10 @@ require_relative "parse_extract"
 module Relaton
   module Render
     class Parse
-      def initialize; end
+      def initialize(options)
+        @lang = options[:lang] || "en"
+        @script = options[:script] || "Latn"
+      end
 
       def extract(doc)
         host = host(doc)
@@ -19,7 +22,7 @@ module Relaton
         creators, role = creatornames(doc)
         { type: type(doc), title: title(doc), extent_raw: extent(doc),
           size_raw: size(doc),
-          standardidentifier: standardidentifier(doc), uri: uri(doc),
+          standardidentifier: standardidentifier(doc), uri_raw: uri(doc),
           status: status(doc), creators: creators, role_raw: role }
       end
 

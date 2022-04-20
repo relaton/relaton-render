@@ -63,7 +63,9 @@ module Relaton
         def template_clean(str)
           str = str.gsub(/&#x3c;/i, LT_DELIM).gsub(/&#x3e;/i, GT_DELIM)
           str = template_clean1(@htmlentities.decode(str))
-          str.strip.gsub(/#{LT_DELIM}/o, "&#x3c;").gsub(/#{GT_DELIM}/o, "&#x3e;")
+          /[[:alnum:]]/.match?(str) or return nil
+          str.strip.gsub(/#{LT_DELIM}/o, "&#x3c;")
+            .gsub(/#{GT_DELIM}/o, "&#x3e;")
             .gsub(/&(?!#\S+?;)/, "&#x26;")
         end
 
@@ -76,6 +78,7 @@ module Relaton
             .gsub(/([,:;]\s*)+(,(\s|$))/, "\\2")
             .gsub(/(:\s+)(&\s)/, "\\2")
             .gsub(/\s+([,.:;)])/, "\\1")
+            .sub(/^\s*[,.:;]\s*/, "")
             .gsub(/_/, " ")
             .gsub(/#{NON_SPACING_DELIM}/o, "").gsub(/\s+/, " ")
         end

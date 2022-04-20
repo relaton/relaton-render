@@ -5,10 +5,13 @@ module Relaton
         doc.relation.detect { |r| r.type == "includedIn" }&.bibitem
       end
 
+      # TODO : first is naive choice
       def title(doc)
-        return nil if doc.nil?
+        return nil if doc.nil? || doc.title.empty?
 
-        doc.title.first.title.content
+        t = doc.title.select { |x| x.title.language&.include? @lang }
+        t.empty? and t = doc.title
+        t.first&.title&.content
       end
 
       def medium(doc, host)
@@ -153,8 +156,6 @@ module Relaton
         return nil unless iter = doc&.status&.iteration
 
         iter
-        # iter.to_i.localize.to_rbnf_s("SpelloutRules",
-        #                             "spellout-ordinal").capitalize
       end
 
       def status(doc)

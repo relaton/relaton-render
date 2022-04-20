@@ -38,7 +38,7 @@ module Relaton
 
       def root_initalize(opt)
         i18n_initialize(opt)
-        @parse = @parseklass.new
+        @parse = @parseklass.new(lang: @lang, script: @script)
         @nametemplate = @nametemplateklass
           .new(template: opt["nametemplate"], i18n: @i18n)
         @seriestemplate = @seriestemplateklass
@@ -106,7 +106,7 @@ module Relaton
         f = doc.formattedref and
           return embedded ? f.children.to_xml : doc.to_xml
 
-        ret = parse1(doc)
+        ret = parse1(doc) or return nil
         embedded and return ret
         "<formattedref>#{ret}</formattedref>"
       end
