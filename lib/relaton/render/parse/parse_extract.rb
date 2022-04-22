@@ -11,7 +11,9 @@ module Relaton
 
         t = doc.title.select { |x| x.title.language&.include? @lang }
         t.empty? and t = doc.title
-        t.first&.title&.content
+        t1 = t.select { |x| x.type == "main" }
+        t1.empty? and t1 = t
+        t1.first&.title&.content
       end
 
       def medium(doc, host)

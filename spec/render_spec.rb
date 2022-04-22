@@ -827,11 +827,13 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
-  it "picks right language for title" do
+  it "picks right language and type for title" do
     input = <<~INPUT
       <bibitem type="misc">
-        <title format='text/plain' language="fr">Céréales et production céréalière</title>
-        <title format='text/plain' language="de">Getreide und Getreideproduktion</title>
+        <title format='text/plain' type="alt" language="fr">Céréales et production céréalière 1</title>
+        <title format='text/plain' type="main" language="fr">Céréales et production céréalière</title>
+        <title format='text/plain' type="alt" language="de">Getreide und Getreideproduktion 1</title>
+        <title format='text/plain' type="main" language="de">Getreide und Getreideproduktion</title>
         <medium>
           <genre>preprint</genre>
         </medium>
