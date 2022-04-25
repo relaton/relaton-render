@@ -24,6 +24,7 @@ module Relaton
           .each do |k|
           hash[k[0]] = nameformat(hash[k[1]])
         end
+        hash[:publisher_abbrev] = hash[:publisher_abbrev_raw]&.join(", ")
       end
 
       def role_fields_format(hash)

@@ -48,17 +48,20 @@ module Relaton
         [cr.map { |x| extractname(x) }, contributor_role(cr)]
       end
 
+      def creatornames_roles_allowed
+        %w(author performer adapter translator editor publisher distributor)
+      end
+
       def creatornames1(doc)
         cr = []
         return [] if doc.nil?
 
-        %w(author performer adapter translator editor publisher distributor)
-          .each do |r|
-            add = pick_contributor(doc, r)
-            next if add.nil?
+        creatornames_roles_allowed.each do |r|
+          add = pick_contributor(doc, r)
+          next if add.nil?
 
-            cr = add and break
-          end
+          cr = add and break
+        end
         cr.nil? and cr = doc.contributor
         cr
       end
@@ -99,6 +102,27 @@ module Relaton
         ret = doc.date.detect { |x| x.type == "accessed" }
         host and ret ||= host.date.detect { |x| x.type == "accessed" }
         datepick(ret)
+      end
+
+      def publisher(doc, host)
+        x = pick_contributor(doc, "publisher")
+        host and x ||= pick_contributor(host, "publisher")
+        x.nil? and return nil
+        x.map { |c| extractname(c) }
+      end
+
+      def publisher_abbrev(doc, host)
+        x = pick_contributor(doc, "publisher")
+        host and x ||= pick_contributor(host, "publisher")
+        x.nil? and return nil
+        x.map { |c| c.entity.abbreviation&.content }
+      end
+
+      def distributor(doc, host)
+        x = pick_contributor(doc, "distributor")
+        host and x ||= pick_contributor(host, "distributor")
+        x.nil? and return nil
+        x.map { |c| extractname(c) }
       end
     end
   end

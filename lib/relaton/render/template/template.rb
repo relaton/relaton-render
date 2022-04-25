@@ -79,6 +79,7 @@ module Relaton
             .gsub(/(:\s+)(&\s)/, "\\2")
             .gsub(/\s+([,.:;)])/, "\\1")
             .sub(/^\s*[,.:;]\s*/, "")
+            .sub(/[,:;]\s*$/, "")
             .gsub(/_/, " ")
             .gsub(/#{NON_SPACING_DELIM}/o, "").gsub(/\s+/, " ")
         end
@@ -133,9 +134,9 @@ module Relaton
         end
 
         def template_select_etal(names)
-          if @etal_count && names.size >= @etal_count
+          if @etal_count && names[:surname].size >= @etal_count
             @template[:etal]
-          else expand_nametemplate(@template_raw[:more], names.size)
+          else expand_nametemplate(@template_raw[:more], names[:surname].size)
           end
         end
 

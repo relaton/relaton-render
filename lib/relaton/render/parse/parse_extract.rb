@@ -43,20 +43,6 @@ module Relaton
         x.map(&:name)
       end
 
-      def publisher(doc, host)
-        x = pick_contributor(doc, "publisher")
-        host and x ||= pick_contributor(host, "publisher")
-        x.nil? and return nil
-        x.map { |c| extractname(c) }
-      end
-
-      def distributor(doc, host)
-        x = pick_contributor(doc, "distributor")
-        host and x ||= pick_contributor(host, "distributor")
-        x.nil? and return nil
-        x.map { |c| extractname(c) }
-      end
-
       def series(doc)
         doc.series.detect { |s| s.type == "main" } ||
           doc.series.detect { |s| s.type.nil? } ||
@@ -103,7 +89,7 @@ module Relaton
 
       def uri(doc)
         uri = nil
-        %i(doi uri src).each do |t|
+        %w(doi uri src).each do |t|
           uri = doc.link.detect { |u| u.type == t } and break
         end
         uri ||= doc.link.first

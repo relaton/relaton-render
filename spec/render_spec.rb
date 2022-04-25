@@ -298,6 +298,7 @@ RSpec.describe Relaton::Render do
               <role type="publisher"/>
               <organization>
                 <name>Cambridge University Press</name>
+                <abbreviation>CUP</abbreviation>
               </organization>
             </contributor>
             <place>Cambridge, UK</place>
@@ -305,11 +306,11 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>Aluffi, P., D. Anderson, M. S. Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, first edition. Cambridge, UK.</formattedref>
+      <formattedref>Aluffi, P., D. Anderson, M. S. Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, first edition. Cambridge, UK: CUP.</formattedref>
     OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ,_{{role}} ({{date}}) . <em>{{ title }}</em> [{{medium}}] ,_{{ edition }} .
-      {{ place }}. {{ uri }}. At:_{{ access_location }}.
+      {{ place }} : {{ publisher_abbrev }} . {{ uri }}. At:_{{ access_location }}.
     TEMPLATE
     etal = <<~TEMPLATE
       {{surname[0] }}, {{initials[0] | join: ". " | append: "." }}, {{initials[1]  | join: ". " | append: "." }} {{surname[1] }}, {{initials[2]  | join: ". " | append: "." }} {{surname[2] }} <em>et al.</em>
