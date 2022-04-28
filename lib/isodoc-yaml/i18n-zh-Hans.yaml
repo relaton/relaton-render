@@ -8,8 +8,10 @@ date:
   month_year: yMMMM
   day_month_year: to_long_s
   date_time: to_long_s
-edition_number: ["OrdinalRules", "digits-ordinal"]
-edition: "第%版"
+ordinal_keys: []
+OrdinalRules: digits-ordinal
+edition_ordinal: "第%Ordinal版"
+edition: 版
 draft: "草案%"
 editor:
   sg: 编辑

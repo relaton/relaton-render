@@ -10,7 +10,7 @@ module Relaton
     class General
       attr_reader :template, :journaltemplate, :seriestemplate, :nametemplate,
                   :extenttemplate, :sizetemplate, :lang, :script, :i18n,
-                  :edition, :edition_number, :date
+                  :edition, :edition_ordinal, :date
 
       def initialize(opt = {})
         options = read_config.merge(Utils::string_keys(opt))
@@ -53,7 +53,7 @@ module Relaton
         @lang = opt["language"]
         @script = opt["script"]
         @i18n = i18n_klass(opt["language"], opt["script"])
-        @edition_number = opt["edition_number"] || @i18n.edition_number
+        @edition_ordinal = opt["edition_ordinal"] || @i18n.edition_ordinal
         @edition = opt["edition"] || @i18n.edition
         @date = opt["date"] || @i18n.date
       end

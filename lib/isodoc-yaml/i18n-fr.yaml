@@ -8,8 +8,14 @@ date:
   month_year: yMMMM
   day_month_year: to_long_s
   date_time: to_long_s
-edition_number: ["OrdinalRules", "digits-ordinal-feminine"]
-edition: "% édition"
+ordinal_keys: [gender,number]
+OrdinalRules:
+  m.sg: digits-ordinal-masculine
+  f.sg: digits-ordinal-feminine
+  m.pl: digits-ordinal-masculine-plural
+  f.pl: digits-ordinal-feminine-plural
+edition_ordinal: "%Ordinal édition"
+edition: édition
 draft: "brouillon %"
 editor:
   sg: éd.
@@ -28,3 +34,7 @@ size:
   volume:
     sg: "% vol."
     pl: "% vol."
+inflection:
+  édition:
+    gender: f
+

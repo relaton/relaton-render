@@ -98,10 +98,20 @@ module Relaton
       def editionformat(edn)
         return edn unless /^\d+$/.match?(edn)
 
-        num = edn
-        @r.edition_number and num = edn.to_i.localize(tw_cldr_lang)
-          .to_rbnf_s(*@r.edition_number)
-        @r.edition.sub(/%/, num)
+        num = edition_translate1(edn.to_i)
+        @r.edition_ordinal.sub(/%(Spellout|Ordinal)?/, num)
+      end
+
+      def edition_translate1(num)
+        ruleset = case @r.i18n.edition_ordinal
+                  when /%Spellout/ then "SpelloutRules"
+                  when /%Ordinal/ then "OrdinalRules"
+                  else "Digit"
+                  end
+        ruleset == "Digit" and return num.to_s
+        ed = HTMLEntities.new.decode(@r.i18n.edition)
+        @r.i18n.inflect_ordinal(num, @r.i18n.inflection&.dig(ed) || {},
+                                ruleset)
       end
 
       def draftformat(num, _hash)

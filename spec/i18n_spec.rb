@@ -73,7 +73,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>RAMSEY, J. K. و W. C. MCGREW. Object play in great apes: Studies in nature and captivity. في: PELLEGRINI, Anthony D. و Peter K. SMITH (محرران): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. ؜الطبعة؜ ٣.؜؜. New York, NY: Guilford Press. 2005. ؜89–112 ص؜. [ينظر: 3 سبتمبر 2019].</formattedref>
+      <formattedref>RAMSEY, J. K. و W. C. MCGREW. Object play in great apes: Studies in nature and captivity. في: PELLEGRINI, Anthony D. و Peter K. SMITH (محرران): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. ؜الطبعة؜ ٣.؜. New York, NY: Guilford Press. 2005. ؜89–112 ص؜. [ينظر: 3 سبتمبر 2019].</formattedre
     OUTPUT
     p = Relaton::Render::General.new(language: "ar")
     expect(HTMLEntities.new.decode(p.render(input)))

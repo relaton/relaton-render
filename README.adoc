@@ -35,8 +35,7 @@ The parameters are:
 `journaltemplate`:: template for rendering journals in article citations
 `extenttemplate`:: templates for rendering extents
 `sizetemplate`:: templates for rendering sizes
-`edition_number`:: override formatting of edition number
-`edition`:: override formatting of edition 
+`edition_ordinal`:: override formatting of edition with ordinal
 `date`:: default date format (from Twitter CLDR)
 
 == Configuration

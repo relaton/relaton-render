@@ -9,7 +9,9 @@ date:
   day_month_year: to_long_s
   date_time: to_long_s
 draft: "Entwurf %"
-edition: "% Aufl."
+edition_ordinal: "% Aufl."
+ordinal_keys: []
+edition: Auflage
 editor:
   sg: Hrsg.
   pl: Hrsg.
@@ -27,3 +29,7 @@ size:
   volume:
     sg: "% Bd."
     pl: "% Bde."
+inflection:
+  Auflage:
+    gender: f
+

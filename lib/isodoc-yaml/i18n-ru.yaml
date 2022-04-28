@@ -8,8 +8,16 @@ date:
   month_year: yMMMM
   day_month_year: to_long_s
   date_time: to_long_s
-edition_number: ["SpelloutRules", "spellout-ordinal-neuter"]
-edition: "% издание"
+ordinal_keys: [gender,number]
+SpelloutRules:
+  m.sg: spellout-ordinal-masculine
+  f.sg: spellout-ordinal-feminine
+  n.sg: spellout-ordinal-neuter
+  m.pl: spellout-ordinal-plural
+  f.pl: spellout-ordinal-plural
+  n.pl: spellout-ordinal-plural
+edition_ordinal: "%Spellout издание"
+edition: издание
 draft: "проект %"
 editor:
   sg: изд.
@@ -28,4 +36,7 @@ size:
   volume:
     sg: "% т."
     pl: "% тт."
+inflection:  
+  издание:
+    gender: n
 
