@@ -80,7 +80,8 @@ module Relaton
             .gsub(/\s+([,.:;)])/, "\\1")
             .sub(/^\s*[,.:;]\s*/, "")
             .sub(/[,:;]\s*$/, "")
-            .gsub(/_/, " ")
+            .gsub(/(?<!\\)_/, " ")
+            .gsub(/\\_/, "_")
             .gsub(/#{NON_SPACING_DELIM}/o, "").gsub(/\s+/, " ")
         end
 

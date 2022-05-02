@@ -132,6 +132,7 @@ The Liquid template surrounds each field by preceding and following punctuation.
 * If fields are not space-delimited, this is indicated by inserting `|`. So `{{ title }}|{{ medium}}` is two fields, rendered with no space separation.
 * If the field is empty, its surrounding markup is also removed. So if there is no medium, then `[{{medium}}]` is not rendered, and the brackets will be stripped.
 * Underscore is treated as space, attaching to the preceding or following field. So `,_{{ edition }}_{{ labels['edition'] }}` is treated as the one field.
+* Underscore is escaped by \. So `<span_class="std\_note">` maps to `<span class="std_note">`.
 * If punctuation is space delimited, it is inserted regardless of preceding content. So `{{ creatornames }} ({{date}}) .` will insert the full stop whether or not the date is present.
 * Space between punctuation and before punctuation is automatically removed.
 

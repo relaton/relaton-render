@@ -326,6 +326,49 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
+  it "processes underscore" do
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <docidentifier type="ISBN">9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <date type="accessed"><on>2022-04-02</on></date>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+          </person>
+        </contributor>
+        <edition>1</edition>
+        <series>
+        <title>London Mathematical Society Lecture Note Series</title>
+        <number>472</number>
+        </series>
+            <contributor>
+              <role type="publisher"/>
+              <organization>
+                <name>Cambridge University Press</name>
+                <abbreviation>CUP</abbreviation>
+              </organization>
+            </contributor>
+            <place>Cambridge, UK</place>
+          <size><value type="page">lxii</value><value type="page">500</value></size>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>ALUFFI, Paolo, ed. (2022). <em><span class="std_class">Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</span></em>, 1st edition. Cambridge, UK: CUP.</formattedref>
+    OUTPUT
+    template = <<~TEMPLATE
+      {{ creatornames }} ,_{{role}} ({{date}}) . <em><span_class="std\\_class">{{ title }}</span></em> [{{medium}}] ,_{{ edition }} .
+      {{ place }} : {{ publisher_abbrev }} . {{ uri }}. At:_{{ access_location }}.
+    TEMPLATE
+    p = Relaton::Render::General
+      .new(template: { book: template }, language: "en")
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
   it "reuses templates from one type to another" do
     input = <<~INPUT
       <bibitem type="book">
