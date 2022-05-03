@@ -110,7 +110,7 @@ module Relaton
                   end
         ruleset == "Digit" and return num.to_s
         ed = HTMLEntities.new.decode(@r.i18n.edition)
-        @r.i18n.inflect_ordinal(num, @r.i18n.inflection&.dig(ed) || {},
+        @r.i18n.inflect_ordinal(num, @r.i18n.get["inflection"]&.dig(ed) || {},
                                 ruleset)
       end
 
