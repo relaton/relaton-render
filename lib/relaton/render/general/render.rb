@@ -55,7 +55,7 @@ module Relaton
           i18n_klass(opt["language"], opt["script"], opt["i18nhash"])
         @edition_ordinal = opt["edition_ordinal"] || @i18n.edition_ordinal
         @edition = opt["edition"] || @i18n.edition
-        @date = opt["date"] || @i18n.date
+        @date = opt["date"] || @i18n.date_formats
       end
 
       def render_initialize(opt)

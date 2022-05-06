@@ -4,7 +4,7 @@ and: y
 updated: actualizado
 viewed: visto
 version: versión
-date:
+date_formats:
   month_year: yMMMM
   day_month_year: to_long_s
   date_time: to_long_s
