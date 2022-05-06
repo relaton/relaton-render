@@ -37,6 +37,7 @@ The parameters are:
 `sizetemplate`:: templates for rendering sizes
 `edition_ordinal`:: override formatting of edition with ordinal
 `date`:: default date format (from Twitter CLDR)
+`i18nhash`:: Metanorma internationalisation hash
 
 == Configuration
 

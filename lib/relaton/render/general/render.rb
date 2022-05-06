@@ -19,7 +19,6 @@ module Relaton
         root_initalize(options)
         render_initialize(options)
         @parse ||= options["parse"]
-        @i18n ||= options["i18n"]
       end
 
       def read_config
@@ -52,7 +51,8 @@ module Relaton
       def i18n_initialize(opt)
         @lang = opt["language"]
         @script = opt["script"]
-        @i18n = i18n_klass(opt["language"], opt["script"])
+        @i18n = opt["i18n"] ||
+          i18n_klass(opt["language"], opt["script"], opt["i18nhash"])
         @edition_ordinal = opt["edition_ordinal"] || @i18n.edition_ordinal
         @edition = opt["edition"] || @i18n.edition
         @date = opt["date"] || @i18n.date
@@ -91,8 +91,8 @@ module Relaton
         "{{creatornames}}. {{title}}. {{date}}."
       end
 
-      def i18n_klass(lang = "en", script = "Latn")
-        ::IsoDoc::RelatonRenderI18n.new(lang, script)
+      def i18n_klass(lang = "en", script = "Latn", i18nhash = nil)
+        ::IsoDoc::RelatonRenderI18n.new(lang, script, i18nhash: i18nhash)
       end
 
       def render(bib, embedded: false)
