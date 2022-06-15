@@ -115,7 +115,10 @@ module Relaton
         x = pick_contributor(doc, "publisher")
         host and x ||= pick_contributor(host, "publisher")
         x.nil? and return nil
-        x.map { |c| c.entity.abbreviation&.content }
+        x.map do |c|
+          c.entity.abbreviation&.content ||
+            c.entity.name.first&.content
+        end
       end
 
       def distributor(doc, host)
