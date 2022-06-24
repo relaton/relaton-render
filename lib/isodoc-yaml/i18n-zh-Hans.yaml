@@ -23,6 +23,9 @@ extent:
   volume:
     sg: "第%卷"
     pl: "第%卷"
+  issue:
+    sg: "第%期"
+    pl: "第%期"
 size:
   page:
     sg: "%页"
@@ -30,3 +33,6 @@ size:
   volume:
     sg: "%卷"
     pl: "%卷"
+  issue:
+    sg: "%期"
+    pl: "%期"

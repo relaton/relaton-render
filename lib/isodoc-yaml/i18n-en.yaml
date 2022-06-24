@@ -23,6 +23,9 @@ extent:
   volume:
     sg: "vol. %"
     pl: "vols. %"
+  issue:
+    sg: "no. %"
+    pl: "nos. %"
 size:
   page:
     sg: "% p."
@@ -30,4 +33,6 @@ size:
   volume:
     sg: "% vol."
     pl: "% vols."
-
+  issue:
+    sg: "% no."
+    pl: "% nos."

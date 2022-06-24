@@ -15,12 +15,12 @@ extenttemplate:
   standard: book
   techreport: book
   inbook: "{{ volume }}: {{ page }}"
-  misc: "{{ volume }}, {{ page }}, {{ duration }}"
+  misc: "{{ volume }} {{issue}} , {{ page }}, {{ duration }}"
 sizetemplate:
   dataset: "{{ data }}"
   electronic resource: dataset
   webresource: dataset
-  misc: "{{ volume }}, {{ page }}, {{ data }}, {{ duration }}"
+  misc: "{{ volume }}, {{ issue }}, {{ page }}, {{ data }}, {{ duration }}"
 language: en
 script: Latn
 template:

@@ -223,11 +223,11 @@ The extent of a bibliographic item may be expressed differently depending on the
 
 To capture this, a separate template is supplied under `extenttemplate` for each bibliographic item type. For those types where none is supplied, the template given for `misc` is used as the default. 
 
-The template draws on the defined types of locality of extents; the most common of these is `page` and `volume`. Locality types are the fields used in the Liquid templates; for example:
+The template draws on the defined types of locality of extents; the most common of these is `volume`, `issue` (within volume; "number" for journals), and `page`. Locality types are the fields used in the Liquid templates; for example:
 
 ....
 {
-  article: "{{ volume_raw }}: {{ page_raw }}"
+  article: "{{ volume_raw }}|({{ issue_raw }}) : {{ page_raw }}"
   misc: "{{ volume }}, {{ page }}"
 }
 ....
@@ -237,7 +237,7 @@ The internationalisation files define a singular and a plural version of the loc
 * The plural label is always used if the extent is a range (with a `<from>` and `<to>`). 
 * The singular label is used if the extent is not a range (_pp. 2–4_ vs. _p. 3_).
 * The internationalisation files include a slot where the number or number range is inserted, indicated by `%`, since this varies by language. (For instance, English has `pp. %`,  whereas Chinese has `第%页`.) 
-* The number of the volume or page, without accompanying labels, is given in `volume_raw` and `page_raw`.
+* The number of the volume, issue/number, or page, without accompanying labels, is given in `volume_raw`, `issue_raw`, and `page_raw`.
 
 === Size template
 
@@ -252,6 +252,8 @@ The template draws on the defined types of locality of extents; the following ar
 
 | volume  | ./medium/size[@type = 'volume'] | With internationalisation of label
 | volume_raw  | ./medium/size[@type = 'volume'] |
+| issue  | ./medium/size[@type = 'issue'] | With internationalisation of label
+| issue_raw  | ./medium/size[@type = 'issue'] |
 | page  | ./medium/size[@type = 'page'] | With internationalisation of label
 | page_raw  | ./medium/size[@type = 'page'] |
 | data  | ./medium/size[@type = 'data'] | Unit of size is included in value

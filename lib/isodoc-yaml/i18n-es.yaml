@@ -25,6 +25,9 @@ extent:
   volume:
     sg: "vol. %"
     pl: "vols. %"
+  issue:
+    sg: "núm. %"
+    pl: "núms. %"
 size:
   page:
     sg: "% pág."
@@ -32,6 +35,10 @@ size:
   volume:
     sg: "% vol."
     pl: "% vols."
+issue:
+    sg: "% núm."
+    pl: "% núms."
+
 inflection:
   edición:
     gender: f

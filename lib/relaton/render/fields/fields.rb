@@ -133,7 +133,7 @@ module Relaton
       end
 
       def extentformat1(key, val, hash, norm_hash)
-        if %i(volume page).include?(key)
+        if %i(volume issue page).include?(key)
           hash["#{key}_raw".to_sym] = norm_hash[key]
           hash[key] = pagevolformat(norm_hash[key], val, key.to_s, false)
         end
@@ -164,6 +164,9 @@ module Relaton
         when "volume"
           hash[:volume_raw] = val
           hash[:volume] = pagevolformat(val, nil, "volume", true)
+        when "issue"
+          hash[:issue_raw] = val
+          hash[:issue] = pagevolformat(val, nil, "issue", true)
         when "page"
           hash[:page_raw] = val
           hash[:page] = pagevolformat(val, nil, "page", true)

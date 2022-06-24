@@ -587,6 +587,7 @@ RSpec.describe Relaton::Render do
             <extent>
                 <localityStack>
                   <locality type="volume"><referenceFrom>1</referenceFrom></locality>
+                  <locality type="issue"><referenceFrom>7</referenceFrom></locality>
         <locality type="page">
           <referenceFrom>89</referenceFrom>
           <referenceTo>112</referenceTo>
@@ -596,7 +597,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. <em>London Mathematical Society Lecture Note Series</em> (N.S.). 1st edition. vol. 1, pp. 89–112. Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831.</formattedref>
+      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. <em>London Mathematical Society Lecture Note Series</em> (N.S.). 1st edition. vol. 1 no. 7, pp. 89–112. Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))

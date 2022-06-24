@@ -22,6 +22,9 @@ extent:
   volume:
     sg: "Bd. %"
     pl: "Bde. %"
+  issue:
+    sg: "Nr. %"
+    pl: "Nr. %"
 size:
   page:
     sg: "% S."
@@ -29,6 +32,9 @@ size:
   volume:
     sg: "% Bd."
     pl: "% Bde."
+  issue:
+    sg: "% Nr."
+    pl: "% Nr."
 inflection:
   Auflage:
     gender: f

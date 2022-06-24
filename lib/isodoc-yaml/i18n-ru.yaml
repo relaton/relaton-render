@@ -29,6 +29,10 @@ extent:
   volume:
     sg: "т. %"
     pl: "тт. %"
+  issue:
+    sg: "шт. %"
+    pl: "шт. %"
+
 size:
   page:
     sg: "% стр."
@@ -36,6 +40,9 @@ size:
   volume:
     sg: "% т."
     pl: "% тт."
+  issue:
+    sg: "% шт."
+    pl: "% шт."
 inflection:  
   издание:
     gender: n
