@@ -99,6 +99,7 @@ drawn from the bibliographic item:
 | title   | ./title | | |
 | edition | ./edition | | Y | If numeric value, is given internationalised rendering of "nth edition", as set in edition_numbering. Otherwise, the textual content of the tag is given.
 | edition_raw | ./edition | | Y | The strict textual content of the tag is given.
+| edition_num | ./edition[@number] | | Y | 
 | medium  | ./medium | | Y |
 | place   | ./place | | Y |
 | publisher | ./contributor[role/@type = 'publisher']/organization/name | | Y | 

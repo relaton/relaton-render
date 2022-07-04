@@ -33,7 +33,11 @@ module Relaton
       end
 
       def edition(doc, host)
-        doc.edition || host&.edition
+        doc.edition&.content || host&.edition&.content
+      end
+
+      def edition_num(doc, host)
+        doc.edition&.number || host&.edition&.number
       end
 
       def place(doc, host)

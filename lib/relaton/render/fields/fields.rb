@@ -34,7 +34,7 @@ module Relaton
       end
 
       def edition_fields_format(hash)
-        hash[:edition] = editionformat(hash[:edition_raw])
+        hash[:edition] = editionformat(hash[:edition_raw], hash[:edition_num])
         hash[:draft] = draftformat(hash[:draft_raw], hash)
       end
 
@@ -95,11 +95,11 @@ module Relaton
         @r.i18n.get[role][number] || role
       end
 
-      def editionformat(edn)
-        return edn unless /^\d+$/.match?(edn)
+      def editionformat(edn, num)
+        return edn unless num || /^\d+$/.match?(edn)
 
-        num = edition_translate1(edn.to_i)
-        @r.edition_ordinal.sub(/%(Spellout|Ordinal)?/, num)
+        ret = edition_translate1(num || edn.to_i)
+        @r.edition_ordinal.sub(/%(Spellout|Ordinal)?/, ret)
       end
 
       def edition_translate1(num)
