@@ -25,6 +25,7 @@ module Relaton
           hash[k[0]] = nameformat(hash[k[1]])
         end
         hash[:publisher_abbrev] = hash[:publisher_abbrev_raw]&.join(", ")
+        hash[:authorcite] = authorciteformat(hash[:creators])
       end
 
       def role_fields_format(hash)
@@ -85,6 +86,19 @@ module Relaton
           end
         end
         @r.nametemplate.render(names_out)
+      end
+
+      def authorciteformat(names)
+        return names if names.nil?
+
+        parts = %i(surname initials given middle nonpersonal)
+        names_out = names.each_with_object({}) do |n, m|
+          parts.each do |i|
+            m[i] ||= []
+            m[i] << n[i]
+          end
+        end
+        @r.authorcitetemplate.render(names_out)
       end
 
       def role_inflect(contribs, role)
