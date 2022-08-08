@@ -4,6 +4,8 @@ and: 和
 updated: 更新
 viewed: 看过
 version: 版本
+no_date: 无日期
+no_place: 无出版地
 date_formats:
   month_year: yMMMM
   day_month_year: to_long_s

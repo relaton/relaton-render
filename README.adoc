@@ -15,11 +15,19 @@ input = "<bibitem type='...'>....</bibitem>"
 
 r = Relaton::Render::General.new(template: ..., nametemplate: ..., seriestemplate: ..., language: "en", script: "Latn")
 
-r.render(input)
+r.render(input) == "Author1 and Author2 2000. Title &c."
 
 bibliography = "<references><bibitem id=''>...</bibitem>...<bibitem id=''>...</bibitem></references>"
 
-r.render_all(bibliography, type: "author-cite")
+r.render_all(bibliography, type: "author-cite") ==
+
+{ bibitem["id"] :
+  { author: "Author1 and Author2",
+    date: "2000a",
+    citation: "Author1 and Author2 2000a",
+    formattedref: "Author1 and Author2 2000a. Title &c."
+  }
+}
 ----
 
 The gem processes either Relaton XML, or native Relaton classes.

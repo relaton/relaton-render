@@ -16,9 +16,6 @@ module Relaton
       end
 
       def name_fields_format(hash)
-        hash[:place] = nameformat(hash[:place_raw]&.map do |x|
-                                    { nonpersonal: x }
-                                  end)
         [%i(creatornames creators), %i(host_creatornames host_creators),
          %i(publisher publisher_raw), %i(distributor distributor_raw)]
           .each do |k|
@@ -26,6 +23,12 @@ module Relaton
         end
         hash[:publisher_abbrev] = hash[:publisher_abbrev_raw]&.join(", ")
         hash[:authorcite] = authorciteformat(hash[:creators])
+        place_format(hash)
+      end
+
+      def place_format(hash)
+        hash[:place] =
+          nameformat(hash[:place_raw].map { |x| { nonpersonal: x } })
       end
 
       def role_fields_format(hash)
@@ -52,6 +55,8 @@ module Relaton
         [%i(date date), %i(date_updated date_updated),
          %i(date_accessed date_accessed)].each do |k|
           hash[k[0]] = dateformat(hash[k[1]], hash)
+          k[0] == :date and
+            hash[k[0]] ||= @r.i18n.get["no_date"]
         end
       end
 

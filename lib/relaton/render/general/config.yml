@@ -31,12 +31,12 @@ sizetemplate:
 language: en
 script: Latn
 template:
-  book: "{{ creatornames }} ({{role}}) . <em>{{ title }}</em> [{{medium}}] . {{ edition | capitalize_first }}. ({{ series }}.) {{place}}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]. {{size}}. {{extent}}."
+  book: "{{ creatornames }} ({{role}}) . <em>{{ title }}</em> [{{medium}}] . {{ edition | capitalize_first }}. ({{ series }}.) {% if place %}{{place}}{%else%}{{ labels['no_place']}}{%endif%}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]. {{size}}. {{extent}}."
     # TODO: omitted: author ids, subsidiary titles, subsidiary creators, rights metadata, distributor, item attributes, relationships
   booklet: book
   manual: book
   proceedings: book
-  inbook: "{{ creatornames }} ({{role}}) . {{ title }} . {{ labels['in'] | capitalize }}: {{ host_creatornames}} ({{ host_role}}) : <em>{{host_title}}</em> [{{medium}}] . {{ edition | capitalize_first }}. ({{ series }}.) {{place}}: {{publisher}}. {{date}}. {{size}}. {{extent}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]."
+  inbook: "{{ creatornames }} ({{role}}) . {{ title }} . {{ labels['in'] | capitalize }}: {{ host_creatornames}} ({{ host_role}}) : <em>{{host_title}}</em> [{{medium}}] . {{ edition | capitalize_first }}. ({{ series }}.) {% if place %}{{place}}{%else%}{{ labels['no_place']}}{%endif%}: {{publisher}}. {{date}}. {{size}}. {{extent}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ standardidentifier | first }}. {{ uri }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. [{{ labels['viewed'] }}:_{{date_accessed}}]."
   inproceedings: inbook
   incollection: inbook
     # TODO: omitted: author ids, additional info for component part, subsidiary titles of host resource, rights metadata, distributor, relationships
