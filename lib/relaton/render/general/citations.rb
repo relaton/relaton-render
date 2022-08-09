@@ -18,7 +18,8 @@ module Relaton
 
       def render1(cit)
         r = @renderer.renderer(cit[:type] || "misc")
-        cit[:formattedref] = @i18n.l10n(r.render(cit[:data_liquid]))
+        cit[:formattedref] =
+          @renderer.valid_parse(@i18n.l10n(r.render(cit[:data_liquid])))
         %i(type data_liquid).each { |x| cit.delete(x) }
         cit
       end

@@ -133,7 +133,12 @@ module Relaton
         data = @parse.extract(doc)
         data_liquid = @fieldsklass.new(renderer: self)
           .compound_fields_format(data)
-        @i18n.l10n(r.render(data_liquid))
+        valid_parse(@i18n.l10n(r.render(data_liquid)))
+      end
+
+      def valid_parse(ret)
+        @i18n.get["no_date"] == ret and return nil
+        ret
       end
 
       # expect array of Relaton objects, in sorted order

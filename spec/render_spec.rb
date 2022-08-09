@@ -848,7 +848,6 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>n.d.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
