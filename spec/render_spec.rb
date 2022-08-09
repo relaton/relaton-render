@@ -121,12 +121,11 @@ RSpec.describe Relaton::Render do
                 <name>Cambridge University Press</name>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
           <size><value type="volume">1</value></size>
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831. 1 vol.</formattedref>
+      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) n.p.: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831. 1 vol.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -865,7 +864,24 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref><em>Cereals and cereal products</em>.</formattedref>
+      <formattedref><em>Cereals and cereal products</em>. n.d.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
+  it "does not insert no date for standards" do
+    input = <<~INPUT
+      <bibitem type="standard">
+        <title format='text/plain'>Cereals and cereal products</title>
+        <medium>
+          <genre>preprint</genre>
+        </medium>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref><em>Cereals and cereal products</em>. Preprint.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -885,7 +901,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref><em>Getreide und Getreideproduktion</em>.</formattedref>
+      <formattedref><em>Getreide und Getreideproduktion</em>. o.J.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new(language: "de")
     expect(p.render(input))

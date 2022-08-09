@@ -13,7 +13,21 @@ a configuration, and generates a https://www.metanorma.org[Metanorma] XML render
 ----
 input = "<bibitem type='...'>....</bibitem>"
 
-Relaton::Render::General.new(template: ..., nametemplate: ..., seriestemplate: ..., language: "en", script: "Latn").render(input)
+r = Relaton::Render::General.new(template: ..., nametemplate: ..., seriestemplate: ..., language: "en", script: "Latn")
+
+r.render(input) == "Author1 and Author2 2000. Title &c."
+
+bibliography = "<references><bibitem id=''>...</bibitem>...<bibitem id=''>...</bibitem></references>"
+
+r.render_all(bibliography, type: "author-cite") ==
+
+{ bibitem["id"] :
+  { author: "Author1 and Author2",
+    date: "2000a",
+    citation: "Author1 and Author2 2000a",
+    formattedref: "Author1 and Author2 2000a. Title &c."
+  }
+}
 ----
 
 The gem processes either Relaton XML, or native Relaton classes.
@@ -31,6 +45,7 @@ The parameters are:
 `script`:: in ISO-15124
 `template`:: templates for rendering different bibliographic types
 `nametemplate`:: templates for rendering personal names
+`authorcitetemplate`:: templates for rendering names for the purpose of author-date citations
 `seriestemplate`:: template for rendering series
 `journaltemplate`:: template for rendering journals in article citations
 `extenttemplate`:: templates for rendering extents
@@ -38,6 +53,42 @@ The parameters are:
 `edition_ordinal`:: override formatting of edition with ordinal
 `date`:: default date format (from Twitter CLDR)
 `i18nhash`:: Metanorma internationalisation hash
+
+== Functionality
+
+=== Rendering single reference
+
+Given an Relaton bibitem object (or equivalent Relaton XML), `render(input)` will output a formatted reference for that
+bibitem, following the rules laid out in the configuration. That output can be inserted into the `<formattedref>` element
+of the bibitem by the calling code, and used as the authoritative rendering of the citation.
+
+This method does not address how the bibliographic item is to be cited, and does not differentiate citations with the same
+author and date. It should not be used for rendering of references aligned to the author-date citation system. 
+
+=== Rendering multiple references
+
+Given a collection of Relaton bibitem objects (or equivalent Relaton XML, wrapped in `<references>`), 
+`render_all(bibliography, type: type)`
+will output a hash of objects, with information to be used both for rendering references, and for generating citations.
+This method addresses the disambiguation of citiations, and changes to rendering of references reflecting that disambiguation.
+For that reason, this method should be used for references using the author-date citation system.
+
+The `type` argument of `render_all` reflects the citation system to be used. 
+
+* If it is set to "author-date", citations with the same author and date will be disambiguated from each other
+by appending a letter to the date, in the order in which they occur in `bibliography`. (That means that any fixed sorting
+of references needs to be applied before the bibliography is presented to the method.)
+* If it is set to nil (as is the default), no such disambiguation occurs.
+
+The hash maps from the anchor of each bibitem (`bibitem/@id`), to an object containing the following fields:
+
+`formattedref`:: the formatted reference, as output by `render(input)`, but with the date of the citation disambiguated
+if called with `type: "author-date"`.
+`citation`:: the citation for the reference (Author-Date if called with `type: "author-date"`; `docidentifier` if called with `type: nil`).
+`author`:: the author designation for the reference (if called with `type: "author-date"`)
+`date`:: the date designation for the reference, with disambiguating letter if necessary (if called with `type: "author-date"`).
+The author and date are differentiated so that consumers can separate them in citations -- e.g. "Jones (1996) claims", 
+"(Jones 1996, 1997)".
 
 == Configuration
 
@@ -110,6 +161,7 @@ drawn from the bibliographic item:
 | access_location | ./accessLocation | | Y |
 | extent | ./extent | Y | | Render with standard abbreviations for pp, vols, with n-dash, with delimiting of multiple locations
 | creatornames | ./contributor[role/@type = 'author'] \| ./contributor[role/@type = 'performer'] \| ./contributor[role/@type = 'adapter'] \| ./contributor[role/@type = 'translator'] \| ./contributor[role/@type = 'editor'] \| ./contributor[role/@type = 'publisher'] \| ./contributor[role/@type = 'distributor'] \| ./contributor | Y | | <<nametemplate,`nametemplate`>> applied to each name; joining template from internationalisation applied to multiple names
+| authorcite | ./contributor[role/@type = 'author'] \| ./contributor[role/@type = 'performer'] \| ./contributor[role/@type = 'adapter'] \| ./contributor[role/@type = 'translator'] \| ./contributor[role/@type = 'editor'] \| ./contributor[role/@type = 'publisher'] \| ./contributor[role/@type = 'distributor'] \| ./contributor | Y | | <<authorcitetemplate,`authorcitetemplate`>> applied to each name; joining template from internationalisation applied to multiple names
 | role | ./contributor[role/description] \| ./contributor[role/@type] | | | 
 | date | ./date[@type = 'issued'] \| ./date[@type = 'circulated'] \| ./date | | Y |
 | date_updated | ./date[@type = 'updated'] | | Y | 
@@ -121,6 +173,8 @@ drawn from the bibliographic item:
 | type | ./@type | |
 | labels | | | text to be looked up in internationalisation configuration files: "edition", "In", "At", "Vol", "Vols", "p.", "pp" 
 |===
+
+Missing dates and places of publication are rendered as "n.d." and "n.p." or the equivalent internationalisation (`no_date`, `no_place` in the internationalisation YAML files.) However, missing dates are left as nil in standards, as undated standards indicate that the citation applies to the latest version of the standard, and not that the date is unknown.
 
 Many fields are populated either by the description of the bibliographic item itself, or by the description of the item containing it (the _host_ item: `./relation[@type = 'includedIn']/bibitem`). For example, in a paper included in an edited volume, the edition will typically be given for the editor volume, rather than for the paper. Those fields are indicated by "Can come from host" in the table.
 
@@ -188,6 +242,12 @@ For example:
 ....
 
 In the case of `more`, the `(name)[1]` entries are repeated for all additional authors above 2 and before the final author.
+
+[[authorcitetemplate]]
+=== Author citation templates
+
+The `authorcitetemplate` is a subclass of the name template, configured for rendering author names for author-date citations.
+That means that it typically selects only surnames for rendering.
 
 [[seriestemplate]]
 === Series template

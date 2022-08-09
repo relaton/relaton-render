@@ -16,15 +16,19 @@ module Relaton
       end
 
       def name_fields_format(hash)
-        hash[:place] = nameformat(hash[:place_raw]&.map do |x|
-                                    { nonpersonal: x }
-                                  end)
         [%i(creatornames creators), %i(host_creatornames host_creators),
          %i(publisher publisher_raw), %i(distributor distributor_raw)]
           .each do |k|
           hash[k[0]] = nameformat(hash[k[1]])
         end
         hash[:publisher_abbrev] = hash[:publisher_abbrev_raw]&.join(", ")
+        hash[:authorcite] = authorciteformat(hash[:creators])
+        place_format(hash)
+      end
+
+      def place_format(hash)
+        hash[:place] =
+          nameformat(hash[:place_raw].map { |x| { nonpersonal: x } })
       end
 
       def role_fields_format(hash)
@@ -51,6 +55,8 @@ module Relaton
         [%i(date date), %i(date_updated date_updated),
          %i(date_accessed date_accessed)].each do |k|
           hash[k[0]] = dateformat(hash[k[1]], hash)
+          k[0] == :date && hash[:type] != "standard" and
+            hash[k[0]] ||= @r.i18n.get["no_date"]
         end
       end
 
@@ -85,6 +91,19 @@ module Relaton
           end
         end
         @r.nametemplate.render(names_out)
+      end
+
+      def authorciteformat(names)
+        return names if names.nil?
+
+        parts = %i(surname initials given middle nonpersonal)
+        names_out = names.each_with_object({}) do |n, m|
+          parts.each do |i|
+            m[i] ||= []
+            m[i] << n[i]
+          end
+        end
+        @r.authorcitetemplate.render(names_out)
       end
 
       def role_inflect(contribs, role)

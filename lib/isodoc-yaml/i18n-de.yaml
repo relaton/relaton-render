@@ -4,6 +4,8 @@ and: und
 updated: aktualisiert
 viewed: angesehen
 version: Version
+no_date: o.J.
+no_place: o.O.
 date_formats:
   month_year: yMMMM
   day_month_year: to_long_s

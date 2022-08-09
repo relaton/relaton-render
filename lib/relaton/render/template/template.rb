@@ -180,6 +180,9 @@ module Relaton
           [acc, curr, prec]
         end
       end
+
+      class AuthorCite < Name
+      end
     end
   end
 end

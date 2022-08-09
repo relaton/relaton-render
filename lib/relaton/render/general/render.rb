@@ -1,4 +1,5 @@
 require_relative "render_classes"
+require_relative "citations"
 require "yaml"
 require "liquid"
 require "relaton_bib"
@@ -9,7 +10,8 @@ module Relaton
   module Render
     class General
       attr_reader :template, :journaltemplate, :seriestemplate, :nametemplate,
-                  :extenttemplate, :sizetemplate, :lang, :script, :i18n,
+                  :authorcitetemplate, :extenttemplate, :sizetemplate,
+                  :lang, :script, :i18n,
                   :edition, :edition_ordinal, :date
 
       def initialize(opt = {})
@@ -27,6 +29,7 @@ module Relaton
 
       def klass_initialize(_options)
         @nametemplateklass = Relaton::Render::Template::Name
+        @authorcitetemplateklass = Relaton::Render::Template::AuthorCite
         @seriestemplateklass = Relaton::Render::Template::Series
         @extenttemplateklass = Relaton::Render::Template::Extent
         @sizetemplateklass = Relaton::Render::Template::Size
@@ -40,6 +43,8 @@ module Relaton
         @parse = @parseklass.new(lang: @lang, script: @script)
         @nametemplate = @nametemplateklass
           .new(template: opt["nametemplate"], i18n: @i18n)
+        @authorcitetemplate = @authorcitetemplateklass
+          .new(template: opt["authorcitetemplate"], i18n: @i18n)
         @seriestemplate = @seriestemplateklass
           .new(template: opt["seriestemplate"], i18n: @i18n)
         @journaltemplate = @seriestemplateklass
@@ -128,7 +133,42 @@ module Relaton
         data = @parse.extract(doc)
         data_liquid = @fieldsklass.new(renderer: self)
           .compound_fields_format(data)
-        @i18n.l10n(r.render(data_liquid))
+        valid_parse(@i18n.l10n(r.render(data_liquid)))
+      end
+
+      def valid_parse(ret)
+        @i18n.get["no_date"] == ret and return nil
+        ret
+      end
+
+      # expect array of Relaton objects, in sorted order
+      def render_all(bib, type: "author-date")
+        bib = sanitise_citations_input(bib) or return
+        Citations.new(type: type, renderer: self, i18n: @i18n)
+          .render(citations1(bib))
+      end
+
+      def sanitise_citations_input(bib)
+        bib.is_a?(Array) and return bib
+        bib.is_a?(String) and return sanitise_citations_input_string(bib)
+      end
+
+      def sanitise_citations_input_string(bib)
+        p = Nokogiri::XML(bib) or return
+        (p.errors.empty? && p.root.at("./bibitem")) or return nil
+
+        p.root.xpath("./bibitem").each_with_object([]) do |b, m|
+          m << RelatonBib::XMLParser.from_xml(b.to_xml)
+        end
+      end
+
+      def citations1(bib)
+        bib.each_with_object([]).with_index do |(b, m), i|
+          data_liquid = @fieldsklass.new(renderer: self)
+            .compound_fields_format(@parse.extract(b))
+          m << { author: data_liquid[:authorcite], date: data_liquid[:date],
+                 ord: i, id: b.id, data_liquid: data_liquid, type: b.type }
+        end
       end
 
       private
