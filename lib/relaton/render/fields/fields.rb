@@ -55,7 +55,7 @@ module Relaton
         [%i(date date), %i(date_updated date_updated),
          %i(date_accessed date_accessed)].each do |k|
           hash[k[0]] = dateformat(hash[k[1]], hash)
-          k[0] == :date and
+          k[0] == :date && hash[:type] != "standard" and
             hash[k[0]] ||= @r.i18n.get["no_date"]
         end
       end

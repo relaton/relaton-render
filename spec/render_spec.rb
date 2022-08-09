@@ -872,6 +872,23 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
+  it "does not insert no date for standards" do
+    input = <<~INPUT
+      <bibitem type="standard">
+        <title format='text/plain'>Cereals and cereal products</title>
+        <medium>
+          <genre>preprint</genre>
+        </medium>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref><em>Cereals and cereal products</em>. Preprint.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
   it "picks right language and type for title" do
     input = <<~INPUT
       <bibitem type="misc">
