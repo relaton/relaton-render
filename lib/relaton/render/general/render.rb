@@ -44,7 +44,7 @@ module Relaton
         @nametemplate = @nametemplateklass
           .new(template: opt["nametemplate"], i18n: @i18n)
         @authorcitetemplate = @authorcitetemplateklass
-          .new(template: opt["authorcitetemplate"], i18n: @i18n)
+          &.new(template: opt["authorcitetemplate"], i18n: @i18n)
         @seriestemplate = @seriestemplateklass
           .new(template: opt["seriestemplate"], i18n: @i18n)
         @journaltemplate = @seriestemplateklass

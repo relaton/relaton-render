@@ -94,7 +94,7 @@ module Relaton
       end
 
       def authorciteformat(names)
-        return names if names.nil?
+        return names if names.nil? || @r.authorcitetemplate.nil?
 
         parts = %i(surname initials given middle nonpersonal)
         names_out = names.each_with_object({}) do |n, m|
