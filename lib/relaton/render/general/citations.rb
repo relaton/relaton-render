@@ -61,17 +61,23 @@ module Relaton
       end
 
       def suffix_date(ret)
-        ret.each_value do |v|
-          v.each_value do |v1|
-            next if v1.size < 2
+        ret.each do |k, v|
+          v.each do |k1, v1|
+            next if v1.reject { |b| b[:date].nil? }.size < 2
 
-            v1.each_with_index do |b, i|
-              b[:date] += ("a".ord + i).chr.to_s
-              b[:data_liquid][:date] = b[:date]
-            end
+            suffix_date1(ret, k, k1)
           end
         end
         ret
+      end
+
+      def suffix_date1(ret, key1, key2)
+        ret[key1][key2].each_with_index do |b, i|
+          next if b[:date].nil?
+
+          b[:date] += ("a".ord + i).chr.to_s
+          b[:data_liquid][:date] = b[:date]
+        end
       end
 
       def to_hash(ret)
