@@ -15,11 +15,14 @@ module Relaton
       end
 
       def given_and_middle_name(person)
-        forenames = person.name.forename.map(&:content)
-        initials = person.name.initial.map(&:content)
-          .map { |x| x.sub(/\.$/, "") }
+        forenames = person.name.forename.map do |x|
+          x.content.empty? ? "#{x.initial}." : x.content
+        end
+        initials = person.name.initials&.content&.sub(/(.)\.?$/, "\\1.")
+        initials ||= person.name.forename.map(&:initial)
+          .compact.map { |x| x.sub(/(.)\.?$/, "\\1.") }
         forenames.empty? and initials.empty? and return [nil, nil, nil]
-        initials.empty? and initials = forenames.map { |x| x[0] }
+        initials.empty? and initials = forenames.map { |x| "#{x[0]}." }
         [forenames.first, forenames[1..-1], initials]
       end
 

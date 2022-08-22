@@ -305,14 +305,14 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>Aluffi, P., D. Anderson, M. S. Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP.</formattedref>
+      <formattedref>Aluffi, P, D Anderson, MS Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP.</formattedref>
     OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ,_{{role}} ({{date}}) . <em>{{ title }}</em> [{{medium}}] ,_{{ edition }} .
       {{ place }} : {{ publisher_abbrev }} . {{ uri }}. At:_{{ access_location }}.
     TEMPLATE
     etal = <<~TEMPLATE
-      {{surname[0] }}, {{initials[0] | join: ". " | append: "." }}, {{initials[1]  | join: ". " | append: "." }} {{surname[1] }}, {{initials[2]  | join: ". " | append: "." }} {{surname[2] }} <em>et al.</em>
+      {{surname[0] }}, {{initials[0] | join: "" | replace: ".", "" }}, {{initials[1]  | join: "" | replace: ".", "" }} {{surname[1] }}, {{initials[2]  | join: "" | replace: ".", "" }} {{surname[2] }} <em>et al.</em>
     TEMPLATE
     p = Relaton::Render::General
       .new(template: { book: template },
@@ -428,7 +428,7 @@ RSpec.describe Relaton::Render do
       {{ place }}. {{ uri }}. At:_{{ access_location }}.
     TEMPLATE
     etal = <<~TEMPLATE
-      {{surname[0] }}, {{initials[0] | join: ". " | append: "." }}, {{initials[1]  | join: ". " | append: "." }} {{surname[1] }}, {{initials[2]  | join: ". " | append: "." }} {{surname[2] }} <em>et al.</em>
+      {{surname[0] }}, {{initials[0] | join: " " }}, {{initials[1]  | join: " " }} {{surname[1] }}, {{initials[2]  | join: " " }} {{surname[2] }} <em>et al.</em>
     TEMPLATE
     p = Relaton::Render::General
       .new(template: { booklet: template, book: "booklet" },
@@ -442,7 +442,7 @@ RSpec.describe Relaton::Render do
 
   it "renders incollection, two authors" do
     input = <<~INPUT
-      <bibitem type="incollection">
+          <bibitem type="incollection">
         <title>Object play in great apes: Studies in nature and captivity</title>
         <date type="published"><on>2005</on></date>
         <date type="accessed"><on>2019-09-03</on></date>
@@ -451,7 +451,7 @@ RSpec.describe Relaton::Render do
           <person>
             <name>
               <surname>Ramsey</surname>
-              <initial>J. K.</initial>
+              <formatted-initials>J. K.</formatted-initials>
             </name>
           </person>
         </contributor>
@@ -460,7 +460,7 @@ RSpec.describe Relaton::Render do
           <person>
             <name>
               <surname>McGrew</surname>
-              <initial>W. C.</initial>
+              <formatted-initials>W. C.</formatted-initials>
             </name>
           </person>
         </contributor>
@@ -472,8 +472,8 @@ RSpec.describe Relaton::Render do
               <person>
                 <name>
                   <surname>Pellegrini</surname>
-                  <forename>Anthony</forename>
-                  <forename>D.</forename>
+                  <forename initial="A">Anthony</forename>
+                  <forename initial="D"/>
                 </name>
               </person>
             </contributor>
@@ -482,8 +482,8 @@ RSpec.describe Relaton::Render do
               <person>
                 <name>
                   <surname>Smith</surname>
-                  <forename>Peter</forename>
-                  <forename>K.</forename>
+                  <forename initial="P">Peter</forename>
+                  <forename initial="K">Kenneth</forename>
                 </name>
               </person>
             </contributor>
@@ -502,7 +502,7 @@ RSpec.describe Relaton::Render do
           </bibitem>
         </relation>
         <extent>
-          <locality type="page">
+         <locality type="page">
           <referenceFrom>89</referenceFrom>
           <referenceTo>112</referenceTo>
           </locality>
@@ -510,7 +510,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>RAMSEY, J. K. and W. C. MCGREW. Object play in great apes: Studies in nature and captivity. In: PELLEGRINI, Anthony D. and Peter K. SMITH (eds.): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. 3rd edition. New York, NY: Guilford Press. 2005. pp. 89&#x2013;112. [viewed: September 3, 2019].</formattedref>
+      <formattedref>RAMSEY, J. K. and W. C. MCGREW. Object play in great apes: Studies in nature and captivity. In: PELLEGRINI, Anthony D. and Peter Kenneth SMITH (eds.): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. 3rd edition. New York, NY: Guilford Press. 2005. pp. 89&#x2013;112. [viewed: September 3, 2019].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
