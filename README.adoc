@@ -218,7 +218,7 @@ draws on the following fields drawn from the bibliographic item:
 | surname[0] | ./contributor[1]/person/name/surname \| ./contributor[1]/person/name/completename | | i.e. surname is the name default
 | surname[1] | ./contributor[2]/name/surname | |
 | surname[2] | ./contributor[3]/name/surname | |
-| initials[0] | ./contributor[1]/name/initial | | If not supplied, the first letter of each given name is used instead
+| initials[0] | ./contributor[1]/name/formatted-initials \| ./contributor[1]/name/forename/@initial | | If not supplied, the first letter of each given name is used instead
 | initials[1] | ./contributor[2]/name/initial | |
 | given[0] | ./contributor[1]/name/forename[1] | | If not supplied, initials are used instead
 | given[1] |  ./contributor[2]/name/forename[1] | |
@@ -227,6 +227,10 @@ draws on the following fields drawn from the bibliographic item:
 | nonpersonal[0] |./contributor[1]/organization/name | Y |
 | nonpersonal[1] |./contributor[2]/organization/name | Y |
 |===
+
+The `formatted-initials` field is presumed to contain full stops, and so do the surrogates of that field done by using individual
+forenames' `initial` attributes, or the forename initials. If the full stops are to be stripped, that needs to occur within the
+Liquid template.
 
 There are at least three distinct `nametemplate` instances that need to be provided, one for a single contributor (`one:`), one for two contributors (`two:`), one for three or more (`more:`), and optionally one for "et al." (`etal:`). The number of contributors for which "et al." starts being used is indicated by `etal_count`.
 
