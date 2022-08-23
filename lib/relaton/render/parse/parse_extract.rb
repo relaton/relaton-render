@@ -56,9 +56,10 @@ module Relaton
       def series_title(series, _doc)
         return nil if series.nil?
 
-        series.title.respond_to?(:titles) and
+        series.title.respond_to?(:titles) && !series.title.titles.empty? and
           return series.title.titles.first.title.content
-        series.title&.title&.content || series.formattedref&.content
+        series.title.respond_to?(:title) and return series.title.title&.content
+        series.title.respond_to?(:formattedref) and series.formattedref.content
       end
 
       def series_formatted(series, _doc)

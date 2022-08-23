@@ -23,7 +23,7 @@ module Relaton
           .compact.map { |x| x.sub(/(.)\.?$/, "\\1.") }
         forenames.empty? and initials.empty? and return [nil, nil, nil]
         initials.empty? and initials = forenames.map { |x| "#{x[0]}." }
-        [forenames.first, forenames[1..-1], initials]
+        [forenames.first, forenames[1..-1], Array(initials)]
       end
 
       def extractname(contributor)

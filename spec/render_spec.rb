@@ -267,7 +267,7 @@ RSpec.describe Relaton::Render do
                 <contributor>
           <role type="editor"/>
           <person>
-            <name><surname>Anderson</surname><forename>David</forename></name>
+            <name><surname>Anderson</surname><formatted-initials>D. X.</formatted-initials></name>
           </person>
         </contributor>
         <contributor>
@@ -305,14 +305,14 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>Aluffi, P, D Anderson, MS Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP.</formattedref>
+      <formattedref>Aluffi, P, DX Anderson, MS Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP.</formattedref>
     OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ,_{{role}} ({{date}}) . <em>{{ title }}</em> [{{medium}}] ,_{{ edition }} .
       {{ place }} : {{ publisher_abbrev }} . {{ uri }}. At:_{{ access_location }}.
     TEMPLATE
     etal = <<~TEMPLATE
-      {{surname[0] }}, {{initials[0] | join: "" | replace: ".", "" }}, {{initials[1]  | join: "" | replace: ".", "" }} {{surname[1] }}, {{initials[2]  | join: "" | replace: ".", "" }} {{surname[2] }} <em>et al.</em>
+      {{surname[0] }}, {{initials[0] | join: "" | remove: "." | remove: "_" }}, {{initials[1]  | join: "" | remove: "." | remove: "_" }} {{surname[1] }}, {{initials[2]  | join: "" | remove: "." | remove: "_" }} {{surname[2] }} <em>et al.</em>
     TEMPLATE
     p = Relaton::Render::General
       .new(template: { book: template },
