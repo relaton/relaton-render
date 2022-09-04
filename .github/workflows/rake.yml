@@ -10,4 +10,6 @@ on:
 
 jobs:
   rake:
-    uses: relaton/support/.github/workflows/rake.yml@master
+    uses: metanorma/ci/.github/workflows/generic-rake.yml@main
+    secrets:
+      pat_token: ${{ secrets.METANORMA_CI_PAT_TOKEN }}
