@@ -52,7 +52,7 @@ module Relaton
       end
 
       def creatornames_roles_allowed
-        %w(author performer adapter translator editor publisher distributor)
+        %w(author performer adapter translator editor distributor)
       end
 
       def creatornames1(doc)

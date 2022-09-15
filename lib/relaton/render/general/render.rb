@@ -40,7 +40,7 @@ module Relaton
 
       def root_initalize(opt)
         i18n_initialize(opt)
-        @parse = @parseklass.new(lang: @lang, script: @script)
+        @parse = @parseklass.new(lang: @lang, script: @script, i18n: @i18n)
         @nametemplate = @nametemplateklass
           .new(template: opt["nametemplate"], i18n: @i18n)
         @authorcitetemplate = @authorcitetemplateklass

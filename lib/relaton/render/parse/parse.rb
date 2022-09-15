@@ -9,6 +9,7 @@ module Relaton
       def initialize(options)
         @lang = options[:lang] || "en"
         @script = options[:script] || "Latn"
+        @i18n = options[:i18n]
       end
 
       def extract(doc)

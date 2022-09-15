@@ -44,7 +44,15 @@ module Relaton
         x = doc.place
         x.empty? && host and x = host.place
         x.empty? and return x
-        x.map(&:name)
+        x.map { |p| place1(p) }
+      end
+
+      def place1(place)
+        place.city.nil? && place.region.empty? && place.country.empty? and
+          return place.name
+        ret = [place.city] + place.region.map(&:name) +
+          place.country.map(&:name)
+        @i18n.l10n(ret.compact.join(", "))
       end
 
       def series(doc)

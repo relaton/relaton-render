@@ -132,7 +132,7 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
-  it "renders book, five editors with specific class" do
+  it "renders book, five editors with specific class, broken down place" do
     input = <<~INPUT
       <bibitem type="book">
         <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
@@ -180,12 +180,15 @@ RSpec.describe Relaton::Render do
                 <name>Cambridge University Press</name>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><city>Cambridge</city>
+            <region>Cambridgeshire</region>
+            <country>UK</country>
+            </place>
           <size><value type="volume">1</value></size>
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831. 1 vol.</formattedref>
+      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, Cambridgeshire, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831. 1 vol.</formattedref>
     OUTPUT
     p = Relaton::Render::Book.new
     expect(p.render(input))
