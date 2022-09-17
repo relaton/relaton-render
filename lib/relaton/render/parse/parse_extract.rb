@@ -90,14 +90,25 @@ module Relaton
         series.run
       end
 
-      def standardidentifier(doc)
+      def authoritative_identifier(doc)
         doc.docidentifier.each_with_object([]) do |id, ret|
-          ret << id.id unless standardidentifier_exclude.include? id.type
+          ret << id.id unless authoritative_identifier_exclude.include? id.type
         end
       end
 
-      def standardidentifier_exclude
-        %w(metanorma metanorma-ordinal)
+      def authoritative_identifier_exclude
+        %w(metanorma metanorma-ordinal) + other_identifier_include
+      end
+
+      def other_identifier(doc)
+        doc.docidentifier.each_with_object([]) do |id, ret|
+          other_identifier_include.include? id.type or next
+          ret << @i18n.l10n("#{id.type}: #{id.id}")
+        end
+      end
+
+      def other_identifier_include
+        %w(ISSN ISBN DOI)
       end
 
       def uri(doc)
