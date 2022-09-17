@@ -61,7 +61,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831. 1 vol.</formattedref>
+      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -125,7 +125,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) n.p.: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831. 1 vol.</formattedref>
+      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) n.p.: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -188,7 +188,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, Cambridgeshire, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831. 1 vol.</formattedref>
+      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, Cambridgeshire, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.</formattedref>
     OUTPUT
     p = Relaton::Render::Book.new
     expect(p.render(input))
@@ -599,7 +599,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. <em>London Mathematical Society Lecture Note Series</em> (N.S.). 1st edition. vol. 1 no. 7, pp. 89–112. Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831.</formattedref>
+      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. <em>London Mathematical Society Lecture Note Series</em> (N.S.). 1st edition. vol. 1 no. 7, pp. 89–112. Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -641,6 +641,7 @@ RSpec.describe Relaton::Render do
         <title>Intellectual Property Rights in IETF technology</title>
         <uri>https://www.ietf.org/rfc/rfc3979.txt</uri>
         <docidentifier type="RFC">RFC 3979</docidentifier>
+        <docidentifier type="DOI">https://doi.org/10.3886/ICPSR20520.v2</docidentifier>
         <date type="published"><on>2005</on></date>
         <date type="accessed"><on>2012-06-18</on></date>
         <contributor>
@@ -662,7 +663,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>Internet Engineering Task Force. <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. RFC 3979. <link target="https://www.ietf.org/rfc/rfc3979.txt">https://www.ietf.org/rfc/rfc3979.txt</link>. [viewed: June 18, 2012].</formattedref>
+      <formattedref>Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <link target="https://www.ietf.org/rfc/rfc3979.txt">https://www.ietf.org/rfc/rfc3979.txt</link>. [viewed: June 18, 2012].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))

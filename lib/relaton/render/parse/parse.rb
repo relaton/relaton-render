@@ -22,8 +22,9 @@ module Relaton
       def simple_xml2hash(doc)
         creators, role = creatornames(doc)
         { type: type(doc), title: title(doc), extent_raw: extent(doc),
-          size_raw: size(doc),
-          standardidentifier: standardidentifier(doc), uri_raw: uri(doc),
+          size_raw: size(doc), uri_raw: uri(doc),
+          authoritative_identifier: authoritative_identifier(doc),
+          other_identifier: other_identifier(doc),
           status: status(doc), creators: creators, role_raw: role }
       end
 

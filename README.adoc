@@ -155,7 +155,8 @@ drawn from the bibliographic item:
 | place   | ./place | | Y |
 | publisher | ./contributor[role/@type = 'publisher']/organization/name | | Y | 
 | distributor | ./contributor[role/@type = 'distributor']/organization/name | | Y | 
-| standardidentifier | ./docidentifier[not(@type = 'metanorma' or @type = 'ordinal')] | Y | |
+| authoritative_identifier | ./docidentifier[not(@type = 'metanorma' or @type = 'ordinal' or @type = 'ISBN' or @type = 'ISSN' or @type = 'DOI')] | Y | |
+| other_identifier | ./docidentifier[@type = 'ISBN' or @type = 'ISSN' or @type = 'DOI'] | Y | | By default, each such identifier is prefixed with its type and colon
 | status | ./status | | | Rendering varies by flavour
 | uri | ./uri[@type = 'doi' or @type = 'uri' or @type = 'src' or true] | | |
 | access_location | ./accessLocation | | Y |
