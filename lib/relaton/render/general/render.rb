@@ -56,13 +56,14 @@ module Relaton
       def i18n_initialize(opt)
         @lang = opt["language"]
         @script = opt["script"]
+        @locale = opt["locale"]
         @i18n = opt["i18n"] ||
-          i18n_klass(opt["language"], opt["script"], opt["i18nhash"])
+          i18n_klass(language: @lang, script: @script, locale: @locale,
+                     i18nhash: opt["i18nhash"])
         @edition_ordinal = opt["edition_ordinal"] || @i18n.edition_ordinal
         @edition = opt["edition"] || @i18n.edition
         @date = opt["date"] || @i18n.get["date_formats"] ||
-          { "month_year" => "yMMMM",
-            "day_month_year" => "to_long_s",
+          { "month_year" => "yMMMM", "day_month_year" => "to_long_s",
             "date_time" => "to_long_s" }
       end
 
@@ -99,8 +100,9 @@ module Relaton
         "{{creatornames}}. {{title}}. {{date}}."
       end
 
-      def i18n_klass(lang = "en", script = "Latn", i18nhash = nil)
-        ::IsoDoc::RelatonRenderI18n.new(lang, script, i18nhash: i18nhash)
+      def i18n_klass(language: "en", script: "Latn", locale: nil, i18nhash: nil)
+        ::IsoDoc::RelatonRenderI18n.new(language, script, locale: locale,
+                                                          i18nhash: i18nhash)
       end
 
       def render(bib, embedded: false)
