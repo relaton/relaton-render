@@ -113,7 +113,7 @@ RSpec.describe Relaton::Render do
 
   it "renders incollection, two authors, with French internationalisation" do
     output = <<~OUTPUT
-      <formattedref>RAMSEY, J. K. et W. C. MCGREW. Object play in great apes: Studies in nature and captivity. Dans: PELLEGRINI, Anthony D. et Peter Kenneth SMITH (éd.): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. 3e édition. New York, NY: Guilford Press. 2005. p. 89–112. [vu: 3 septembre 2019].</formattedref>
+      <formattedref>RAMSEY, J. K. et W. C. MCGREW. Object play in great apes : Studies in nature and captivity. Dans : PELLEGRINI, Anthony D. et Peter Kenneth SMITH (éd.): <em>The nature of play : Great apes and humans</em> [electronic resource, 8vo]. 3e édition. New York, NY : Guilford Press. 2005. p. 89–112. [vu : 3 septembre 2019].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new(language: "fr")
     expect(HTMLEntities.new.decode(p.render(input)))
