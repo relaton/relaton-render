@@ -147,7 +147,7 @@ drawn from the bibliographic item:
 |===
 | Field   | Relaton XPath | Multiple | Can come from host | Note
 
-| title   | ./title | | |
+| title   | ./title | | | If multiples, prioritise language match
 | edition | ./edition | | Y | If numeric value, is given internationalised rendering of "nth edition", as set in edition_numbering. Otherwise, the textual content of the tag is given.
 | edition_raw | ./edition | | Y | The strict textual content of the tag is given.
 | edition_num | ./edition[@number] | | Y | 
@@ -158,7 +158,7 @@ drawn from the bibliographic item:
 | authoritative_identifier | ./docidentifier[not(@type = 'metanorma' or @type = 'ordinal' or @type = 'ISBN' or @type = 'ISSN' or @type = 'DOI')] | Y | |
 | other_identifier | ./docidentifier[@type = 'ISBN' or @type = 'ISSN' or @type = 'DOI'] | Y | | By default, each such identifier is prefixed with its type and colon
 | status | ./status | | | Rendering varies by flavour
-| uri | ./uri[@type = 'doi' or @type = 'uri' or @type = 'src' or true] | | |
+| uri | ./uri[@type = 'citation' or @type = 'doi' or @type = 'uri' or @type = 'src' or true] | | | If multiples, prioritise language match
 | access_location | ./accessLocation | | Y |
 | extent | ./extent | Y | | Render with standard abbreviations for pp, vols, with n-dash, with delimiting of multiple locations
 | creatornames | ./contributor[role/@type = 'author'] \| ./contributor[role/@type = 'performer'] \| ./contributor[role/@type = 'adapter'] \| ./contributor[role/@type = 'translator'] \| ./contributor[role/@type = 'editor'] \| ./contributor[role/@type = 'distributor'] \| ./contributor | Y | | <<nametemplate,`nametemplate`>> applied to each name; joining template from internationalisation applied to multiple names
