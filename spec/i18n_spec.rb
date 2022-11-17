@@ -130,9 +130,18 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
-  it "renders incollection, two authors, with Chinese internationalisation" do
+  it "renders incollection, two authors, with Traditional Chinese internationalisation" do
     output = <<~OUTPUT
-      <formattedref>RAMSEY, J. K. 和 W. C. MCGREW. Object play in great apes: Studies in nature and captivity. 在： PELLEGRINI, Anthony D. 和 Peter Kenneth SMITH （编辑）： <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. 第第3版。 New York, NY: Guilford Press. 2005. 第89–112页。 <link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</link>。【看过：2019年9月3日】.</formattedref>
+      formattedref>RAMSEY, J. K. 和 W. C. MCGREW. Object play in great apes: Studies in nature and captivity. 在： PELLEGRINI, Anthony D. 和 Peter Kenneth SMITH （編輯）： <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. 第第3版。 New York, NY: Guilford Press. 2005. 第89–112頁。 <link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</link>。【閱：2019年9月3日】.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new(language: "zh", script: "Hant")
+    expect(HTMLEntities.new.decode(p.render(input)))
+      .to be_equivalent_to output
+  end
+
+  it "renders incollection, two authors, with Simplified Chinese internationalisation" do
+    output = <<~OUTPUT
+      <formattedref>RAMSEY, J. K. 和 W. C. MCGREW. Object play in great apes: Studies in nature and captivity. 在： PELLEGRINI, Anthony D. 和 Peter Kenneth SMITH （编）： <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. 第第3版。 New York, NY: Guilford Press. 2005. 第89–112页。 <link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</link>。【阅：2019年9月3日】.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new(language: "zh", script: "Hans")
     expect(HTMLEntities.new.decode(p.render(input)))

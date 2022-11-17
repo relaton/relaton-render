@@ -8,8 +8,9 @@ module IsoDoc
       when "en", "fr", "ru", "de", "es", "ar"
         load_yaml2(lang)
       when "zh"
-        if script == "Hans" then load_yaml2("zh-Hans")
-        else load_yaml2("en")
+        case script
+        when "Hans", "Hant" then load_yaml2("zh-#{script}")
+        else load_yaml2("zh-Hans")
         end
       else load_yaml2("en")
       end
