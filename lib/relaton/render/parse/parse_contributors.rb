@@ -19,6 +19,7 @@ module Relaton
           x.content.empty? ? "#{x.initial}." : x.content
         end
         initials = person.name.initials&.content&.sub(/(.)\.?$/, "\\1.")
+          &.split /(?<=\.) /
         initials ||= person.name.forename.map(&:initial)
           .compact.map { |x| x.sub(/(.)\.?$/, "\\1.") }
         forenames.empty? and initials.empty? and return [nil, nil, nil]
