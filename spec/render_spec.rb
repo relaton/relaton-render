@@ -282,7 +282,7 @@ RSpec.describe Relaton::Render do
         <contributor>
           <role type="editor"/>
           <person>
-            <name><surname>Mustaţă</surname><forename>Mircea</forename></name>
+            <name><surname>Mustaţă</surname><formatted-initials>M.M.</formatted-initials></name>
           </person>
         </contributor>
         <contributor>
@@ -308,18 +308,18 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>Aluffi, P, DX Anderson, MS Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP.</formattedref>
+    <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP.</formattedref>
     OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ,_{{role}} ({{date}}) . <em>{{ title }}</em> [{{medium}}] ,_{{ edition }} .
       {{ place }} : {{ publisher_abbrev }} . {{ uri }}. At:_{{ access_location }}.
     TEMPLATE
     etal = <<~TEMPLATE
-      {{surname[0] }}, {{initials[0] | join: "" | remove: "." | remove: "_" }}, {{initials[1]  | join: "" | remove: "." | remove: "_" }} {{surname[1] }}, {{initials[2]  | join: "" | remove: "." | remove: "_" }} {{surname[2] }} <em>et al.</em>
+      {{surname[0] }}, {{initials[0] | join: "" | remove: "." | remove: "_" }}, {{initials[1]  | join: "" | remove: "." | remove: "_" }} {{surname[1] }}, {{initials[2]  | join: "" | remove: "." | remove: "_" }} {{surname[2] }},  {{initials[3]  | join: "" | remove: "." | remove: "_" }} {{surname[3] }} <em>et al.</em>
     TEMPLATE
     p = Relaton::Render::General
       .new(template: { book: template },
-           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3, etal: etal },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4, etal: etal },
            sizetemplate: "{{ page_raw }} pages",
            language: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
            edition: "% edition",
