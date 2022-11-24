@@ -15,15 +15,27 @@ module Relaton
       end
 
       def given_and_middle_name(person)
-        forenames = person.name.forename.map do |x|
-          x.content.empty? ? "#{x.initial}." : x.content
-        end
-        initials = person.name.initials&.content&.sub(/(.)\.?$/, "\\1.")
-        initials ||= person.name.forename.map(&:initial)
-          .compact.map { |x| x.sub(/(.)\.?$/, "\\1.") }
+        forenames = forenames_parse(person)
+        initials = initials_parse(person)
         forenames.empty? and initials.empty? and return [nil, nil, nil]
         initials.empty? and initials = forenames.map { |x| "#{x[0]}." }
         [forenames.first, forenames[1..-1], Array(initials)]
+      end
+
+      def forenames_parse(person)
+        person.name.forename.map do |x|
+          x.content.empty? ? "#{x.initial}." : x.content
+        end
+      end
+
+      # de S. => one initial, M.-J. => one initial
+      def initials_parse(person)
+        i = person.name.initials&.content or
+          return person.name.forename.map(&:initial)
+              .compact.map { |x| x.sub(/(.)\.?$/, "\\1.") }
+
+        i.sub(/(.)\.?$/, "\\1.")
+          .scan(/.+?\.(?=(?:$|\s|\p{Alpha}))/).map(&:strip)
       end
 
       def extractname(contributor)

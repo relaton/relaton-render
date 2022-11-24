@@ -328,6 +328,87 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
+  it "processes formatted initials" do
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <docidentifier type="ISBN">9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <date type="accessed"><on>2022-04-02</on></date>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Aluffi</surname><formatted-initials>D.-J. de X.</formatted-initials></name>
+          </person>
+        </contributor>
+                <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Anderson</surname><formatted-initials>D. X.</formatted-initials></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Hering</surname><forename>Milena</forename><forename>S.</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Mustaţă</surname><forename>Mircea</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Payne</surname><forename>Sam</forename></name>
+          </person>
+        </contributor>
+        <edition>1</edition>
+        <series>
+        <title>London Mathematical Society Lecture Note Series</title>
+        <number>472</number>
+        </series>
+            <contributor>
+              <role type="publisher"/>
+              <organization>
+                <name>Cambridge University Press</name>
+                <abbreviation>CUP</abbreviation>
+              </organization>
+            </contributor>
+            <place>Cambridge, UK</place>
+          <size><value type="page">lxii</value><value type="page">500</value></size>
+      </bibitem>
+    INPUT
+    template = <<~TEMPLATE
+      {{ creatornames }} ,_{{role}} ({{date}}) . <em>{{ title }}</em>.
+    TEMPLATE
+    etal = <<~TEMPLATE
+      {{surname[0] }}, {{initials[0] | join: " " | remove: "." }}, {{initials[1]  | join: " " | remove: "." }} {{surname[1] }}, {{initials[2]  | join: " " | remove: "." }} {{surname[2] }} <em>et al.</em>
+    TEMPLATE
+    output = <<~OUTPUT
+      <formattedref>Aluffi, D-J de X, D X Anderson, M S Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General
+      .new(template: { book: template },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3,
+                           etal: etal })
+    expect(p.render(input)).to be_equivalent_to output
+    etal = <<~TEMPLATE
+      {{surname[0] }}, {{initials[0] | join: "" }}, {{initials[1]  | join: "" }} {{surname[1] }}, {{initials[2]  | join: "" }} {{surname[2] }} <em>et al.</em>
+    TEMPLATE
+    output = <<~OUTPUT
+      <formattedref>Aluffi, D.-J.de X., D.X. Anderson, M.S. Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General
+      .new(template: { book: template },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3,
+                           etal: etal })
+    expect(p.render(input)).to be_equivalent_to output
+  end
+
   it "processes underscore" do
     input = <<~INPUT
       <bibitem type="book">
@@ -851,8 +932,7 @@ RSpec.describe Relaton::Render do
         </medium>
       </bibitem>
     INPUT
-    output = <<~OUTPUT
-    OUTPUT
+    output = ""
     p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to output

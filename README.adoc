@@ -230,9 +230,15 @@ draws on the following fields drawn from the bibliographic item:
 | nonpersonal[1] |./contributor[2]/organization/name | Y |
 |===
 
-The `formatted-initials` field is presumed to contain full stops, and so do the surrogates of that field done by using individual
-forenames' `initial` attributes, or the forename initials. If the full stops are to be stripped, that needs to occur within the
-Liquid template.
+The `formatted-initials` field is presumed to contain full stops, and so do the surrogates of that 
+field done by using individual forenames' `initial` attributes, or the forename initials. 
+Initials are considered delimited by a full stop followed by space or an alphabetic character.
+If the full stops are to be stripped, as is often required by bibliographic styles, that needs to occur within the
+Liquid template. Bibliographic styles also govern whether initials are separated by space; this gem treats full stop,
+not space, as the initials delimiter.
+
+(So _D. X._ is two initials, as is _D.X._, but _M.-J._ is a single initial, and so is _de S._)
+
 
 There are at least three distinct `nametemplate` instances that need to be provided, one for a single contributor (`one:`), one for two contributors (`two:`), one for three or more (`more:`), and optionally one for "et al." (`etal:`). The number of contributors for which "et al." starts being used is indicated by `etal_count`.
 
