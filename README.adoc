@@ -193,6 +193,7 @@ The Liquid template surrounds each field by preceding and following punctuation.
 * If punctuation is space delimited, it is inserted regardless of preceding content. So `{{ creatornames }} ({{date}}) .` will insert the full stop whether or not the date is present.
 * Space between punctuation and before punctuation is automatically removed.
 * Spaces within fields are globally converted to underscores. For that reason, any filter operations in Liquid need to refer to underscore instead of space.
+* There are primary and secondary quotation marks defined as fields, and subject to internationalisation: `{{ qq-open }}`, `{{ qq-close }}`,  `{{ q-open }}`, `{{ q-close }}`. By default in Latn and Cyrl, these are `<em>`/`</em>` and empty, respectively; they are 《…》 , 〈…〉 in Hans, and wavy underline, empty in Hant. If these are used, they need not to be space-delimited from what they quote; e.g. `{{ qq-open }}|{{ title }}|{{ qq-close }}`.
 
 For example:
 
