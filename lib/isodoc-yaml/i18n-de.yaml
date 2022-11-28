@@ -28,6 +28,10 @@ extent:
   issue:
     sg: "Nr. %"
     pl: "Nr. %"
+qq-open: <em>
+qq-close: </em>
+q-open:
+q-close: 
 size:
   page:
     sg: "% S."

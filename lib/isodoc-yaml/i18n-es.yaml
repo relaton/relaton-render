@@ -21,6 +21,10 @@ draft: "borrador %"
 editor:
   sg: ed.
   pl: eds.
+qq-open: <em>
+qq-close: </em>
+q-open:
+q-close:
 extent:
   page:
     sg: "pág. %"

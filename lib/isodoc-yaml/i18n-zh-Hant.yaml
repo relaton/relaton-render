@@ -19,6 +19,10 @@ draft: "草案%"
 editor:
   sg: 編輯
   pl: 編輯
+qq-open: <underline style="wavy">
+qq-close: </underline>
+q-open: 〈
+q-close: 〉
 extent:
   page:
     sg: "第%頁"

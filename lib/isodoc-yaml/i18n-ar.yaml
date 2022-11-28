@@ -39,6 +39,10 @@ size:
   issue:
     sg: "% عدد"
     pl: "% عدد"
+qq-open: «
+qq-close: »
+q-open: 
+q-close: 
 inflection:
   الطبعة؜:
     gender: f
