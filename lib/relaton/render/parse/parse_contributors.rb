@@ -27,6 +27,22 @@ module Relaton
         [forenames.first, forenames[1..-1], Array(initials)]
       end
 
+      def forenames_parse(person)
+        person.name.forename.map do |x|
+          x.content.empty? ? "#{x.initial}." : x.content
+        end
+      end
+
+      # de S. => one initial, M.-J. => one initial
+      def initials_parse(person)
+        i = person.name.initials&.content or
+          return person.name.forename.map(&:initial)
+              .compact.map { |x| x.sub(/(.)\.?$/, "\\1.") }
+
+        i.sub(/(.)\.?$/, "\\1.")
+          .scan(/.+?\.(?=(?:$|\s|\p{Alpha}))/).map(&:strip)
+      end
+
       def extractname(contributor)
         org = contributor.entity if contributor.entity
           .is_a?(RelatonBib::Organization)

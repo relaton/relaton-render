@@ -31,7 +31,8 @@ module Relaton
 
         # denote start and end of field,
         # so that we can detect empty fields in postprocessing
-        FIELD_DELIM = "\u0018".freeze
+        #FIELD_DELIM = "\u0018".freeze
+        FIELD_DELIM = "%%".freeze
 
         # escape < >
         LT_DELIM = "\u0019".freeze
@@ -40,13 +41,23 @@ module Relaton
         # use tab internally for non-spacing delimiter
         NON_SPACING_DELIM = "\t".freeze
 
+        def punct_field?(name)
+          name or return false
+          name = name.gsub(/'/, '"')
+          %w(labels["qq-open"] labels["qq-close"] labels["q-open"]
+             labels["q-close"]).include?(name)
+        end
+
         def template_process(template)
-          t = template.gsub(/\{\{/, "#{FIELD_DELIM}{{")
-            .gsub(/\}\}/, "}}#{FIELD_DELIM}")
-            .gsub(/\t/, " ")
-          t1 = t.split(/(\{\{.+?\}\})/).map do |n|
-            n.include?("{{") ? n : n.gsub(/(?<!\\)\|/, "\t")
-          end.join
+          t = template.split(/(\{\{|\}\})/).each_slice(4).map do |a|
+            unless !a[2] || punct_field?(a[2]&.strip)
+              a[1] = "#{FIELD_DELIM}{{"
+              a[3] = "}}#{FIELD_DELIM}"
+            end
+            a.join
+          end.join.gsub(/\t/, " ")
+          t1 = t.gsub(/\}\}#{FIELD_DELIM}\|/o, "}}#{FIELD_DELIM}\t")
+            .gsub(/\|#{FIELD_DELIM}\{\{/o, "\t#{FIELD_DELIM}{{")
           ::Liquid::Template.parse(t1)
         end
 

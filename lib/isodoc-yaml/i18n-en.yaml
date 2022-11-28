@@ -1,6 +1,7 @@
 in: in
 at: at
 and: and
+author_and: and
 updated: updated
 viewed: viewed
 version: version
@@ -18,6 +19,10 @@ draft: "draft %"
 editor:
   sg: ed.
   pl: eds.
+qq-open: <em>
+qq-close: </em>
+q-open:
+q-close:
 extent:
   page:
     sg: "p. %"

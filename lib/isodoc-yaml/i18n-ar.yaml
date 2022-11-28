@@ -1,6 +1,7 @@
 in:  في
 at: في
 and: و
+author_and: و
 updated: محدث
 viewed: ينظر
 version: الإصدار
@@ -38,6 +39,10 @@ size:
   issue:
     sg: "% عدد"
     pl: "% عدد"
+qq-open: «
+qq-close: »
+q-open: 
+q-close: 
 inflection:
   الطبعة؜:
     gender: f

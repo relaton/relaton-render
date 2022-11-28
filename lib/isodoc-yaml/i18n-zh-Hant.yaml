@@ -1,12 +1,12 @@
 in: 在
 at: 在
 and: 和
-author_and: 和
+author_and: 與
 updated: 更新
-viewed: 阅
+viewed: 閱
 version: 版本
-no_date: 无日期
-no_place: 无出版地
+no_date: 無日期
+no_place: 無出版地
 date_formats:
   month_year: yMMMM
   day_month_year: to_long_s
@@ -17,16 +17,16 @@ edition_ordinal: "第%Ordinal版"
 edition: 版
 draft: "草案%"
 editor:
-  sg: 编
-  pl: 编
-qq-open: 《
-qq-close: 》
+  sg: 編輯
+  pl: 編輯
+qq-open: <underline style="wavy">
+qq-close: </underline>
 q-open: 〈
 q-close: 〉
 extent:
   page:
-    sg: "第%页"
-    pl: "第%页"
+    sg: "第%頁"
+    pl: "第%頁"
   volume:
     sg: "第%卷"
     pl: "第%卷"
@@ -35,8 +35,8 @@ extent:
     pl: "第%期"
 size:
   page:
-    sg: "%页"
-    pl: "%页"
+    sg: "%頁"
+    pl: "%頁"
   volume:
     sg: "%卷"
     pl: "%卷"

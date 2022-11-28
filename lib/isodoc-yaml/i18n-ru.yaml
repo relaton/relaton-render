@@ -1,6 +1,7 @@
 in: в
 at: в
 and: и
+author_and: и
 updated: обновлен
 viewed: просмотрено
 version: версия
@@ -24,6 +25,10 @@ draft: "проект %"
 editor:
   sg: изд.
   pl: изд.
+qq-open: <em>
+qq-close: </em>
+q-open:
+q-close:
 extent:
   page:
     sg: "стр. %"

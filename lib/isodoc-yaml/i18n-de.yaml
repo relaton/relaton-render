@@ -1,6 +1,7 @@
 in: in
 at: bei
 and: und
+author_and: und
 updated: aktualisiert
 viewed: angesehen
 version: Version
@@ -27,6 +28,10 @@ extent:
   issue:
     sg: "Nr. %"
     pl: "Nr. %"
+qq-open: <em>
+qq-close: </em>
+q-open:
+q-close: 
 size:
   page:
     sg: "% S."
