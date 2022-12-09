@@ -113,11 +113,13 @@ module Relaton
 
       def uri(doc)
         uri = nil
-        %w(citation doi uri src).each do |t|
+        %w(citation uri src).each do |t|
           uri = uri_type_select(doc, t) and break
         end
-        uri ||= doc.link.detect { |u| u.language == @lang }
-        uri ||= doc.link.first
+        uri ||= doc.link.detect do |u|
+          u.language == @lang && !u.type&.casecmp("doi")&.zero?
+        end
+        uri ||= doc.link.detect { |u| !u.type&.casecmp("doi")&.zero? }
         return nil unless uri
 
         uri.content.to_s
@@ -125,9 +127,9 @@ module Relaton
 
       def uri_type_select(doc, type)
         uri = doc.link.detect do |u|
-          u.type == type && u.language == @lang
+          u.type&.downcase == type && u.language == @lang
         end and return uri
-        uri = doc.link.detect { |u| u.type == type } and return uri
+        uri = doc.link.detect { |u| u.type&.downcase == type } and return uri
         nil
       end
 
