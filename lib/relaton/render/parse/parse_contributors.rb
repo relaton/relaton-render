@@ -1,14 +1,19 @@
 module Relaton
   module Render
     class Parse
+      def content(node)
+        node.nil? and return node
+        node.content.strip
+      end
+
       def extract_orgname(org)
-        org.name&.first&.content
+        content(org.name&.first)
       end
 
       def extract_personname(person)
         surname = person.name.surname || person.name.completename
         given, middle, initials = given_and_middle_name(person)
-        { surname: surname.content,
+        { surname: content(surname),
           given: given,
           middle: middle,
           initials: initials }
@@ -16,9 +21,9 @@ module Relaton
 
       def given_and_middle_name(person)
         forenames = person.name.forename.map do |x|
-          x.content.empty? ? "#{x.initial}." : x.content
+          x.content.empty? ? "#{x.initial}." : content(x)
         end
-        initials = person.name.initials&.content&.sub(/(.)\.?$/, "\\1.")
+        initials = content(person.name.initials)&.sub(/(.)\.?$/, "\\1.")
           &.split /(?<=\.) /
         initials ||= person.name.forename.map(&:initial)
           .compact.map { |x| x.sub(/(.)\.?$/, "\\1.") }
@@ -29,13 +34,13 @@ module Relaton
 
       def forenames_parse(person)
         person.name.forename.map do |x|
-          x.content.empty? ? "#{x.initial}." : x.content
+          x.content.empty? ? "#{x.initial}." : content(x)
         end
       end
 
       # de S. => one initial, M.-J. => one initial
       def initials_parse(person)
-        i = person.name.initials&.content or
+        i = content(person.name.initials) or
           return person.name.forename.map(&:initial)
               .compact.map { |x| x.sub(/(.)\.?$/, "\\1.") }
 
@@ -136,8 +141,8 @@ module Relaton
         host and x ||= pick_contributor(host, "publisher")
         x.nil? and return nil
         x.map do |c|
-          c.entity.abbreviation&.content ||
-            c.entity.name.first&.content
+          content(c.entity.abbreviation) ||
+            content(c.entity.name.first)
         end
       end
 

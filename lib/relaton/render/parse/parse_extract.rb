@@ -13,7 +13,7 @@ module Relaton
         t.empty? and t = doc.title
         t1 = t.select { |x| x.type == "main" }
         t1.empty? and t1 = t
-        t1.first&.title&.content
+        content(t1.first&.title)
       end
 
       def medium(doc, host)
@@ -33,7 +33,7 @@ module Relaton
       end
 
       def edition(doc, host)
-        doc.edition&.content || host&.edition&.content
+        content(doc.edition || host&.edition)
       end
 
       def edition_num(doc, host)
@@ -65,17 +65,19 @@ module Relaton
         return nil if series.nil?
 
         series.title.respond_to?(:titles) && !series.title.titles.empty? and
-          return series.title.titles.first.title.content
-        series.title.respond_to?(:title) and return series.title.title&.content
-        series.title.respond_to?(:formattedref) and series.formattedref.content
+          return content(series.title.titles.first.title)
+        series.title.respond_to?(:title) and
+          return content(series.title.title)
+        series.title.respond_to?(:formattedref) and
+          content(series.formattedref)
       end
 
       def series_formatted(series, _doc)
-        series.formattedref&.content
+        content(series.formattedref)
       end
 
       def series_abbr(series, _doc)
-        series.abbreviation&.content
+        content(series.abbreviation)
       end
 
       def series_num(series, _doc)
@@ -122,7 +124,7 @@ module Relaton
         uri ||= doc.link.detect { |u| !u.type&.casecmp("doi")&.zero? }
         return nil unless uri
 
-        uri.content.to_s
+        uri.content.to_s.strip
       end
 
       def uri_type_select(doc, type)
@@ -201,7 +203,7 @@ module Relaton
       def localized_string_or_text(str)
         case str
         when RelatonBib::LocalizedString
-          str.content
+          content(str)
         when String
           str
         end
