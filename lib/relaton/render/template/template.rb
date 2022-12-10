@@ -31,7 +31,7 @@ module Relaton
 
         # denote start and end of field,
         # so that we can detect empty fields in postprocessing
-        #FIELD_DELIM = "\u0018".freeze
+        # FIELD_DELIM = "\u0018".freeze
         FIELD_DELIM = "%%".freeze
 
         # escape < >
@@ -130,7 +130,9 @@ module Relaton
       class Name < General
         def initialize(opt = {})
           @etal_count = opt[:template]["etal_count"]
+          @etal_display = opt[:template]["etal_display"] || @etal_count
           opt[:template].delete("etal_count")
+          opt[:template].delete("etal_display")
           super
         end
 
@@ -147,8 +149,9 @@ module Relaton
 
         def template_select_etal(names)
           if @etal_count && names[:surname].size >= @etal_count
-            @template[:etal]
-          else expand_nametemplate(@template_raw[:more], names[:surname].size)
+            expand_nametemplate(@template_raw[:etal], @etal_display)
+          else
+            expand_nametemplate(@template_raw[:more], names[:surname].size)
           end
         end
 
@@ -156,29 +159,41 @@ module Relaton
         # ...[0], ...[1], ...[2]
         def expand_nametemplate(template, size)
           t = nametemplate_split(template)
+
           mid = (1..size - 2).each_with_object([]) do |i, m|
             m << t[1].gsub(/\[1\]/, "[#{i}]")
           end
-          template_process(t[0] + mid.join + t[2].gsub(/\[2\]/,
-                                                       "[#{size - 1}]"))
+          t[1] = mid.join
+          t[2].gsub!(/\[\d+\]/, "[#{size - 1}]")
+          template_process(combine_nametemplate(t, size))
+        end
+
+        def combine_nametemplate(parts, size)
+          case size
+          when 1 then parts[0] + parts[3]
+          when 2 then parts[0] + parts[2] + parts[3]
+          else parts.join
+          end
         end
 
         def nametemplate_split(template)
           curr = 0
           prec = ""
           t = template.split(/(\{[{%].+?[}%]\})/)
-            .each_with_object(["", "", ""]) do |n, m|
+            .each_with_object([""]) do |n, m|
             m, curr, prec = nametemplate_split1(n, m, curr, prec)
 
             m
           end
-          t[-1] += prec
-          t
+          [t[0], t[1], t[-1], prec]
         end
 
         def nametemplate_split1(elem, acc, curr, prec)
           if match = /\{[{%].+?\[(\d)\]/.match(elem)
-            curr += 1 if match[1].to_i > curr
+            if match[1].to_i > curr
+              curr += 1
+              acc[curr] ||= ""
+            end
             acc[curr] += prec
             prec = ""
             acc[curr] += elem

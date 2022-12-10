@@ -310,7 +310,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-    <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP.</formattedref>
+      <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP.</formattedref>
     OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ,_{{role}} ({{date}}) . <em>{{ title }}</em> [{{medium}}] ,_{{ edition }} .
@@ -322,6 +322,42 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General
       .new(template: { book: template },
            nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4, etal: etal },
+           sizetemplate: "{{ page_raw }} pages",
+           language: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
+           edition: "% edition",
+           date: { month_year: "MMMd", day_month_year: "yMMMd", date_time: "to_long_s" })
+    expect(p.render(input))
+      .to be_equivalent_to output
+    output = <<~OUTPUT
+      <formattedref>Aluffi, P, DX Anderson, MS Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General
+      .new(template: { book: template },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4, etal_display: 3, etal: etal },
+           sizetemplate: "{{ page_raw }} pages",
+           language: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
+           edition: "% edition",
+           date: { month_year: "MMMd", day_month_year: "yMMMd", date_time: "to_long_s" })
+    expect(p.render(input))
+      .to be_equivalent_to output
+    output = <<~OUTPUT
+      <formattedref>Aluffi, P, DX Anderson <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General
+      .new(template: { book: template },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4, etal_display: 2, etal: etal },
+           sizetemplate: "{{ page_raw }} pages",
+           language: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
+           edition: "% edition",
+           date: { month_year: "MMMd", day_month_year: "yMMMd", date_time: "to_long_s" })
+    expect(p.render(input))
+      .to be_equivalent_to output
+    output = <<~OUTPUT
+      <formattedref>Aluffi, P <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General
+      .new(template: { book: template },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4, etal_display: 1, etal: etal },
            sizetemplate: "{{ page_raw }} pages",
            language: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
            edition: "% edition",

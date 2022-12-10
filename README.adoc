@@ -256,11 +256,30 @@ For example:
 
 In the case of `more`, the `(name)[1]` entries are repeated for all additional authors above 2 and before the final author.
 
+The behaviour of _et al._ can be specified as follows:
+
+* `etal_count`: the number of authors to trigger _et al._ in bibliographic rendering
+* `etal_display`: how many authors to show if using _et al._ in bibliography (by default, same as `etal_count`)
+
+So the Chicago Manual of Style behaviour:
+
+____
+For more than ten authors (not shown here), list the first seven in the reference list, followed by et al.
+____
+
+is realised with etal_count = 10, etal_display = 7
+
 [[authorcitetemplate]]
 === Author citation templates
 
 The `authorcitetemplate` is a subclass of the name template, configured for rendering author names for author-date citations.
 That means that it typically selects only surnames for rendering.
+
+
+The behaviour of _et al._ in author-date citations can be specified as follows:
+
+* `etal_count`: the number of authors to trigger _et al._ in bibliographic rendering
+* `etal_display`: how many authors to show if using _et al._ in bibliography (by default, same as `etal_count`)
 
 [[seriestemplate]]
 === Series template
