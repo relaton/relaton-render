@@ -49,6 +49,11 @@ module Relaton
         end
 
         def template_process(template)
+          template.is_a?(String) or return template
+          ::Liquid::Template.parse(add_field_delim_to_template(template))
+        end
+
+        def add_field_delim_to_template(template)
           t = template.split(/(\{\{|\}\})/).each_slice(4).map do |a|
             unless !a[2] || punct_field?(a[2]&.strip)
               a[1] = "#{FIELD_DELIM}{{"
@@ -56,9 +61,8 @@ module Relaton
             end
             a.join
           end.join.gsub(/\t/, " ")
-          t1 = t.gsub(/\}\}#{FIELD_DELIM}\|/o, "}}#{FIELD_DELIM}\t")
+          t.gsub(/\}\}#{FIELD_DELIM}\|/o, "}}#{FIELD_DELIM}\t")
             .gsub(/\|#{FIELD_DELIM}\{\{/o, "\t#{FIELD_DELIM}{{")
-          ::Liquid::Template.parse(t1)
         end
 
         def render(hash)
