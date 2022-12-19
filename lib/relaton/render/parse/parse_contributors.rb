@@ -3,6 +3,7 @@ module Relaton
     class Parse
       def content(node)
         node.nil? and return node
+        node.content.is_a?(Array) and return node.content.map { |x| content(x) }
         node.content.strip
       end
 
