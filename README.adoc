@@ -155,14 +155,15 @@ drawn from the bibliographic item:
 | place   | ./place | | Y |
 | publisher | ./contributor[role/@type = 'publisher']/organization/name | | Y | 
 | distributor | ./contributor[role/@type = 'distributor']/organization/name | | Y | 
+| authorizer | ./contributor[role/@type = 'authorizer']/organization/name \| ./contributor[role/@type = 'publisher']/organization/name | | Y | 
 | authoritative_identifier | ./docidentifier[not(@type = 'metanorma' or @type = 'ordinal' or @type = 'ISBN' or @type = 'ISSN' or @type = 'DOI')] | Y | |
 | other_identifier | ./docidentifier[@type = 'ISBN' or @type = 'ISSN' or @type = 'DOI'] | Y | | By default, each such identifier is prefixed with its type and colon
 | status | ./status | | | Rendering varies by flavour
 | uri | ./uri[@type = 'citation' or @type = 'uri' or @type = 'src' or true] | | | If multiples, prioritise language match. Always exclude DOI: that is not where the resource is available from
 | access_location | ./accessLocation | | Y |
 | extent | ./extent | Y | | Render with standard abbreviations for pp, vols, with n-dash, with delimiting of multiple locations
-| creatornames | ./contributor[role/@type = 'author'] \| ./contributor[role/@type = 'performer'] \| ./contributor[role/@type = 'adapter'] \| ./contributor[role/@type = 'translator'] \| ./contributor[role/@type = 'editor'] \| ./contributor[role/@type = 'distributor'] \| ./contributor | Y | | <<nametemplate,`nametemplate`>> applied to each name; joining template from internationalisation applied to multiple names
-| authorcite | ./contributor[role/@type = 'author'] \| ./contributor[role/@type = 'performer'] \| ./contributor[role/@type = 'adapter'] \| ./contributor[role/@type = 'translator'] \| ./contributor[role/@type = 'editor'] \| ./contributor[role/@type = 'distributor'] \| ./contributor | Y | | <<authorcitetemplate,`authorcitetemplate`>> applied to each name; joining template from internationalisation applied to multiple names
+| creatornames | ./contributor[role/@type = 'author'] \| ./contributor[role/@type = 'performer'] \| ./contributor[role/@type = 'adapter'] \| ./contributor[role/@type = 'translator'] \| ./contributor[role/@type = 'editor'] \| ./contributor[role/@type = 'distributor'] \| ./contributor[role/@type = 'authorizer'] \| ./contributor | Y | | <<nametemplate,`nametemplate`>> applied to each name; joining template from internationalisation applied to multiple names
+| authorcite | ./contributor[role/@type = 'author'] \| ./contributor[role/@type = 'performer'] \| ./contributor[role/@type = 'adapter'] \| ./contributor[role/@type = 'translator'] \| ./contributor[role/@type = 'editor'] \| ./contributor[role/@type = 'distributor'] \| ./contributor[role/@type = 'authorizer'] \| ./contributor | Y | | <<authorcitetemplate,`authorcitetemplate`>> applied to each name; joining template from internationalisation applied to multiple names
 | role | ./contributor[role/description] \| ./contributor[role/@type] | | | 
 | date | ./date[@type = 'issued'] \| ./date[@type = 'circulated'] \| ./date | | Y |
 | date_updated | ./date[@type = 'updated'] | | Y | 
