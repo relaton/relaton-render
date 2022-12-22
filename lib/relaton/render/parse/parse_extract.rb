@@ -7,8 +7,7 @@ module Relaton
 
       # TODO : first is naive choice
       def title(doc)
-        return nil if doc.nil? || doc.title.empty?
-
+        doc.nil? || doc.title.empty? and return nil
         t = doc.title.select { |x| x.title.language&.include? @lang }
         t.empty? and t = doc.title
         t1 = t.select { |x| x.type == "main" }
@@ -62,8 +61,7 @@ module Relaton
       end
 
       def series_title(series, _doc)
-        return nil if series.nil?
-
+        series.nil? and return nil
         series.title.respond_to?(:titles) && !series.title.titles.empty? and
           return content(series.title.titles.first.title)
         series.title.respond_to?(:title) and
@@ -122,8 +120,7 @@ module Relaton
           u.language == @lang && !u.type&.casecmp("doi")&.zero?
         end
         uri ||= doc.link.detect { |u| !u.type&.casecmp("doi")&.zero? }
-        return nil unless uri
-
+        uri or return nil
         uri.content.to_s.strip
       end
 
@@ -172,9 +169,8 @@ module Relaton
       end
 
       def draft(doc, host)
-        dr = doc.status&.stage&.value || host&.status&.stage&.value
-
-        { iteration: iter_ordinal(doc) || iter_ordinal(host), status: dr }
+        { iteration: iter_ordinal(doc) || iter_ordinal(host),
+          status: status(doc) || status(host) }
       end
 
       def iter_ordinal(doc)
@@ -184,7 +180,7 @@ module Relaton
       end
 
       def status(doc)
-        doc.status&.stage&.value
+        doc&.status&.stage&.value
       end
 
       private
@@ -202,10 +198,8 @@ module Relaton
 
       def localized_string_or_text(str)
         case str
-        when RelatonBib::LocalizedString
-          content(str)
-        when String
-          str
+        when RelatonBib::LocalizedString then content(str)
+        when String then str
         end
       end
     end

@@ -17,7 +17,8 @@ module Relaton
 
       def name_fields_format(hash)
         [%i(creatornames creators), %i(host_creatornames host_creators),
-         %i(publisher publisher_raw), %i(distributor distributor_raw)]
+         %i(publisher publisher_raw), %i(distributor distributor_raw),
+         %i(authorizer authorizer_raw)]
           .each do |k|
           hash[k[0]] = nameformat(hash[k[1]])
         end
@@ -62,8 +63,7 @@ module Relaton
 
       # TODO is not being i18n-alised
       def mediumformat(hash)
-        return nil if hash.nil?
-
+        hash.nil? and return nil
         %w(content genre form carrier size scale).each_with_object([]) do |i, m|
           m << hash[i] if hash[i]
           m
@@ -81,8 +81,7 @@ module Relaton
       end
 
       def nameformat(names)
-        return names if names.nil?
-
+        names.nil? and return names
         parts = %i(surname initials given middle nonpersonal)
         names_out = names.each_with_object({}) do |n, m|
           parts.each do |i|
@@ -94,8 +93,7 @@ module Relaton
       end
 
       def authorciteformat(names)
-        return names if names.nil? || @r.authorcitetemplate.nil?
-
+        names.nil? || @r.authorcitetemplate.nil? and return names
         parts = %i(surname initials given middle nonpersonal)
         names_out = names.each_with_object({}) do |n, m|
           parts.each do |i|
@@ -107,9 +105,9 @@ module Relaton
       end
 
       def role_inflect(contribs, role)
-        return nil if role.nil? || contribs.size.zero? ||
-          %w(author publisher).include?(role)
-
+        role.nil? || contribs.size.zero? ||
+          %w(author publisher distributor
+             authorizer).include?(role) and return nil
         number = contribs.size > 1 ? "pl" : "sg"
         @r.i18n.get[role][number] || role
       end
@@ -134,9 +132,9 @@ module Relaton
       end
 
       def draftformat(num, _hash)
-        return nil if num.nil?
-        return nil if num.is_a?(Hash) && num[:status].nil? && num[:iteration].nil?
-
+        num.nil? ||
+          (num.is_a?(Hash) && num[:status].nil? &&
+            num[:iteration].nil?) and return nil
         @r.i18n.draft.sub(/%/, num)
       end
 
@@ -180,23 +178,16 @@ module Relaton
 
       def sizeformat1(key, val, hash)
         case key
-        when "volume"
-          hash[:volume_raw] = val
-          hash[:volume] = pagevolformat(val, nil, "volume", true)
-        when "issue"
-          hash[:issue_raw] = val
-          hash[:issue] = pagevolformat(val, nil, "issue", true)
-        when "page"
-          hash[:page_raw] = val
-          hash[:page] = pagevolformat(val, nil, "page", true)
+        when "volume", "issue", "page"
+          hash["#{key}_raw".to_sym] = val
+          hash[key.to_sym] = pagevolformat(val, nil, key, true)
         when "data" then hash[:data] = val
         when "duration" then hash[:duration] = val
         end
       end
 
       def pagevolformat(value, value_raw, type, is_size)
-        return nil if value.nil?
-
+        value.nil? and return nil
         num = "pl"
         if is_size
           value == "1" and num = "sg"
@@ -215,8 +206,7 @@ module Relaton
       end
 
       def dateformat(date, _hash)
-        return nil if date.nil?
-
+        date.nil? and return nil
         %i(from to on).each do |k|
           date[k] = ::Relaton::Render::Date.new(date[k], renderer: @r).render
         end
@@ -224,20 +214,16 @@ module Relaton
       end
 
       def uriformat(uri)
-        return nil if uri.nil? || uri.empty?
-
+        uri.nil? || uri.empty? and return nil
         "<link target='#{uri}'>#{uri}</link>"
       end
 
       private
 
       def tw_cldr_lang
-        if @r.lang != "zh"
-          @r.lang.to_sym
-        elsif @r.script == "Hant"
-          :"zh-tw"
-        else
-          :"zh-cn"
+        if @r.lang != "zh" then @r.lang.to_sym
+        elsif @r.script == "Hant" then :"zh-tw"
+        else :"zh-cn"
         end
       end
     end

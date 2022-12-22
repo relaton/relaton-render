@@ -75,7 +75,7 @@ module Relaton
       end
 
       def creatornames_roles_allowed
-        %w(author performer adapter translator editor distributor)
+        %w(author performer adapter translator editor distributor authorizer)
       end
 
       def creatornames1(doc)
@@ -150,6 +150,15 @@ module Relaton
       def distributor(doc, host)
         x = pick_contributor(doc, "distributor")
         host and x ||= pick_contributor(host, "distributor")
+        x.nil? and return nil
+        x.map { |c| extractname(c) }
+      end
+
+      def authorizer(doc, host)
+        x = pick_contributor(doc, "authorizer") ||
+          pick_contributor(doc, "publisher")
+        host and x ||= pick_contributor(host, "authorizer") ||
+          pick_contributor(host, "publisher")
         x.nil? and return nil
         x.map { |c| extractname(c) }
       end

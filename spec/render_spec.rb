@@ -255,7 +255,8 @@ RSpec.describe Relaton::Render do
   rescue SystemExit, RuntimeError
   end
 
-  it "renders book, five editors with manual configuration, et al. rendering, convert forenames to initials" do
+  it "renders book, five editors with manual configuration, " \
+     "et al. rendering, convert forenames to initials" do
     input = <<~INPUT
       <bibitem type="book">
         <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
@@ -321,11 +322,14 @@ RSpec.describe Relaton::Render do
     TEMPLATE
     p = Relaton::Render::General
       .new(template: { book: template },
-           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4, etal: etal },
+           nametemplate: { one: "{{ nonpersonal[0] }}",
+                           etal_count: 4, etal: etal },
            sizetemplate: "{{ page_raw }} pages",
-           language: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
+           language: "en",
+           edition_number: ["SpelloutRules", "spellout-ordinal"],
            edition: "% edition",
-           date: { month_year: "MMMd", day_month_year: "yMMMd", date_time: "to_long_s" })
+           date: { month_year: "MMMd", day_month_year: "yMMMd",
+                   date_time: "to_long_s" })
     expect(p.render(input))
       .to be_equivalent_to output
     output = <<~OUTPUT
@@ -333,11 +337,14 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template },
-           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4, etal_display: 3, etal: etal },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4,
+                           etal_display: 3, etal: etal },
            sizetemplate: "{{ page_raw }} pages",
-           language: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
+           language: "en",
+           edition_number: ["SpelloutRules", "spellout-ordinal"],
            edition: "% edition",
-           date: { month_year: "MMMd", day_month_year: "yMMMd", date_time: "to_long_s" })
+           date: { month_year: "MMMd", day_month_year: "yMMMd",
+                   date_time: "to_long_s" })
     expect(p.render(input))
       .to be_equivalent_to output
     output = <<~OUTPUT
@@ -345,11 +352,14 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template },
-           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4, etal_display: 2, etal: etal },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4,
+                           etal_display: 2, etal: etal },
            sizetemplate: "{{ page_raw }} pages",
-           language: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
+           language: "en",
+           edition_number: ["SpelloutRules", "spellout-ordinal"],
            edition: "% edition",
-           date: { month_year: "MMMd", day_month_year: "yMMMd", date_time: "to_long_s" })
+           date: { month_year: "MMMd", day_month_year: "yMMMd",
+                   date_time: "to_long_s" })
     expect(p.render(input))
       .to be_equivalent_to output
     output = <<~OUTPUT
@@ -357,11 +367,14 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template },
-           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4, etal_display: 1, etal: etal },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4,
+                           etal_display: 1, etal: etal },
            sizetemplate: "{{ page_raw }} pages",
-           language: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
+           language: "en",
+           edition_number: ["SpelloutRules", "spellout-ordinal"],
            edition: "% edition",
-           date: { month_year: "MMMd", day_month_year: "yMMMd", date_time: "to_long_s" })
+           date: { month_year: "MMMd", day_month_year: "yMMMd",
+                   date_time: "to_long_s" })
     expect(p.render(input))
       .to be_equivalent_to output
   end
@@ -554,10 +567,71 @@ RSpec.describe Relaton::Render do
     TEMPLATE
     p = Relaton::Render::General
       .new(template: { booklet: template, book: "booklet" },
-           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3, etal: etal },
+           nametemplate: { one: "{{ nonpersonal[0] }}",
+                           etal_count: 3, etal: etal },
            sizetemplate: "{{ page_raw }} pages",
-           language: "en", edition_number: ["SpelloutRules", "spellout-ordinal"],
+           language: "en",
+           edition_number: ["SpelloutRules", "spellout-ordinal"],
            edition: "% edition")
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
+  it "processes authorizer" do
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <edition>1</edition>
+            <contributor>
+              <role type="publisher"/>
+              <organization>
+                <name>Cambridge University Press</name>
+                <abbreviation>CUP</abbreviation>
+              </organization>
+            </contributor>
+            <contributor>
+              <role type="authorizer"/>
+              <organization>
+                <name>The Illuminati</name>
+                <abbreviation>CUP</abbreviation>
+              </organization>
+            </contributor>
+            <place>Cambridge, UK</place>
+      </bibitem>
+    INPUT
+    template = <<~TEMPLATE
+      {{ authorizer }}
+    TEMPLATE
+    output = "<formattedref>The Illuminati</formattedref>"
+    p = Relaton::Render::General
+      .new(template: { book: template })
+    expect(p.render(input))
+      .to be_equivalent_to output
+
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <edition>1</edition>
+            <contributor>
+              <role type="publisher"/>
+              <organization>
+                <name>Cambridge University Press</name>
+                <abbreviation>CUP</abbreviation>
+              </organization>
+            </contributor>
+            <place>Cambridge, UK</place>
+      </bibitem>
+    INPUT
+    template = <<~TEMPLATE
+      {{ authorizer }}
+    TEMPLATE
+    output = "<formattedref>Cambridge University Press</formattedref>"
+    p = Relaton::Render::General
+      .new(template: { book: template })
     expect(p.render(input))
       .to be_equivalent_to output
   end
