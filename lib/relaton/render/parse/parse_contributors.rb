@@ -112,10 +112,13 @@ module Relaton
         date.first
       end
 
+      # year-only
       def date(doc, host)
         ret = date1(doc.date)
         host and ret ||= date1(host.date)
-        datepick(ret)
+        datepick(ret)&.transform_values do |v|
+          v&.sub(/-.*$/, "")
+        end
       end
 
       def date_updated(doc, host)

@@ -157,12 +157,12 @@ module Relaton
       end
 
       def range(hash)
-        if hash[:on] then hash[:on]
-        elsif hash.has_key?(:from) && hash[:from].nil? then nil
-        elsif hash[:from]
-          hash[:to] ? "#{hash[:from]}&#x2013;#{hash[:to]}" : hash[:from]
-        else hash
-        end
+        hash[:on] and return hash[:on]
+        hash.has_key?(:from) && hash[:from].nil? and return nil
+        !hash[:from] and return hash
+        hash[:to] && hash[:to] != hash[:from] and
+          return "#{hash[:from]}&#x2013;#{hash[:to]}"
+        hash[:from]
       end
 
       def sizeformat(size, hash)
@@ -199,10 +199,8 @@ module Relaton
       end
 
       def date_range(hash)
-        if hash[:from]
-          "#{hash[:from]}&#x2013;#{hash[:to]}"
-        else range(hash)
-        end
+        hash[:from] && !hash[:to] and return "#{hash[:from]}&#x2013;"
+        range(hash)
       end
 
       def dateformat(date, _hash)

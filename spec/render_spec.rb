@@ -821,7 +821,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. September 4, 2019. <link target="https://github.com/metanorma/metanorma-standoc">https://github.com/metanorma/metanorma-standoc</link>.</formattedref>
+      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <link target="https://github.com/metanorma/metanorma-standoc">https://github.com/metanorma/metanorma-standoc</link>.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -898,7 +898,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>PORTES, Alejandro and Rubén G. RUMBAUT. <em>Children of Immigrants. Longitudinal Sudy (CILS) 1991–2006 ICPSR20520</em>. Version 2. Dataset. January 23, 2012. <link target="https://doi.org/10.3886/ICPSR20520.v2">https://doi.org/10.3886/ICPSR20520.v2</link>. 501 GB. [viewed: May 6, 2018].</formattedref>
+      <formattedref>PORTES, Alejandro and Rubén G. RUMBAUT. <em>Children of Immigrants. Longitudinal Sudy (CILS) 1991–2006 ICPSR20520</em>. Version 2. Dataset. 2012. <link target="https://doi.org/10.3886/ICPSR20520.v2">https://doi.org/10.3886/ICPSR20520.v2</link>. 501 GB. [viewed: May 6, 2018].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -1029,7 +1029,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em>. Preprint. June 2020. <link target="https://eprints.soton.ac.uk/338797/">https://eprints.soton.ac.uk/338797/</link>. [viewed: June 2020].</formattedref>
+      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em>. Preprint. 2020. <link target="https://eprints.soton.ac.uk/338797/">https://eprints.soton.ac.uk/338797/</link>. [viewed: June 2020].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -1200,6 +1200,105 @@ RSpec.describe Relaton::Render do
       <formattedref>JENKINS und Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em> [preprint]. o.O.: o.J. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new(language: "de")
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
+  it "truncates date to year" do
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</title>
+        <uri>https://eprints.soton.ac.uk/338791/</uri>
+        <uri type="DOI">https://eprints.soton.ac.uk/338794/</uri>
+        <uri type="DOI" language="de">https://eprints.soton.ac.uk/338795/</uri>
+        <uri type="DOI" language="en">https://eprints.soton.ac.uk/338796/</uri>
+        <date type="published"><on>2022-10-12</on></date>
+        <date type="accessed"><on>2022-10-12</on></date>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Jenkins</surname><initials>S.</initials></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Ruostekoski</surname><forename>Janne</forename></name>
+          </person>
+        </contributor>
+        <medium>
+          <genre>preprint</genre>
+        </medium>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em> [preprint]. n.p.: 2022. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>. [viewed: October 12, 2022].</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</title>
+        <uri>https://eprints.soton.ac.uk/338791/</uri>
+        <uri type="DOI">https://eprints.soton.ac.uk/338794/</uri>
+        <uri type="DOI" language="de">https://eprints.soton.ac.uk/338795/</uri>
+        <uri type="DOI" language="en">https://eprints.soton.ac.uk/338796/</uri>
+        <date type="published"><from>2021-10-12</from><to>2022-10-12</to></date>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Jenkins</surname><initials>S.</initials></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Ruostekoski</surname><forename>Janne</forename></name>
+          </person>
+        </contributor>
+        <medium>
+          <genre>preprint</genre>
+        </medium>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em> [preprint]. n.p.: 2021–2022. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</title>
+        <uri>https://eprints.soton.ac.uk/338791/</uri>
+        <uri type="DOI">https://eprints.soton.ac.uk/338794/</uri>
+        <uri type="DOI" language="de">https://eprints.soton.ac.uk/338795/</uri>
+        <uri type="DOI" language="en">https://eprints.soton.ac.uk/338796/</uri>
+        <date type="published"><from>2022-10-12</from><to>2022-11-12</to></date>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Jenkins</surname><initials>S.</initials></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Ruostekoski</surname><forename>Janne</forename></name>
+          </person>
+        </contributor>
+        <medium>
+          <genre>preprint</genre>
+        </medium>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em> [preprint]. n.p.: 2022. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to output
   end
