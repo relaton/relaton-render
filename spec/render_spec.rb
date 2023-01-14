@@ -1204,6 +1204,43 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
+  it "drop ISSN/ISBN type from docidentifier prefixing" do
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <docidentifier type="ISBN.electronic">9781108877831</docidentifier>
+        <uri>https://eprints.soton.ac.uk/338791/</uri>
+        <uri type="DOI">https://eprints.soton.ac.uk/338794/</uri>
+        <uri type="DOI" language="de">https://eprints.soton.ac.uk/338795/</uri>
+        <uri type="DOI" language="en">https://eprints.soton.ac.uk/338796/</uri>
+        <date type="published"><on>2022-10-12</on></date>
+        <date type="accessed"><on>2022-10-12</on></date>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Jenkins</surname><initials>S.</initials></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Ruostekoski</surname><forename>Janne</forename></name>
+          </person>
+        </contributor>
+        <medium>
+          <genre>preprint</genre>
+        </medium>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em> [preprint]. n.p.: 2022. 9781108877831. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>. [viewed: October 12, 2022].</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
   it "truncates date to year" do
     input = <<~INPUT
       <bibitem type="book">

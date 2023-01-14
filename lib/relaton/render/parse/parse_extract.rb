@@ -102,8 +102,9 @@ module Relaton
 
       def other_identifier(doc)
         doc.docidentifier.each_with_object([]) do |id, ret|
-          other_identifier_include.include? id.type or next
-          ret << @i18n.l10n("#{id.type}: #{id.id}")
+          type = id.type&.sub(/^(ISBN|ISSN)\..*$/, "\\1")
+          other_identifier_include.include? type or next
+          ret << @i18n.l10n("#{type}: #{id.id}")
         end
       end
 
