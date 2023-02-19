@@ -29,7 +29,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "simplecov"
 
   spec.add_dependency "isodoc-i18n", "~> 1.1.2"
-  spec.add_dependency "liquid", "~> 4"
+  spec.add_dependency "liquid", "~> 5"
   spec.add_dependency "nokogiri"
   spec.add_dependency "relaton-bib", ">= 1.13.0"
   spec.add_dependency "twitter_cldr"
