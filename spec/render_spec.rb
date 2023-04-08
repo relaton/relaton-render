@@ -1339,4 +1339,33 @@ RSpec.describe Relaton::Render do
     expect(p.render(input))
       .to be_equivalent_to output
   end
+
+  it "deals with URIs containing underscore" do
+    input = <<~INPUT
+      <bibitem type="software">
+        <title>metanorma-standoc</title>
+        <uri>https://github.com/metanorma/metanorma_standoc</uri>
+        <date type="published"><on>2019-09-04</on></date>
+        <contributor>
+          <role type="author"/>
+          <organization>
+            <name>Ribose Inc.</name>
+          </organization>
+        </contributor>
+        <contributor>
+          <role type="distributor"/>
+          <organization>
+            <name>GitHub</name>
+          </organization>
+        </contributor>
+        <edition>1.3.1</edition>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <link target="https://github.com/metanorma/metanorma_standoc">https://github.com/metanorma/metanorma_standoc</link>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
 end

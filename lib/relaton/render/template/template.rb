@@ -110,7 +110,7 @@ module Relaton
           when Array
             hash.map { |v| liquid_hash(v) }
           when String
-            hash.empty? ? nil : hash.gsub(/ /, "_")
+            hash.empty? ? nil : hash.gsub(/_/, "\\_").gsub(/ /, "_")
           else hash
           end
         end
