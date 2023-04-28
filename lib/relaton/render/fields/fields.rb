@@ -145,7 +145,7 @@ module Relaton
             extentformat1(k, v, m, e1)
             m
           end
-          @r.extenttemplate.render(ret.merge(type: hash[:type]))
+          @r.extenttemplate.render(hash.merge(ret))
         end.join("; ")
       end
 

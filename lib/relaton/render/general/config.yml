@@ -22,6 +22,7 @@ extenttemplate:
   standard: book
   techreport: book
   inbook: "{{ volume }}: {{ page }}"
+  article: "{{ volume }} {{issue}} , {{ page }}, {{ duration }}"
   misc: "{{ volume }} {{issue}} , {{ page }}, {{ duration }}"
 sizetemplate:
   dataset: "{{ data }}"
