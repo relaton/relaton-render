@@ -105,11 +105,13 @@ module Relaton
       end
 
       def role_inflect(contribs, role)
-        role.nil? || contribs.size.zero? ||
+        role.nil? || contribs.empty? ||
           %w(author publisher distributor
              authorizer).include?(role) and return nil
         number = contribs.size > 1 ? "pl" : "sg"
-        @r.i18n.get[role][number] || role
+        x = @r.i18n.get[role]
+        x.is_a?(Hash) or return role
+        x[number] || role
       end
 
       def editionformat(edn, num)
@@ -135,7 +137,7 @@ module Relaton
         num.nil? ||
           (num.is_a?(Hash) && num[:status].nil? &&
             num[:iteration].nil?) and return nil
-        @r.i18n.draft.sub(/%/, num)
+        @r.i18n.draft.sub("%", num)
       end
 
       def extentformat(extent, hash)
@@ -195,7 +197,7 @@ module Relaton
           value_raw[:to] or num = "sg"
         end
         @r.i18n.l10n(@r.i18n.get[is_size ? "size" : "extent"][type][num]
-          .sub(/%/, value))
+          .sub("%", value))
       end
 
       def date_range(hash)
