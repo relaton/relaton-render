@@ -2,7 +2,9 @@ require_relative "render_classes"
 require_relative "citations"
 require "yaml"
 require "liquid"
+require "date"
 require "relaton_bib"
+require "net/http"
 require_relative "../template/template"
 require_relative "../../../isodoc/i18n"
 
@@ -133,6 +135,7 @@ module Relaton
       def parse1(doc)
         r = renderer(doc.type || "misc")
         data = @parse.extract(doc)
+        enhance_data(data, r.template_raw)
         data_liquid = @fieldsklass.new(renderer: self)
           .compound_fields_format(data)
         valid_parse(@i18n.l10n(r.render(data_liquid)))
@@ -173,6 +176,23 @@ module Relaton
         end
       end
 
+      # add to liquid data based on template
+      def enhance_data(data, template)
+        template.is_a?(String) or return
+        add_date_accessed(data, template)
+      end
+
+      def add_date_accessed(data, template)
+        (/\{\{\s*date_accessed\s*\}\}/.match?(template) &&
+          /\{\{\s*uri\s*\}\}/.match?(template) &&
+          data[:uri_raw] && !data[:date_accessed]) or return
+        if url_exist?(data[:uri_raw])
+          data[:date_accessed] = { on: ::Date.today.to_s }
+        else
+          warn "BIBLIOGRAPHY WARNING: cannot access #{data[:uri_raw]}"
+        end
+      end
+
       private
 
       def template_hash_fill(templates)
@@ -181,6 +201,23 @@ module Relaton
           BIBTYPE.include?(template) and template = templates[template]
           m[type] = template
         end
+      end
+
+      def url_exist?(url_string)
+        res = access_url(url_string)
+        res.is_a?(Net::HTTPRedirection) and return url_exist?(res["location"])
+        res.code[0] != "4"
+      rescue Errno::ENOENT, SocketError
+        false # false if can't find the server
+      end
+
+      def access_url(url_string)
+        url = URI.parse(url_string)
+        req = Net::HTTP.new(url.host, url.port)
+        req.use_ssl = (url.scheme == "https")
+        path = url.path or return false
+        path.empty? and path = "/"
+        req.request_head(path)
       end
     end
   end

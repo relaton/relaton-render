@@ -77,7 +77,7 @@ RSpec.describe Relaton::Render do
 
   it "renders incollection, two authors, with Arabic internationalisation" do
     output = <<~OUTPUT
-      <formattedref>RAMSEY, J. K. و W. C. MCGREW. Object play in great apes: Studies in nature and captivity. في: PELLEGRINI, Anthony D. و Peter Kenneth SMITH (محرران): «The nature of play: Great apes and humans» [electronic resource, 8vo]. ؜الطبعة؜ ٣.؜. New York, NY: Guilford Press. 2005. ؜89–112 ص؜. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>. [ينظر: 3 سبتمبر 2019].</formattedref>
+      <formattedref>RAMSEY, J. K. و W. C. MCGREW. Object play in great apes: Studies in nature and captivity. في: PELLEGRINI, Anthony D. و Peter Kenneth SMITH (محرران): «The nature of play: Great apes and humans» [electronic resource, 8vo]. ؜الطبعة؜ ٣؜. New York, NY: Guilford Press. 2005. ؜89–112 ص؜. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>. [ينظر: 3 سبتمبر 2019].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new(language: "ar")
     expect(HTMLEntities.new.decode(p.render(input)))
@@ -123,7 +123,7 @@ RSpec.describe Relaton::Render do
 
   it "renders incollection, two authors, with Russian internationalisation" do
     output = <<~OUTPUT
-      <formattedref>RAMSEY, J. K. и W. C. MCGREW. Object play in great apes: Studies in nature and captivity. В: PELLEGRINI, Anthony D. и Peter Kenneth SMITH (изд.): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. Третье издание. New York, NY: Guilford Press. 2005. стр. 89–112. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>. [просмотрено: 3 сентября 2019 г.].</formattedref>
+      <formattedref>RAMSEY, J. K. и W. C. MCGREW. Object play in great apes: Studies in nature and captivity. В: PELLEGRINI, Anthony D. и Peter Kenneth SMITH (изд.): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. Третье издание. New York, NY: Guilford Press. 2005. стр. 89–112. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>. [просмотрено: 3 сентября 2019 г.].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new(language: "ru")
     expect(HTMLEntities.new.decode(p.render(input)))

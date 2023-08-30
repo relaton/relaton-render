@@ -5,6 +5,8 @@ module Relaton
   module Render
     module Template
       class General
+        attr_reader :template_raw
+
         def initialize(opt = {})
           @htmlentities = HTMLEntities.new
           customise_liquid
@@ -43,7 +45,7 @@ module Relaton
 
         def punct_field?(name)
           name or return false
-          name = name.gsub(/'/, '"')
+          name = name.gsub("'", '"')
           %w(labels["qq-open"] labels["qq-close"] labels["q-open"]
              labels["q-close"]).include?(name)
         end
@@ -60,7 +62,7 @@ module Relaton
               a[3] = "}}#{FIELD_DELIM}"
             end
             a.join
-          end.join.gsub(/\t/, " ")
+          end.join.gsub("\t", " ")
           t.gsub(/\}\}#{FIELD_DELIM}\|/o, "}}#{FIELD_DELIM}\t")
             .gsub(/\|#{FIELD_DELIM}\{\{/o, "\t#{FIELD_DELIM}{{")
         end
@@ -96,7 +98,7 @@ module Relaton
             .sub(/^\s*[,.:;]\s*/, "")
             .sub(/[,:;]\s*$/, "")
             .gsub(/(?<!\\)_/, " ")
-            .gsub(/\\_/, "_")
+            .gsub("\\_", "_")
             .gsub(/#{NON_SPACING_DELIM}/o, "").gsub(/\s+/, " ")
         end
 
@@ -110,7 +112,7 @@ module Relaton
           when Array
             hash.map { |v| liquid_hash(v) }
           when String
-            hash.empty? ? nil : hash.gsub(/_/, "\\_").gsub(/ /, "_")
+            hash.empty? ? nil : hash.gsub("_", "\\_").gsub(/ /, "_")
           else hash
           end
         end
@@ -165,7 +167,7 @@ module Relaton
           t = nametemplate_split(template)
 
           mid = (1..size - 2).each_with_object([]) do |i, m|
-            m << t[1].gsub(/\[1\]/, "[#{i}]")
+            m << t[1].gsub("[1]", "[#{i}]")
           end
           t[1] = mid.join
           t[2].gsub!(/\[\d+\]/, "[#{size - 1}]")

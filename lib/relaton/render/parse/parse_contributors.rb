@@ -109,7 +109,7 @@ module Relaton
           ret = date.detect { |x| x.type == t } and
             return ret
         end
-        date.first
+        date.reject { |x| x.type == "accessed" }.first
       end
 
       # year-only
