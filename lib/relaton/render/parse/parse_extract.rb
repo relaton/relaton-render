@@ -119,11 +119,12 @@ module Relaton
       end
 
       def doi(doc)
-        doc.docidentifier.each_with_object([]) do |id, ret|
+        out = doc.docidentifier.each_with_object([]) do |id, ret|
           type = id.type&.sub(/^(DOI)\..*$/i, "\\1") or next
           type.casecmp("doi").zero? or next
           ret << id.id
         end
+        out.empty? ? nil : out
       end
 
       def id_type_norm(id)
