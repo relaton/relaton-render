@@ -5,7 +5,7 @@ module IsoDoc
   class RelatonRenderI18n < I18n
     def load_yaml1(lang, script)
       case lang
-      when "en", "fr", "ru", "de", "es", "ar"
+      when "en", "fr", "ru", "de", "es", "ar", "ja"
         load_yaml2(lang)
       when "zh"
         case script
@@ -25,7 +25,7 @@ module IsoDoc
     # because of the potential for script mixing
     def cleanup_entities(hash, is_xml: true)
       ret = super
-      if @lang == "ar" && /%/.match?(ret)
+      if @lang == "ar" && ret.include?("%")
         ret = "&#x61c;#{ret}&#x61c;"
       end
       ret

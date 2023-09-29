@@ -939,6 +939,105 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
+  it "renders merged joint published standard" do
+    input = <<~INPUT
+      <bibitem type="standard">
+        <title>Intellectual Property Rights in IETF technology</title>
+        <uri>https://www.ietf.org/rfc/rfc3979.txt</uri>
+        <uri>https://www.iso.org/rfc/rfc3979.txt</uri>
+        <docidentifier primary="true" type="RFC">RFC 3979</docidentifier>
+        <docidentifier primary="true" type="ISO">ISO 3979</docidentifier>
+        <docidentifier type="ISO-committee">IC 3979</docidentifier>
+        <docidentifier type="DOI">https://doi.org/10.3886/ICPSR20520.v2</docidentifier>
+        <date type="published"><on>2005</on></date>
+        <date type="accessed"><on>2012-06-18</on></date>
+        <contributor>
+          <role type="publisher"/>
+          <organization>
+            <name>Internet Engineering Task Force</name>
+            <abbreviation>IETF</abbreviation>
+          </organization>
+        </contributor>
+        <contributor>
+          <role type="publisher"/>
+          <organization>
+            <name>International Organization for Standardization</name>
+            <abbreviation>ISO</abbreviation>
+          </organization>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Bradner</surname><initials>S.</initials></name>
+          </person>
+        </contributor>
+        <medium>
+          <carrier>Online</carrier>
+        </medium>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>BRADNER (ed.). RFC 3979|ISO 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. Internet Engineering Task Force and International Organization for Standardization. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <link target='https://www.ietf.org/rfc/rfc3979.txt'>https://www.ietf.org/rfc/rfc3979.txt</link>. [viewed: June 18, 2012].</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
+  it "renders dual joint published standard" do
+    input = <<~INPUT
+      <bibitem type="standard">
+        <title>Intellectual Property Rights in IETF technology</title>
+        <uri>https://www.ietf.org/rfc/rfc3979.txt</uri>
+        <docidentifier primary="true" type="RFC">RFC 3979</docidentifier>
+        <docidentifier type="ISO-committee">IC 3979</docidentifier>
+        <docidentifier type="DOI">https://doi.org/10.3886/ICPSR20520.v2</docidentifier>
+        <date type="published"><on>2005</on></date>
+        <date type="accessed"><on>2012-06-18</on></date>
+        <contributor>
+          <role type="publisher"/>
+          <organization>
+            <name>Internet Engineering Task Force</name>
+            <abbreviation>IETF</abbreviation>
+          </organization>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Bradner</surname><initials>S.</initials></name>
+          </person>
+        </contributor>
+        <medium>
+          <carrier>Online</carrier>
+        </medium>
+        <relation type="hasRepresentation">
+              <bibitem type="standard">
+        <title>Intellectual Property Rights in IETF technology</title>
+        <uri>https://www.iso.org/rfc/rfc3979.txt</uri>
+        <docidentifier primary="true" type="ISO">ISO 3979</docidentifier>
+        <docidentifier type="ISO-committee">IC 3979</docidentifier>
+        <docidentifier type="DOI">https://doi.org/10.3886/ICPSR20520.v2</docidentifier>
+        <date type="published"><on>2005</on></date>
+        <date type="accessed"><on>2012-06-18</on></date>
+        <contributor>
+          <role type="publisher"/>
+          <organization>
+            <name>International Organization for Standardisation</name>
+            <abbreviation>ISO</abbreviation>
+          </organization>
+        </contributor>
+        </bibitem>
+        </relation>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>BRADNER (ed.). RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. Internet Engineering Task Force. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <link target='https://www.ietf.org/rfc/rfc3979.txt'>https://www.ietf.org/rfc/rfc3979.txt</link>. [viewed: June 18, 2012]. Also published as: ISO 3979: <em>Intellectual Property Rights in IETF technology</em>. International Organization for Standardisation. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <link target='https://www.iso.org/rfc/rfc3979.txt'>https://www.iso.org/rfc/rfc3979.txt</link>. [viewed: June 18, 2012].</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
   it "renders dataset" do
     input = <<~INPUT
       <bibitem type="dataset">
@@ -1121,7 +1220,7 @@ RSpec.describe Relaton::Render do
         </medium>
       </bibitem>
     INPUT
-    output = ""
+    output = "<formattedref></formattedref>"
     p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to output

@@ -91,9 +91,13 @@ module Relaton
       end
 
       def authoritative_identifier(doc)
-        doc.docidentifier.each_with_object([]) do |id, ret|
+        out = doc.docidentifier.each_with_object([]) do |id, ret|
+          ret << id.id if id.primary
+        end
+        out.empty? and out = doc.docidentifier.each_with_object([]) do |id, ret|
           ret << id.id unless authoritative_identifier_exclude.include? id.type
         end
+        out
       end
 
       def authoritative_identifier_exclude
