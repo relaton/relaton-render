@@ -260,7 +260,8 @@ RSpec.describe Relaton::Render do
     input = <<~INPUT
       <bibitem type="book">
         <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
-        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <docidentifier type="DOI">10.1017/9781108877831</docidentifier>
+        <docidentifier type="DOI">10.1017/9781108877832</docidentifier>
         <docidentifier type="ISBN">9781108877831</docidentifier>
         <date type="published"><on>2022</on></date>
         <date type="accessed"><on>2022-04-02</on></date>
@@ -311,11 +312,11 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP.</formattedref>
+      <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
     OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ,_{{role}} ({{date}}) . <em>{{ title }}</em> [{{medium}}] ,_{{ edition }} .
-      {{ place }} : {{ publisher_abbrev }} . {{ uri }}. At:_{{ access_location }}.
+      {{ place }} : {{ publisher_abbrev }} . {{ uri }}. At:_{{ access_location }}. DOI:_{{ doi | join: ", " }}
     TEMPLATE
     etal = <<~TEMPLATE
       {{surname[0] }}, {{initials[0] | join: "" | remove: "." | remove: "_" }}, {{initials[1]  | join: "" | remove: "." | remove: "_" }} {{surname[1] }}, {{initials[2]  | join: "" | remove: "." | remove: "_" }} {{surname[2] }},  {{initials[3]  | join: "" | remove: "." | remove: "_" }} {{surname[3] }} <em>et al.</em>
@@ -333,7 +334,7 @@ RSpec.describe Relaton::Render do
     expect(p.render(input))
       .to be_equivalent_to output
     output = <<~OUTPUT
-      <formattedref>Aluffi, P, DX Anderson, MS Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP.</formattedref>
+      <formattedref>Aluffi, P, DX Anderson, MS Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template },
@@ -348,7 +349,7 @@ RSpec.describe Relaton::Render do
     expect(p.render(input))
       .to be_equivalent_to output
     output = <<~OUTPUT
-      <formattedref>Aluffi, P, DX Anderson <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP.</formattedref>
+      <formattedref>Aluffi, P, DX Anderson <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template },
@@ -363,7 +364,7 @@ RSpec.describe Relaton::Render do
     expect(p.render(input))
       .to be_equivalent_to output
     output = <<~OUTPUT
-      <formattedref>Aluffi, P <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP.</formattedref>
+      <formattedref>Aluffi, P <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template },
@@ -1212,6 +1213,21 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
+  it "ignore non-authoritative identifiers" do
+    input = <<~INPUT
+        <bibitem id="ref_pddl" type="book" schema-version="v1.2.4">  <fetched>2023-09-29</fetched>
+      <title type="main" format="text/plain" script="Latn">An Introduction to the Planning Domain Definition Language</title>
+        <uri type="DOI">http://dx.doi.org/10.1007/978-3-031-01584-7</uri>  <uri type="src">https://link.springer.com/10.1007/978-3-031-01584-7</uri>  <docidentifier type="DOI" primary="true">10.1007/978-3-031-01584-7</docidentifier><docidentifier type="metanorma-ordinal">[B1]</docidentifier>  <docidentifier type="ISBN">9783031004568</docidentifier>  <docidentifier type="ISBN">9783031015847</docidentifier>  <docidentifier type="issn.print">1939-4608</docidentifier>  <docidentifier type="issn.electronic">1939-4616</docidentifier>
+        </bibitem>
+    INPUT
+    output = <<~OUTPUT
+<formattedref><em>An Introduction to the Planning Domain Definition Language</em>. n.p.: n.d. DOI: 10.1007/978-3-031-01584-7. ISBN: 9783031004568. ISBN: 9783031015847. ISSN: 1939-4608. ISSN: 1939-4616. <link target='https://link.springer.com/10.1007/978-3-031-01584-7'>https://link.springer.com/10.1007/978-3-031-01584-7</link>.</formattedref>
+OUTPUT
+    p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
   it "renders empty reference" do
     input = <<~INPUT
       <bibitem type="misc">
@@ -1310,7 +1326,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em> [preprint]. n.p.: 2022. 9781108877831. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>. [viewed: October 12, 2022].</formattedref>
+      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em> [preprint]. n.p.: 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>. [viewed: October 12, 2022].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))

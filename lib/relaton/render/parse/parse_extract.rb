@@ -92,10 +92,12 @@ module Relaton
 
       def authoritative_identifier(doc)
         out = doc.docidentifier.each_with_object([]) do |id, ret|
-          ret << id.id if id.primary
+          id.primary && !authoritative_identifier_exclude.include?(id.type) and
+            ret << id.id
         end
         out.empty? and out = doc.docidentifier.each_with_object([]) do |id, ret|
-          ret << id.id unless authoritative_identifier_exclude.include? id.type
+          authoritative_identifier_exclude.include?(id_type_norm(id)) or
+            ret << id.id
         end
         out
       end
@@ -106,7 +108,7 @@ module Relaton
 
       def other_identifier(doc)
         doc.docidentifier.each_with_object([]) do |id, ret|
-          type = id.type&.sub(/^(ISBN|ISSN)\..*$/, "\\1")
+          type = id_type_norm(id)
           other_identifier_include.include? type or next
           ret << @i18n.l10n("#{type}: #{id.id}")
         end
@@ -114,6 +116,18 @@ module Relaton
 
       def other_identifier_include
         %w(ISSN ISBN DOI)
+      end
+
+      def doi(doc)
+        doc.docidentifier.each_with_object([]) do |id, ret|
+          type = id.type&.sub(/^(DOI)\..*$/i, "\\1") or next
+          type.casecmp("doi").zero? or next
+          ret << id.id
+        end
+      end
+
+      def id_type_norm(id)
+        id.type&.sub(/^(ISBN|ISSN)\..*$/i) { $1.upcase }
       end
 
       def uri(doc)

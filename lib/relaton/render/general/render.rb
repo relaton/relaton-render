@@ -133,7 +133,6 @@ module Relaton
       end
 
       def parse1(doc)
-
         r = doc.relation.select { |x| x.type == "hasRepresentation" }
           .map { |x| @i18n.also_pub_as + parse_single_bibitem(x.bibitem) }
         out = [parse_single_bibitem(doc)] + r
