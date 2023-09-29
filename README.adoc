@@ -158,6 +158,7 @@ drawn from the bibliographic item:
 | authorizer | ./contributor[role/@type = 'authorizer']/organization/name \| ./contributor[role/@type = 'publisher']/organization/name | | Y | 
 | authoritative_identifier | ./docidentifier[not(@type = 'metanorma' or @type = 'ordinal' or @type = 'ISBN' or @type = 'ISSN' or @type = 'DOI')] | Y | |
 | other_identifier | ./docidentifier[@type = 'ISBN' or @type = 'ISSN' or @type = 'DOI'] | Y | | By default, each such identifier is prefixed with its type and colon
+| doi | ./docidentifier[@type = 'DOI'] | Y | | No prefix supplied
 | status | ./status | | | Rendering varies by flavour
 | uri | ./uri[@type = 'citation' or @type = 'uri' or @type = 'src' or true] | | | If multiples, prioritise language match. Always exclude DOI: that is not where the resource is available from
 | access_location | ./accessLocation | | Y |
