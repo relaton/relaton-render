@@ -90,6 +90,21 @@ module Relaton
         series.run
       end
 
+      def series_org(series, _doc)
+        series.organization
+      end
+
+      def series_place(series, _doc)
+        series.place
+      end
+
+      def series_dates(series, _doc)
+        f = series.from
+        t = series.to
+        f || t or return nil
+        "#{f}–#{t}"
+      end
+
       def authoritative_identifier(doc)
         out = doc.docidentifier.each_with_object([]) do |id, ret|
           id.primary && !authoritative_identifier_exclude.include?(id.type) and

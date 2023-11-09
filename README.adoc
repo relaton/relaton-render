@@ -296,6 +296,9 @@ The `seriestemplate` is a template for the rendering of series information. It d
 | series_num  | ./series[@type = 'main' or not(@type) or true]/number | | Y |
 | series_partnumber  | ./series[@type = 'main' or not(@type) or true]/partnumber | | Y |
 | series_run  | ./series[@type = 'main' or not(@type) or true]/run | | Y |
+| series_place  | ./series[@type = 'main' or not(@type) or true]/place | | Y |
+| series_organization  | ./series[@type = 'main' or not(@type) or true]/organization | | Y |
+| series_dates  | ./series[@type = 'main' or not(@type) or true]/from, ./series[@type = 'main' or not(@type) or true]/to | | Y |
 |===
 
 For example: `{% if series_abbr %}{{series_abbr}}{% else %}{{series_title}}{% endif %} ,_({{series_run}}) {{series_num}}|({{series_partnumber}})`

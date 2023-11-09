@@ -60,7 +60,10 @@ module Relaton
           series_abbr: series_abbr(series, doc),
           series_run: series_run(series, doc),
           series_num: series_num(series, doc),
-          series_partnumber: series_partnumber(series, doc) }
+          series_partnumber: series_partnumber(series, doc),
+          series_place: series_place(series, doc),
+          series_org: series_org(series, doc),
+          series_dates: series_dates(series, doc) }
       end
     end
   end

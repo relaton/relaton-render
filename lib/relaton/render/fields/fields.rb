@@ -72,7 +72,7 @@ module Relaton
 
       def seriesformat(hash)
         parts = %i(series_title series_abbr series_num series_partnumber
-                   series_run series_formatted)
+                   series_run series_formatted series_dates series_place series_org)
         series_out = parts.each_with_object({}) do |i, m|
           m[i] = hash[i]
         end

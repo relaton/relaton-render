@@ -380,6 +380,85 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
+   it "processes capitalize_first" do
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>facets of algebraic geometry: a collection in honor of william fulton's 80th birthday</title>
+        <docidentifier type="DOI">10.1017/9781108877831</docidentifier>
+        <docidentifier type="DOI">10.1017/9781108877832</docidentifier>
+        <docidentifier type="ISBN">9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <date type="accessed"><on>2022-04-02</on></date>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+          </person>
+        </contributor>
+                <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Anderson</surname><formatted-initials>D. X.</formatted-initials></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Hering</surname><forename>Milena</forename><forename>S.</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Mustaţă</surname><formatted-initials>M.M.</formatted-initials></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Payne</surname><forename>Sam</forename></name>
+          </person>
+        </contributor>
+        <edition>1</edition>
+        <series>
+        <title>London Mathematical Society Lecture Note Series</title>
+        <number>472</number>
+        </series>
+            <contributor>
+              <role type="publisher"/>
+              <organization>
+                <name>Cambridge University Press</name>
+                <abbreviation>CUP</abbreviation>
+              </organization>
+            </contributor>
+            <place>Cambridge, UK</place>
+          <size><value type="page">lxii</value><value type="page">500</value></size>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă <em>et al.</em>, eds. (2022). <em>Facets of algebraic geometry: a collection in honor of william fulton's 80th birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
+    OUTPUT
+    template = <<~TEMPLATE
+      {{ creatornames }} ,_{{role}} ({{date}}) . <em>{{ title | capitalize_first }}</em> [{{medium}}] ,_{{ edition }} .
+      {{ place }} : {{ publisher_abbrev }} . {{ uri }}. At:_{{ access_location }}. DOI:_{{ doi | join: ", " }}
+    TEMPLATE
+    etal = <<~TEMPLATE
+      {{surname[0] }}, {{initials[0] | join: "" | remove: "." | remove: "_" }}, {{initials[1]  | join: "" | remove: "." | remove: "_" }} {{surname[1] }}, {{initials[2]  | join: "" | remove: "." | remove: "_" }} {{surname[2] }},  {{initials[3]  | join: "" | remove: "." | remove: "_" }} {{surname[3] }} <em>et al.</em>
+    TEMPLATE
+    p = Relaton::Render::General
+      .new(template: { book: template },
+           nametemplate: { one: "{{ nonpersonal[0] }}",
+                           etal_count: 4, etal: etal },
+           sizetemplate: "{{ page_raw }} pages",
+           language: "en",
+           edition_number: ["SpelloutRules", "spellout-ordinal"],
+           edition: "% edition",
+           date: { month_year: "MMMd", day_month_year: "yMMMd",
+                   date_time: "to_long_s" })
+    expect(p.render(input))
+      .to be_equivalent_to output
+     end
+
   it "processes formatted initials" do
     input = <<~INPUT
       <bibitem type="book">
@@ -870,6 +949,112 @@ RSpec.describe Relaton::Render do
       extenttemplate: {
         article: "{{ volume_raw}}{%if issue %}.{{issue_raw}}{%endif%} ({{date}}) {{page_raw}}",
       },
+    )
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
+  it "renders article, with journaltemplate" do
+    input = <<~INPUT
+      <bibitem type="article">
+              <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <docidentifier type="ISBN">9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+          </person>
+        </contributor>
+        <edition>1</edition>
+        <series>
+        <title>London Mathematical Society Lecture Note Series</title>
+        <place>Paris</place>
+        <organization>UCL</organization>
+        <abbreviation>LMS</abbreviation>
+        <from>1999</from>
+        <to>2000</to>
+        <number>472</number>
+        <partnumber>472</partnumber>
+        <run>N.S.</run>
+        </series>
+            <contributor>
+              <role type="publisher"/>
+              <organization>
+                <name>Cambridge University Press</name>
+              </organization>
+            </contributor>
+            <place>Cambridge, UK</place>
+            <extent>
+                <localityStack>
+                  <locality type="volume"><referenceFrom>1</referenceFrom></locality>
+                  <locality type="issue"><referenceFrom>7</referenceFrom></locality>
+        <locality type="page">
+          <referenceFrom>89</referenceFrom>
+          <referenceTo>112</referenceTo>
+        </locality>
+                </localityStack>
+            </extent>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>ALUFFI, Paolo (ed.). Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. London Mathematical Society Lecture Note Series Paris UCL 1999–2000 N.S. 472. 1st edition. vol. 1 no. 7, pp. 89–112. Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new(
+      journaltemplate: 
+        "{{ series_title }} {{ series_place }} {{ series_org }} {{series_dates }} {{ series_run }} {{series_number}} {{series_partnumber }}"
+    )
+    expect(p.render(input))
+      .to be_equivalent_to output
+
+       input = <<~INPUT
+      <bibitem type="article">
+              <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <docidentifier type="ISBN">9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+          </person>
+        </contributor>
+        <edition>1</edition>
+        <series>
+        <title>London Mathematical Society Lecture Note Series</title>
+        <place>Paris</place>
+        <organization>UCL</organization>
+        <abbreviation>LMS</abbreviation>
+        <number>472</number>
+        <partnumber>472</partnumber>
+        <run>N.S.</run>
+        </series>
+            <contributor>
+              <role type="publisher"/>
+              <organization>
+                <name>Cambridge University Press</name>
+              </organization>
+            </contributor>
+            <place>Cambridge, UK</place>
+            <extent>
+                <localityStack>
+                  <locality type="volume"><referenceFrom>1</referenceFrom></locality>
+                  <locality type="issue"><referenceFrom>7</referenceFrom></locality>
+        <locality type="page">
+          <referenceFrom>89</referenceFrom>
+          <referenceTo>112</referenceTo>
+        </locality>
+                </localityStack>
+            </extent>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>ALUFFI, Paolo (ed.). Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. London Mathematical Society Lecture Note Series Paris UCL N.S. 472. 1st edition. vol. 1 no. 7, pp. 89–112. Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new(
+      journaltemplate:
+        "{{ series_title }} {{ series_place }} {{ series_org }} {{series_dates }} {{ series_run }} {{series_number}} {{series_partnumber }}"
     )
     expect(p.render(input))
       .to be_equivalent_to output
