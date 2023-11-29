@@ -114,13 +114,16 @@ module Relaton
         parse(bib, embedded: embedded)
       end
 
+      def fmtref(doc)
+        "<formattedref>#{doc}</formattedref>"
+      end
+
       def parse(doc, embedded: false)
         f = doc.formattedref and
-          return embedded ? f.children.to_xml : doc.to_xml
-
+          return embedded ? f.content : fmtref(f.content)
         ret = parse1(doc) or return nil
         embedded and return ret
-        "<formattedref>#{ret}</formattedref>"
+        fmtref(ret)
       end
 
       def renderer(type)
