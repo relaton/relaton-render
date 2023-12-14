@@ -13,9 +13,9 @@ date_formats:
   day_month_year: to_long_s
   date_time: to_long_s
 draft: "Entwurf %"
-edition_ordinal: "% Aufl."
+edition_ordinal: "% Ausg."
 ordinal_keys: []
-edition: Auflage
+edition: Ausgabe
 editor:
   sg: Hrsg.
   pl: Hrsg.
@@ -44,6 +44,6 @@ size:
     sg: "% Nr."
     pl: "% Nr."
 inflection:
-  Auflage:
+  Ausgabe:
     gender: f
 

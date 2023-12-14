@@ -115,9 +115,8 @@ module Relaton
       end
 
       def editionformat(edn, num)
-        return edn unless num || /^\d+$/.match?(edn)
-
-        ret = edition_translate1(num || edn.to_i)
+        num || /^\d+$/.match?(edn) or return edn
+        ret = edition_translate1(num || edn.to_i) or return edn
         @r.edition_ordinal.sub(/%(Spellout|Ordinal)?/, ret)
       end
 
