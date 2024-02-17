@@ -331,7 +331,7 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
-   it "processes capitalize_first" do
+  it "processes capitalize_first" do
     input = <<~INPUT
       <bibitem type="book">
         <title>facets of algebraic geometry: a collection in honor of william fulton's 80th birthday</title>
@@ -408,7 +408,7 @@ RSpec.describe Relaton::Render do
                    date_time: "to_long_s" })
     expect(p.render(input))
       .to be_equivalent_to output
-     end
+  end
 
   it "processes formatted initials" do
     input = <<~INPUT

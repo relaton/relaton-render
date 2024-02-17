@@ -15,7 +15,7 @@ date_formats:
 ordinal_keys: []
 OrdinalRules: digits-ordinal
 edition: edition
-edition_ordinal: "%Ordinal edition"
+edition_ordinal: "{{ var1 | ordinal_num: '', '' }} edition"
 draft: "draft %"
 editor:
   sg: ed.

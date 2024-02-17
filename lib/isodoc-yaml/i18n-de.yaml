@@ -13,7 +13,7 @@ date_formats:
   day_month_year: to_long_s
   date_time: to_long_s
 draft: "Entwurf %"
-edition_ordinal: "% Ausg."
+edition_ordinal: "{{ var1 }} Ausg."
 ordinal_keys: []
 edition: Ausgabe
 editor:
@@ -45,5 +45,6 @@ size:
     pl: "% Nr."
 inflection:
   Ausgabe:
-    gender: f
+    grammar:
+      gender: f
 
