@@ -20,7 +20,7 @@ SpelloutRules:
   m.pl: spellout-ordinal-plural
   f.pl: spellout-ordinal-plural
   n.pl: spellout-ordinal-plural
-edition_ordinal: "%Spellout издание"
+edition_ordinal: "{{ var1 | ordinal_word: 'edition', '' }} издание"
 edition: издание
 draft: "проект %"
 editor:
@@ -53,5 +53,6 @@ size:
     pl: "% шт."
 inflection:  
   издание:
-    gender: n
+    grammar:
+      gender: n
 
