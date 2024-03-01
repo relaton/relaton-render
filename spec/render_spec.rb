@@ -78,11 +78,49 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) n.p.: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.</formattedref>
+      ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) n.p.: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
+      .to be_equivalent_to "<formattedref>#{output}</formattedref>"
+    data, template = p.parse(input)
+    expect(p.liquid(data, template))
       .to be_equivalent_to output
+    hash = {
+      authorcite: "Aluffi, Anderson, Hering, Mustaţă and Payne",
+      authorizer: "Cambridge University Press",
+      authorizer_raw: [{ nonpersonal: "Cambridge University Press" }],
+      creatornames: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE",
+      creators: [
+        { given: "Paolo", initials: ["P."], middle: [], surname: "Aluffi" },
+        { given: "David", initials: ["D."], middle: [], surname: "Anderson" },
+        { given: "Milena", initials: ["M."], middle: [], surname: "Hering" },
+        { given: "Mircea", initials: ["M."], middle: [], surname: "Mustaţă" },
+        { given: "Sam", initials: ["S."], middle: [], surname: "Payne" },
+      ],
+      date: "2022",
+      doi: ["https://doi.org/10.1017/9781108877831"],
+      draft_raw: { iteration: nil, status: nil },
+      edition: "1st edition",
+      edition_raw: "1",
+      other_identifier: ["DOI: https://doi.org/10.1017/9781108877831",
+                         "ISBN: 9781108877831"],
+      publisher: "Cambridge University Press",
+      publisher_abbrev: "Cambridge University Press",
+      publisher_abbrev_raw: ["Cambridge University Press"],
+      publisher_raw: [{ nonpersonal: "Cambridge University Press" }],
+      role: "eds.",
+      role_raw: "editor",
+      series: "London Mathematical Society Lecture Note Series 472",
+      series_num: "472",
+      series_title: "London Mathematical Society Lecture Note Series",
+      size: "1 vol.",
+      size_raw: { "volume" => ["1"] },
+      title: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
+      type: "book",
+    }
+    expect(metadata(data))
+      .to eq(hash)
   end
 
   it "renders book, five editors with specific class, broken down place" do
@@ -897,8 +935,9 @@ RSpec.describe Relaton::Render do
       <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. <em>London Mathematical Society Lecture Note Series</em> (N.S.). 1st edition. 1.7 (2022) 89–112. Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new(
-      extenttemplate: {
-        article: "{{ volume_raw}}{%if issue %}.{{issue_raw}}{%endif%} ({{date}}) {{page_raw}}",
+      extenttemplate: { article: <<~TEMPLATE,
+        {{ volume_raw}}{%if issue %}.{{issue_raw}}{%endif%} ({{date}}) {{page_raw}}
+      TEMPLATE
       },
     )
     expect(p.render(input))
@@ -953,13 +992,14 @@ RSpec.describe Relaton::Render do
       <formattedref>ALUFFI, Paolo (ed.). Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. London Mathematical Society Lecture Note Series Paris UCL 1999–2000 N.S. 472. 1st edition. vol. 1 no. 7, pp. 89–112. Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new(
-      journaltemplate: 
-        "{{ series_title }} {{ series_place }} {{ series_org }} {{series_dates }} {{ series_run }} {{series_number}} {{series_partnumber }}"
+      journaltemplate: <<~TEMPLATE,
+        {{ series_title }} {{ series_place }} {{ series_org }} {{series_dates }} {{ series_run }} {{series_number}} {{series_partnumber }}
+      TEMPLATE
     )
     expect(p.render(input))
       .to be_equivalent_to output
 
-       input = <<~INPUT
+    input = <<~INPUT
       <bibitem type="article">
               <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
         <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
@@ -1004,8 +1044,9 @@ RSpec.describe Relaton::Render do
       <formattedref>ALUFFI, Paolo (ed.). Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. London Mathematical Society Lecture Note Series Paris UCL N.S. 472. 1st edition. vol. 1 no. 7, pp. 89–112. Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new(
-      journaltemplate:
-        "{{ series_title }} {{ series_place }} {{ series_org }} {{series_dates }} {{ series_run }} {{series_number}} {{series_partnumber }}"
+      journaltemplate: <<~TEMPLATE,
+        {{ series_title }} {{ series_place }} {{ series_org }} {{series_dates }} {{ series_run }} {{series_number}} {{series_partnumber }}
+      TEMPLATE
     )
     expect(p.render(input))
       .to be_equivalent_to output
@@ -1357,9 +1398,37 @@ RSpec.describe Relaton::Render do
         </bibitem>
     INPUT
     output = <<~OUTPUT
-<formattedref><em>An Introduction to the Planning Domain Definition Language</em>. n.p.: n.d. DOI: 10.1007/978-3-031-01584-7. ISBN: 9783031004568. ISBN: 9783031015847. ISSN: 1939-4608. ISSN: 1939-4616. <link target='https://link.springer.com/10.1007/978-3-031-01584-7'>https://link.springer.com/10.1007/978-3-031-01584-7</link>.</formattedref>
-OUTPUT
+      <formattedref><em>An Introduction to the Planning Domain Definition Language</em>. n.p.: n.d. DOI: 10.1007/978-3-031-01584-7. ISBN: 9783031004568. ISBN: 9783031015847. ISSN: 1939-4608. ISSN: 1939-4616. <link target='https://link.springer.com/10.1007/978-3-031-01584-7'>https://link.springer.com/10.1007/978-3-031-01584-7</link>.</formattedref>
+    OUTPUT
     p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
+  it "ignore untrademarked IEEE identifiers" do
+    input = <<~INPUT
+        <bibitem id="ref_pddl" type="book" schema-version="v1.2.4">  <fetched>2023-09-29</fetched>
+      <title type="main" format="text/plain" script="Latn">An Introduction to the Planning Domain Definition Language</title>
+        <uri type="DOI">http://dx.doi.org/10.1007/978-3-031-01584-7</uri>  <uri type="src">https://link.springer.com/10.1007/978-3-031-01584-7</uri>
+        <docidentifier type="DOI">10.1007/978-3-031-01584-7</docidentifier>
+        <docidentifier type="IEEE" scope="trademark">IEEE-TM 2</docidentifier>
+        <docidentifier type="IEEE">IEEE 2</docidentifier>
+        </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref><em>An Introduction to the Planning Domain Definition Language</em>. n.p.: n.d. IEEE-TM 2. DOI: 10.1007/978-3-031-01584-7. <link target='https://link.springer.com/10.1007/978-3-031-01584-7'>https://link.springer.com/10.1007/978-3-031-01584-7</link>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+
+    output = <<~OUTPUT
+      <formattedref><em>An Introduction to the Planning Domain Definition Language</em>. n.p.: n.d. IEEE 2. DOI: 10.1007/978-3-031-01584-7. <link target='https://link.springer.com/10.1007/978-3-031-01584-7'>https://link.springer.com/10.1007/978-3-031-01584-7</link>.</formattedref>
+    OUTPUT
+    input.sub!(
+      '<docidentifier type="IEEE" scope="trademark">IEEE-TM 2</docidentifier>',
+      "",
+    )
     expect(p.render(input))
       .to be_equivalent_to output
   end

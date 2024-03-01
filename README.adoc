@@ -90,6 +90,11 @@ if called with `type: "author-date"`.
 The author and date are differentiated so that consumers can separate them in citations -- e.g. "Jones (1996) claims", 
 "(Jones 1996, 1997)".
 
+=== Parsing single reference
+
+Given an Relaton bibitem object (or equivalent Relaton XML), `parse(input)` will output the hash of fields that is passed into the
+Liquid templates described below for rendering: it is the hash of bibliographic fields extracted by the gem.
+
 == Configuration
 
 === Templates

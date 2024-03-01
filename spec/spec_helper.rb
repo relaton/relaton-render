@@ -16,3 +16,9 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 end
+
+def metadata(hash)
+  hash.sort.to_h.delete_if do |_k, v|
+    v.nil? || (v.respond_to?(:empty?) && v.empty?)
+  end
+end

@@ -17,7 +17,6 @@ module Relaton
 
       def medium(doc, host)
         x = doc.medium || host&.medium or return nil
-
         %w(content genre form carrier size scale).each_with_object({}) do |i, m|
           m[i] = x.send i
         end.compact
@@ -47,10 +46,11 @@ module Relaton
       end
 
       def place1(place)
-        place.city.nil? && place.region.empty? && place.country.empty? and
-          return place.name
-        ret = [place.city] + place.region.map(&:name) +
-          place.country.map(&:name)
+        c = place.city
+        r = place.region
+        n = place.country
+        c.nil? && r.empty? && n.empty? and return place.name
+        ret = [c] + r.map(&:name) + n.map(&:name)
         @i18n.l10n(ret.compact.join(", "))
       end
 
@@ -105,14 +105,21 @@ module Relaton
         "#{f}–#{t}"
       end
 
+      def auth_id_filter(ids)
+        ids.detect { |i| i.type == "IEEE" && i.scope == "trademark" } &&
+          ids.detect { |i| i.type == "IEEE" && i.scope != "trademark" } and
+          ids.reject! { |i| i.type == "IEEE" && i.scope != "trademark" }
+        ids
+      end
+
       def authoritative_identifier(doc)
-        out = doc.docidentifier.each_with_object([]) do |id, ret|
+        out = auth_id_filter(doc.docidentifier).each_with_object([]) do |id, m|
           id.primary && !authoritative_identifier_exclude.include?(id.type) and
-            ret << id.id
+            m << id.id
         end
-        out.empty? and out = doc.docidentifier.each_with_object([]) do |id, ret|
+        out.empty? and out = doc.docidentifier.each_with_object([]) do |id, m|
           authoritative_identifier_exclude.include?(id_type_norm(id)) or
-            ret << id.id
+            m << id.id
         end
         out
       end

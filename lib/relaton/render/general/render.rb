@@ -108,22 +108,21 @@ module Relaton
       end
 
       def render(bib, embedded: false)
-        if bib.is_a?(String) && Nokogiri::XML(bib).errors.empty?
-          bib = RelatonBib::XMLParser.from_xml bib
-        end
-        parse(bib, embedded: embedded)
+        bib = xml2relaton(bib)
+        f = bib.formattedref and
+          return embedded ? f.content : fmtref(f.content)
+        ret = render1(bib) or return nil
+        embedded and return ret
+        fmtref(ret)
+      end
+
+      def xml2relaton(bib)
+        bib.is_a?(String) && Nokogiri::XML(bib).errors.empty? and
+          bib = RelatonBib::XMLParser.from_xml(bib) or bib
       end
 
       def fmtref(doc)
         "<formattedref>#{doc}</formattedref>"
-      end
-
-      def parse(doc, embedded: false)
-        f = doc.formattedref and
-          return embedded ? f.content : fmtref(f.content)
-        ret = parse1(doc) or return nil
-        embedded and return ret
-        fmtref(ret)
       end
 
       def renderer(type)
@@ -135,20 +134,30 @@ module Relaton
         ret
       end
 
-      def parse1(doc)
+      def render1(doc)
         r = doc.relation.select { |x| x.type == "hasRepresentation" }
-          .map { |x| @i18n.also_pub_as + parse_single_bibitem(x.bibitem) }
-        out = [parse_single_bibitem(doc)] + r
+          .map { |x| @i18n.also_pub_as + render_single_bibitem(x.bibitem) }
+        out = [render_single_bibitem(doc)] + r
         @i18n.l10n(out.join(". ").gsub(".. ", ". "))
       end
 
-      def parse_single_bibitem(doc)
+      def render_single_bibitem(doc)
+        data_liquid, r = parse(doc)
+        liquid(data_liquid, r)
+      end
+
+      def liquid(data_liquid, renderer)
+        valid_parse(@i18n.l10n(renderer.render(data_liquid)))
+      end
+
+      def parse(doc)
+        doc = xml2relaton(doc)
         r = renderer(doc.type || "misc")
         data = @parse.extract(doc)
         enhance_data(data, r.template_raw)
         data_liquid = @fieldsklass.new(renderer: self)
           .compound_fields_format(data)
-        valid_parse(@i18n.l10n(r.render(data_liquid)))
+        [data_liquid, r]
       end
 
       def valid_parse(ret)
