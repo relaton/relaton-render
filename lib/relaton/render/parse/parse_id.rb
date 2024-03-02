@@ -3,10 +3,35 @@ module Relaton
     class Parse
       # filter applied across full list of auth_id
       def auth_id_filter(ids)
-        ids.detect { |i| i.type == "IEEE" && i.scope == "trademark" } &&
-          ids.detect { |i| i.type == "IEEE" && i.scope != "trademark" } and
-          ids.reject! { |i| i.type == "IEEE" && i.scope != "trademark" }
-        ids
+        id_scope_filter(ids)
+      end
+
+      def id_scope_filter(ids)
+        ids.detect(&:scope) or return ids
+        id_sort_by_scope(ids).each_with_object([]) do |(k, v), m|
+          case k
+          when "IEEE"
+            m << id_extract_by_scope(v, "trademark")
+          else
+            m << id_extract_by_scope(v, nil)
+          end
+        end.flatten
+      end
+
+      def id_sort_by_scope(ids)
+        ids.each_with_object({}) do |i, m|
+          m[i.type] ||= {}
+          m[i.type][i.scope] ||= []
+          m[i.type][i.scope] << i
+        end
+      end
+
+      def id_extract_by_scope(idents, key)
+        if idents.key?(key) && idents.keys.size > 1
+          idents[key]
+        else
+          idents.each_with_object([]) { |(_, v), m| m << v }.flatten
+        end
       end
 
       # list of successive filters on individual auth_id instances

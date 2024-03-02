@@ -106,6 +106,21 @@ RSpec.describe Relaton::Render do
       .to eq ["IEEE 2"]
   end
 
+  it "ignore non-IEEE scopes" do
+    input = <<~INPUT
+        <bibitem id="ref_pddl" type="book" schema-version="v1.2.4">  <fetched>2023-09-29</fetched>
+      <title type="main" format="text/plain" script="Latn">An Introduction to the Planning Domain Definition Language</title>
+        <docidentifier type="DOI">10.1007/978-3-031-01584-7</docidentifier>
+        <docidentifier type="IETF" scope="anchor">IEEE-TM 2</docidentifier>
+        <docidentifier type="IETF">IEEE 2</docidentifier>
+        </bibitem>
+    INPUT
+    p = Relaton::Render::General.new
+    data, = p.parse(input)
+    expect(data[:authoritative_identifier])
+      .to eq ["IEEE 2"]
+  end
+
   it "drop ISSN/ISBN type from docidentifier prefixing" do
     input = <<~INPUT
       <bibitem type="book">

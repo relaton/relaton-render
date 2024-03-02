@@ -200,5 +200,35 @@ RSpec.describe Relaton::Render do
     expect { p.render(input) }
       .to output(%r{BIBLIOGRAPHY WARNING: cannot access https://completely.broken.url.com})
       .to_stderr
+
+    input = <<~INPUT
+      <bibitem type="software">
+        <title>metanorma-standoc</title>
+        <uri>file/file.xml</uri>
+        <date type="published"><on>2019-09-04</on></date>
+        <contributor>
+          <role type="author"/>
+          <organization>
+            <name>Ribose Inc.</name>
+          </organization>
+        </contributor>
+        <contributor>
+          <role type="distributor"/>
+          <organization>
+            <name>GitHub</name>
+          </organization>
+        </contributor>
+        <edition>1.3.1</edition>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <link target="file/file.xml">file/file.xml</link>. [viewed: #{Date.today.strftime('%B %-d, %Y')}].</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+    expect { p.render(input) }
+      .not_to output(%r{BIBLIOGRAPHY WARNING: cannot access file/file.xml})
+      .to_stderr
   end
 end

@@ -117,6 +117,8 @@ module Relaton
       end
 
       def xml2relaton(bib)
+        bib.is_a?(Nokogiri::XML::Element) and
+          bib = bib.to_xml
         bib.is_a?(String) && Nokogiri::XML(bib).errors.empty? and
           bib = RelatonBib::XMLParser.from_xml(bib) or bib
       end
@@ -223,15 +225,16 @@ module Relaton
       end
 
       def url_exist?(url_string)
-        res = access_url(url_string)
+        url = URI.parse(url_string)
+        url.host or return true # allow file URLs
+        res = access_url(url)
         res.is_a?(Net::HTTPRedirection) and return url_exist?(res["location"])
         res.code[0] != "4"
       rescue Errno::ENOENT, SocketError
         false # false if can't find the server
       end
 
-      def access_url(url_string)
-        url = URI.parse(url_string)
+      def access_url(url)
         req = Net::HTTP.new(url.host, url.port)
         req.use_ssl = (url.scheme == "https")
         path = url.path or return false
