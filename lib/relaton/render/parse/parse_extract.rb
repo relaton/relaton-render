@@ -105,75 +105,6 @@ module Relaton
         "#{f}–#{t}"
       end
 
-      def auth_id_filter(ids)
-        ids.detect { |i| i.type == "IEEE" && i.scope == "trademark" } &&
-          ids.detect { |i| i.type == "IEEE" && i.scope != "trademark" } and
-          ids.reject! { |i| i.type == "IEEE" && i.scope != "trademark" }
-        ids
-      end
-
-      def authoritative_identifier(doc)
-        out = auth_id_filter(doc.docidentifier).each_with_object([]) do |id, m|
-          id.primary && !authoritative_identifier_exclude.include?(id.type) and
-            m << id.id
-        end
-        out.empty? and out = doc.docidentifier.each_with_object([]) do |id, m|
-          authoritative_identifier_exclude.include?(id_type_norm(id)) or
-            m << id.id
-        end
-        out
-      end
-
-      def authoritative_identifier_exclude
-        %w(metanorma metanorma-ordinal) + other_identifier_include
-      end
-
-      def other_identifier(doc)
-        doc.docidentifier.each_with_object([]) do |id, ret|
-          type = id_type_norm(id)
-          other_identifier_include.include? type or next
-          ret << @i18n.l10n("#{type}: #{id.id}")
-        end
-      end
-
-      def other_identifier_include
-        %w(ISSN ISBN DOI)
-      end
-
-      def doi(doc)
-        out = doc.docidentifier.each_with_object([]) do |id, ret|
-          type = id.type&.sub(/^(DOI)\..*$/i, "\\1") or next
-          type.casecmp("doi").zero? or next
-          ret << id.id
-        end
-        out.empty? ? nil : out
-      end
-
-      def id_type_norm(id)
-        id.type&.sub(/^(ISBN|ISSN)\..*$/i) { $1.upcase }
-      end
-
-      def uri(doc)
-        uri = nil
-        %w(citation uri src).each do |t|
-          uri = uri_type_select(doc, t) and break
-        end
-        uri ||= doc.link.detect do |u|
-          u.language == @lang && !u.type&.casecmp("doi")&.zero?
-        end
-        uri ||= doc.link.detect { |u| !u.type&.casecmp("doi")&.zero? }
-        uri or return nil
-        uri.content.to_s.strip
-      end
-
-      def uri_type_select(doc, type)
-        uri = doc.link.detect do |u|
-          u.type&.downcase == type && u.language == @lang
-        end and return uri
-        uri = doc.link.detect { |u| u.type&.downcase == type } and return uri
-        nil
-      end
-
       def access_location(doc, host)
         x = doc.accesslocation || host&.accesslocation or
           return nil
@@ -199,6 +130,13 @@ module Relaton
         end
       end
 
+      def localized_string_or_text(str)
+        case str
+        when RelatonBib::LocalizedString then content(str)
+        when String then str
+        end
+      end
+
       def extent(doc)
         doc.extent.each_with_object([]) do |e, acc|
           case e
@@ -216,33 +154,12 @@ module Relaton
       end
 
       def iter_ordinal(doc)
-        return nil unless iter = doc&.status&.iteration
-
+        iter = doc&.status&.iteration or return nil
         iter
       end
 
       def status(doc)
         doc&.status&.stage&.value
-      end
-
-      private
-
-      def blank?(text)
-        text.nil? || text.empty?
-      end
-
-      def pick_contributor(doc, role)
-        ret = doc.contributor.select do |c|
-          c.role.any? { |r| r.type == role }
-        end
-        ret.empty? ? nil : ret
-      end
-
-      def localized_string_or_text(str)
-        case str
-        when RelatonBib::LocalizedString then content(str)
-        when String then str
-        end
       end
     end
   end

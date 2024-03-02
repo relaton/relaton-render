@@ -2,6 +2,7 @@ require "nokogiri"
 require "twitter_cldr"
 require_relative "parse_contributors"
 require_relative "parse_extract"
+require_relative "parse_id"
 
 module Relaton
   module Render
@@ -64,6 +65,12 @@ module Relaton
           series_place: series_place(series, doc),
           series_org: series_org(series, doc),
           series_dates: series_dates(series, doc) }
+      end
+
+      private
+
+      def blank?(text)
+        text.nil? || text.empty?
       end
     end
   end

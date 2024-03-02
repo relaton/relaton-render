@@ -61,8 +61,7 @@ module Relaton
       end
 
       def contributor_role(contributors)
-        return nil unless contributors.length.positive?
-
+        contributors.length.positive? or return nil
         desc = contributors[0].role.first.description.join("\n")
         type = contributors[0].role.first.type
         desc.empty? ? type : desc
@@ -80,12 +79,10 @@ module Relaton
 
       def creatornames1(doc)
         cr = []
-        return [] if doc.nil?
-
+        doc.nil? and return []
         creatornames_roles_allowed.each do |r|
           add = pick_contributor(doc, r)
-          next if add.nil?
-
+          add.nil? and next
           cr = add and break
         end
         cr.nil? and cr = doc.contributor
@@ -93,14 +90,12 @@ module Relaton
       end
 
       def datepick(date)
-        return nil if date.nil?
-
+        date.nil? and return nil
         on = date.on
         from = date.from
         to = date.to
-        return { on: on } if on
-        return { from: from, to: to } if from
-
+        on and return { on: on }
+        from and return { from: from, to: to }
         nil
       end
 
@@ -164,6 +159,13 @@ module Relaton
           pick_contributor(host, "publisher")
         x.nil? and return nil
         x.map { |c| extractname(c) }
+      end
+
+      def pick_contributor(doc, role)
+        ret = doc.contributor.select do |c|
+          c.role.any? { |r| r.type == role }
+        end
+        ret.empty? ? nil : ret
       end
     end
   end
