@@ -10,17 +10,58 @@ module Relaton
       # takes array of { id, type, author, date, ord, data_liquid }
       def render(ret)
         cites = citations(ret)
+        cites.each_value do |v|
+          v[:renderer] = @renderer.renderer(v[:type] || "misc")
+        end
+        enhance_data(cites)
         cites.each_key do |k|
           cites[k] = render1(cites[k])
         end
         cites
       end
 
+      def enhance_data(cites)
+        ret = extract_uris_for_lookup(cites)
+        ret.empty? and return
+        @renderer.urls_exist_concurrent(ret.keys).each do |k, v|
+          ret[k].each { |u| add_date_accessed(cites[u], k, v) }
+        end
+      end
+
+      def extract_uris_for_lookup(cites)
+        cites.each_with_object({}) do |(k, v), m|
+          u = extract_uri_for_lookup(v) or next
+          m[u] ||= []
+          m[u] << k
+        end
+      end
+
+      def extract_uri_for_lookup(cite)
+        t = cite[:renderer].template_raw
+        c = cite[:data_liquid]
+        t.is_a?(String) or return
+        (/\{\{\s*date_accessed\s*\}\}/.match?(t) &&
+        /\{\{\s*uri\s*\}\}/.match?(t) &&
+        c[:uri_raw] && !c[:date_accessed]) or return
+        c[:uri_raw]
+      end
+
+      def add_date_accessed(data, uri, status)
+        if status
+          data[:data_liquid][:date_accessed] = { on: ::Date.today.to_s }
+          data[:data_liquid] = @renderer.fieldsklass.new(renderer: @renderer)
+            .compound_fields_format(data[:data_liquid])
+        else
+          warn "BIBLIOGRAPHY WARNING: cannot access #{uri}"
+        end
+      end
+
       def render1(cit)
-        r = @renderer.renderer(cit[:type] || "misc")
         cit[:formattedref] =
-          @renderer.valid_parse(@i18n.l10n(r.render(cit[:data_liquid])))
-        %i(type data_liquid).each { |x| cit.delete(x) }
+          @renderer.valid_parse(
+            @i18n.l10n(cit[:renderer].render(cit[:data_liquid])),
+          )
+        %i(type data_liquid renderer).each { |x| cit.delete(x) }
         cit
       end
 
@@ -55,7 +96,7 @@ module Relaton
       def sort_ord(ret)
         ret.each do |author, v|
           v.each_key do |date|
-            ret[author][date].sort! { |a, b| a[:ord] <=> b[:ord] }
+            ret[author][date].sort_by! { |a| a[:ord] }
           end
         end
       end
@@ -82,7 +123,7 @@ module Relaton
 
       def to_hash(ret)
         ret.each_with_object({}) do |(_k, v), m|
-          v.each do |_k1, v1|
+          v.each_value do |v1|
             v1.each do |b|
               m[b[:id]] = { author: b[:author], date: b[:date],
                             citation: "#{b[:author]} #{b[:date]}",

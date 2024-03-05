@@ -65,7 +65,8 @@ RSpec.describe Relaton::Render::Citations do
       {"A"=>{:author=>"Aluffi, Anderson, Hering, Mustaţă <em>et al.</em>", :date=>"2022", :citation=>"Aluffi, Anderson, Hering, Mustaţă <em>et al.</em> 2022", :formattedref=>"ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol."}}
     OUTPUT
     p = Relaton::Render::General.new(
-      authorcitetemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4, etal: etal },
+      authorcitetemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4,
+                            etal: etal },
     )
     expect(p.render_all(input, type: "author-date"))
       .to be_equivalent_to output
@@ -73,7 +74,8 @@ RSpec.describe Relaton::Render::Citations do
       {"A"=>{:author=>"Aluffi, Anderson, Hering <em>et al.</em>", :date=>"2022", :citation=>"Aluffi, Anderson, Hering <em>et al.</em> 2022", :formattedref=>"ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol."}}
     OUTPUT
     p = Relaton::Render::General.new(
-      authorcitetemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4, etal_display: 3, etal: etal },
+      authorcitetemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4,
+                            etal_display: 3, etal: etal },
     )
     expect(p.render_all(input, type: "author-date"))
       .to be_equivalent_to output
@@ -81,7 +83,8 @@ RSpec.describe Relaton::Render::Citations do
       {"A"=>{:author=>"Aluffi, Anderson <em>et al.</em>", :date=>"2022", :citation=>"Aluffi, Anderson <em>et al.</em> 2022", :formattedref=>"ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol."}}
     OUTPUT
     p = Relaton::Render::General.new(
-      authorcitetemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4, etal_display: 2, etal: etal },
+      authorcitetemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4,
+                            etal_display: 2, etal: etal },
     )
     expect(p.render_all(input, type: "author-date"))
       .to be_equivalent_to output
@@ -89,7 +92,8 @@ RSpec.describe Relaton::Render::Citations do
       {"A"=>{:author=>"Aluffi <em>et al.</em>", :date=>"2022", :citation=>"Aluffi <em>et al.</em> 2022", :formattedref=>"ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol."}}
     OUTPUT
     p = Relaton::Render::General.new(
-      authorcitetemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4, etal_display: 1, etal: etal },
+      authorcitetemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4,
+                            etal_display: 1, etal: etal },
     )
     expect(p.render_all(input, type: "author-date"))
       .to be_equivalent_to output
@@ -289,6 +293,101 @@ RSpec.describe Relaton::Render::Citations do
       "D"=>{:author=>"Aluffi and Anderson", :date=>"2022", :citation=>"Aluffi and Anderson 2022", :formattedref=>"ALUFFI, Paolo and David ANDERSON (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol."}}
     OUTPUT
     p = Relaton::Render::General.new
+    expect(p.render_all(input, type: "author-date"))
+      .to be_equivalent_to output
+  end
+
+  it "adds date accessed as required to set of citations" do
+    input = <<~INPUT
+      <references>
+        <bibitem type="book" id="A">
+          <title>Book 1</title>
+          <uri>https://github.com/metanorma/metanorma-standoc</uri>
+          <date type="published"><on>2021</on></date>
+          <contributor>
+            <role type="editor"/>
+            <person>
+              <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+            </person>
+          </contributor>
+           <contributor>
+                <role type="publisher"/>
+                <organization>
+                  <name>Cambridge University Press</name>
+                </organization>
+              </contributor>
+              <place>Cambridge, UK</place>
+        </bibitem>
+        <bibitem type="book" id="B">
+          <title>Book 2</title>
+          <uri>https://github.com/metanorma/metanorma-standoc</uri>
+          <date type="published"><on>2022</on></date>
+          <contributor>
+            <role type="editor"/>
+            <person>
+              <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+            </person>
+          </contributor>
+           <contributor>
+                <role type="publisher"/>
+                <organization>
+                  <name>Cambridge University Press</name>
+                </organization>
+              </contributor>
+              <place>Cambridge, UK</place>
+        </bibitem>
+        <bibitem type="standard" id="C">
+          <title>Standard 1</title>
+          <date type="published"><on>2023</on></date>
+          <uri>https://github.com/metanorma/metanorma-standoc</uri>
+          <contributor>
+            <role type="editor"/>
+            <person>
+              <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+            </person>
+          </contributor>
+           <contributor>
+                <role type="publisher"/>
+                <organization>
+                  <name>Cambridge University Press</name>
+                </organization>
+              </contributor>
+              <place>Cambridge, UK</place>
+        </bibitem>
+        <bibitem type="standard" id="D">
+          <title>Standard 2</title>
+          <uri>https://github.com/metanorma/metanorma-standoc</uri>
+          <date type="published"><on>2024</on></date>
+          <contributor>
+            <role type="editor"/>
+            <person>
+              <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+            </person>
+          </contributor>
+           <contributor>
+                <role type="publisher"/>
+                <organization>
+                  <name>Cambridge University Press</name>
+                </organization>
+              </contributor>
+              <place>Cambridge, UK</place>
+        </bibitem>
+      </references>
+    INPUT
+    template1 = <<~TEMPLATE
+      {{ creatornames }} ({{date}}) . <em>{{ title }}</em> {{ uri }}.
+    TEMPLATE
+    template2 = <<~TEMPLATE
+      {{ creatornames }} ({{date}}) . <em>{{ title }}</em> {{ uri }}. Accessed: {{ date_accessed }}.
+    TEMPLATE
+    output = <<~OUTPUT
+      {"A"=>{:author=>"Aluffi", :date=>"2021", :citation=>"Aluffi 2021", :formattedref=>"ALUFFI, Paolo (2021). <em>Book 1</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>."},
+      "B"=>{:author=>"Aluffi", :date=>"2022", :citation=>"Aluffi 2022", :formattedref=>"ALUFFI, Paolo (2022). <em>Book 2</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>."},
+      "C"=>{:author=>"Aluffi", :date=>"2023", :citation=>"Aluffi 2023", :formattedref=>"ALUFFI, Paolo (2023). <em>Standard 1</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>. Accessed: March 6, 2024."},
+      "D"=>{:author=>"Aluffi", :date=>"2024", :citation=>"Aluffi 2024", :formattedref=>"ALUFFI, Paolo (2024). <em>Standard 2</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>. Accessed: March 6, 2024."}}
+    OUTPUT
+    p = Relaton::Render::General
+      .new(template: { book: template1, standard: template2 })
     expect(p.render_all(input, type: "author-date"))
       .to be_equivalent_to output
   end

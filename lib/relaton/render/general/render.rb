@@ -1,10 +1,10 @@
 require_relative "render_classes"
 require_relative "citations"
+require_relative "uri"
 require "yaml"
 require "liquid"
 require "date"
 require "relaton_bib"
-require "net/http"
 require_relative "../template/template"
 require_relative "../../../isodoc/i18n"
 
@@ -14,7 +14,7 @@ module Relaton
       attr_reader :template, :journaltemplate, :seriestemplate, :nametemplate,
                   :authorcitetemplate, :extenttemplate, :sizetemplate,
                   :lang, :script, :i18n,
-                  :edition, :edition_ordinal, :date
+                  :edition, :edition_ordinal, :date, :fieldsklass
 
       def initialize(opt = {})
         options = read_config.merge(Utils::string_keys(opt))
@@ -23,6 +23,7 @@ module Relaton
         root_initalize(options)
         render_initialize(options)
         @parse ||= options["parse"]
+        @semaphore = Mutex.new
         @urlcache = {}
       end
 
@@ -133,7 +134,6 @@ module Relaton
           raise "No renderer defined for #{type}"
         @type == "general" || @type == type or
           raise "No renderer defined for #{type}"
-
         ret
       end
 
@@ -169,6 +169,7 @@ module Relaton
       end
 
       # expect array of Relaton objects, in sorted order
+      # enhance_data is skipped here, and is done in batch inside Citations
       def render_all(bib, type: "author-date")
         bib = sanitise_citations_input(bib) or return
         Citations.new(type: type, renderer: self, i18n: @i18n)
@@ -183,7 +184,6 @@ module Relaton
       def sanitise_citations_input_string(bib)
         p = Nokogiri::XML(bib) or return
         (p.errors.empty? && p.root.at("./bibitem")) or return nil
-
         p.root.xpath("./bibitem").each_with_object([]) do |b, m|
           m << RelatonBib::XMLParser.from_xml(b.to_xml)
         end
@@ -222,35 +222,6 @@ module Relaton
           template = templates[type] || templates["misc"] || default_template
           BIBTYPE.include?(template) and template = templates[template]
           m[type] = template
-        end
-      end
-
-      def url_exist?(url_string)
-        url = URI.parse(url_string)
-        url.host or return true # allow file URLs
-        res = access_url(url) or return false
-        res.is_a?(Net::HTTPRedirection) and return url_exist?(res["location"])
-        res.code[0] != "4"
-      rescue Errno::ENOENT, SocketError
-        false # false if can't find the server
-      end
-
-      def access_url(url)
-        path = url.path or return false
-        path.empty? and path = "/"
-        @urlcache.key?(url.to_s) and return @urlcache[url.to_s]
-        @urlcache[url.to_s] = url_head(url, path)
-        @urlcache[url.to_s]
-      rescue => e
-        warn e.backtrace
-        false
-      end
-
-      def url_head(url, path)
-        Net::HTTP.start(url.host, url.port,
-                        read_timeout: 2, open_timeout: 2,
-                        use_ssl: url.scheme == "https") do |http|
-          http.request_head(path)
         end
       end
     end

@@ -193,6 +193,7 @@ module Relaton
 
       def dateformat(date, _hash)
         date.nil? and return nil
+        date.is_a?(String) and return date
         %i(from to on).each do |k|
           date[k] = ::Relaton::Render::Date.new(date[k], renderer: @r).render
         end
