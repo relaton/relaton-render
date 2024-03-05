@@ -23,6 +23,7 @@ module Relaton
         root_initalize(options)
         render_initialize(options)
         @parse ||= options["parse"]
+        @urlcache = {}
       end
 
       def read_config
@@ -227,7 +228,7 @@ module Relaton
       def url_exist?(url_string)
         url = URI.parse(url_string)
         url.host or return true # allow file URLs
-        res = access_url(url)
+        res = access_url(url) or return false
         res.is_a?(Net::HTTPRedirection) and return url_exist?(res["location"])
         res.code[0] != "4"
       rescue Errno::ENOENT, SocketError
@@ -235,11 +236,22 @@ module Relaton
       end
 
       def access_url(url)
-        req = Net::HTTP.new(url.host, url.port)
-        req.use_ssl = (url.scheme == "https")
         path = url.path or return false
         path.empty? and path = "/"
-        req.request_head(path)
+        @urlcache.key?(url.to_s) and return @urlcache[url.to_s]
+        @urlcache[url.to_s] = url_head(url, path)
+        @urlcache[url.to_s]
+      rescue => e
+        warn e.backtrace
+        false
+      end
+
+      def url_head(url, path)
+        Net::HTTP.start(url.host, url.port,
+                        read_timeout: 2, open_timeout: 2,
+                        use_ssl: url.scheme == "https") do |http|
+          http.request_head(path)
+        end
       end
     end
   end
