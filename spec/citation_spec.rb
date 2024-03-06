@@ -383,8 +383,8 @@ RSpec.describe Relaton::Render::Citations do
     output = <<~OUTPUT
       {"A"=>{:author=>"Aluffi", :date=>"2021", :citation=>"Aluffi 2021", :formattedref=>"ALUFFI, Paolo (2021). <em>Book 1</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>."},
       "B"=>{:author=>"Aluffi", :date=>"2022", :citation=>"Aluffi 2022", :formattedref=>"ALUFFI, Paolo (2022). <em>Book 2</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>."},
-      "C"=>{:author=>"Aluffi", :date=>"2023", :citation=>"Aluffi 2023", :formattedref=>"ALUFFI, Paolo (2023). <em>Standard 1</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>. Accessed: March 6, 2024."},
-      "D"=>{:author=>"Aluffi", :date=>"2024", :citation=>"Aluffi 2024", :formattedref=>"ALUFFI, Paolo (2024). <em>Standard 2</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>. Accessed: March 6, 2024."}}
+      "C"=>{:author=>"Aluffi", :date=>"2023", :citation=>"Aluffi 2023", :formattedref=>"ALUFFI, Paolo (2023). <em>Standard 1</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>. Accessed: #{Date.today.strftime('%B %-d, %Y')}."},
+      "D"=>{:author=>"Aluffi", :date=>"2024", :citation=>"Aluffi 2024", :formattedref=>"ALUFFI, Paolo (2024). <em>Standard 2</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>. Accessed: #{Date.today.strftime('%B %-d, %Y')}."}}
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template1, standard: template2 })
