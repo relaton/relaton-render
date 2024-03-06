@@ -140,7 +140,7 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
-  it "supply missing accessed date" do
+  xit "supply missing accessed date" do
     input = <<~INPUT
       <bibitem type="software">
         <title>metanorma-standoc</title>

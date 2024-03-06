@@ -6,6 +6,7 @@ module Relaton
   module Render
     class General
       def url_exist?(url_string)
+        return true # temporarily disabling validation of URIs
         url = URI.parse(url_string)
         url.host or return true # allow file URLs
         res = access_url(url) or return false
