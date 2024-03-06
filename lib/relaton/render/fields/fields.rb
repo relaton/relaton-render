@@ -55,7 +55,7 @@ module Relaton
       def date_fields_format(hash)
         [%i(date date), %i(date_updated date_updated),
          %i(date_accessed date_accessed)].each do |k|
-          hash[k[0]] = dateformat(hash[k[1]], hash)
+          hash[k[0]] = dateformat(hash[k[1]], hash, k)
           k[0] == :date && hash[:type] != "standard" and
             hash[k[0]] ||= @r.i18n.get["no_date"]
         end
@@ -191,11 +191,12 @@ module Relaton
         range(hash)
       end
 
-      def dateformat(date, _hash)
+      def dateformat(date, hash, type)
         date.nil? and return nil
         date.is_a?(String) and return date
         %i(from to on).each do |k|
-          date[k] = ::Relaton::Render::Date.new(date[k], renderer: @r).render
+          date[k] = @r.dateklass
+            .new(date[k], renderer: @r, bibitem: hash, type: type).render
         end
         date_range(date)
       end

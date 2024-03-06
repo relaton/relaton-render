@@ -167,6 +167,7 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to output
+    p = Relaton::Render::General.new
     expect { p.render(input) }
       .not_to output(/BIBLIOGRAPHY WARNING: cannot access/)
       .to_stderr
@@ -197,6 +198,7 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to output
+    p = Relaton::Render::General.new
     expect { p.render(input) }
       .to output(%r{BIBLIOGRAPHY WARNING: cannot access https://completely.broken.url.com})
       .to_stderr
@@ -227,6 +229,7 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to output
+    p = Relaton::Render::General.new
     expect { p.render(input) }
       .not_to output(%r{BIBLIOGRAPHY WARNING: cannot access file/file.xml})
       .to_stderr

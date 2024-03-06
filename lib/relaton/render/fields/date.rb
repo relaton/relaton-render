@@ -4,6 +4,8 @@ module Relaton
       def initialize(date, options)
         @date = date
         @r = options[:renderer]
+        @type = options[:type]
+        @bibitem = options[:bibitem]
       end
 
       def render

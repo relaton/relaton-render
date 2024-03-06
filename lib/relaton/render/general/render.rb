@@ -14,7 +14,7 @@ module Relaton
       attr_reader :template, :journaltemplate, :seriestemplate, :nametemplate,
                   :authorcitetemplate, :extenttemplate, :sizetemplate,
                   :lang, :script, :i18n,
-                  :edition, :edition_ordinal, :date, :fieldsklass
+                  :edition, :edition_ordinal, :date, :fieldsklass, :dateklass
 
       def initialize(opt = {})
         options = read_config.merge(Utils::string_keys(opt))
@@ -25,6 +25,7 @@ module Relaton
         @parse ||= options["parse"]
         @semaphore = Mutex.new
         @urlcache = {}
+        @url_warned = {}
       end
 
       def read_config
@@ -39,6 +40,7 @@ module Relaton
         @sizetemplateklass = Relaton::Render::Template::Size
         @generaltemplateklass = Relaton::Render::Template::General
         @fieldsklass = Relaton::Render::Fields
+        @dateklass = Relaton::Render::Date
         @parseklass = Relaton::Render::Parse
       end
 
@@ -210,9 +212,14 @@ module Relaton
           data[:uri_raw] && !data[:date_accessed]) or return
         if url_exist?(data[:uri_raw])
           data[:date_accessed] = { on: ::Date.today.to_s }
-        else
-          warn "BIBLIOGRAPHY WARNING: cannot access #{data[:uri_raw]}"
+        else url_warn(data[:uri_raw])
         end
+      end
+
+      def url_warn(uri)
+        @url_warned[uri] and return
+        warn "BIBLIOGRAPHY WARNING: cannot access #{uri}"
+        @url_warned[uri] = true
       end
 
       private

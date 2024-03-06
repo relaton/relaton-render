@@ -52,7 +52,7 @@ module Relaton
           data[:data_liquid] = @renderer.fieldsklass.new(renderer: @renderer)
             .compound_fields_format(data[:data_liquid])
         else
-          warn "BIBLIOGRAPHY WARNING: cannot access #{uri}"
+          @renderer.url_warn(uri)
         end
       end
 
