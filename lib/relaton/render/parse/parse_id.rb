@@ -11,9 +11,10 @@ module Relaton
         id_sort_by_scope(ids).each_with_object([]) do |(k, v), m|
           case k
           when "IEEE"
-            m << id_extract_by_scope(v, "trademark")
-          else
-            m << id_extract_by_scope(v, nil)
+            f = id_extract_by_scope(v, "trademark")
+            f.empty? and f = id_extract_by_scope(v, nil)
+            m << f
+          else m << id_extract_by_scope(v, nil)
           end
         end.flatten
       end
@@ -27,10 +28,9 @@ module Relaton
       end
 
       def id_extract_by_scope(idents, key)
-        if idents.key?(key) && idents.keys.size > 1
+        if idents.key?(key)
           idents[key]
-        else
-          idents.each_with_object([]) { |(_, v), m| m << v }.flatten
+        else []
         end
       end
 
