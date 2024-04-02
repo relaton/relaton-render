@@ -1421,7 +1421,7 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
-  it "does not insert no date for standards" do
+  it "does not insert no date for standards or websites" do
     input = <<~INPUT
       <bibitem type="standard">
         <title format='text/plain'>Cereals and cereal products</title>
@@ -1434,6 +1434,15 @@ RSpec.describe Relaton::Render do
       <formattedref><em>Cereals and cereal products</em>. Preprint.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+    input.sub!('type="standard"', 'type="website"')
+    expect(p.render(input))
+      .to be_equivalent_to output
+    input.sub!('type="website"', 'type="book"')
+    output = <<~OUTPUT
+      <formattedref><em>Cereals and cereal products</em> [preprint]. n.p.: n.d.</formattedref>
+    OUTPUT
     expect(p.render(input))
       .to be_equivalent_to output
   end
