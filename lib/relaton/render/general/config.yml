@@ -61,7 +61,7 @@ template:
     # TODO: omitted: author ids, subsidiary titles, subsidiary creators, host archive, item attributes, relationships
   presentation: unpublished
   thesis: "{{ creatornames }} ({{ role }}) . {{labels['qq-open']}}{{ title }}{{labels['qq-close']}} . {{ medium | capitalize }}. {{ place }}: {{ publisher }}. {{ date }}. {{ labels['at'] | capitalize}}:_{{ access_location }}. {{ authoritative_identifier | join: '. ' }}. {{ other_identifier | join: '. ' }}. {{ uri }}. [{{ labels['viewed'] }}:_{{date_accessed}}]."
-  misc:  "{{ creatornames }} ({{ role }}) . {{labels['qq-open']}}{{ title }}{{labels['qq-close']}} . {{ date }}."
+  misc:  "{{ creatornames }} ({{ role }}) . {{labels['qq-open']}}{{ title }}{{labels['qq-close']}} . {{ date }}. {{ uri }}."
   # following are # unsupported types:
   map: misc
   audiovisual: misc
