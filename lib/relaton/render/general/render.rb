@@ -210,9 +210,11 @@ module Relaton
         (/\{\{\s*date_accessed\s*\}\}/.match?(template) &&
           /\{\{\s*uri\s*\}\}/.match?(template) &&
           data[:uri_raw] && !data[:date_accessed]) or return
-        if url_exist?(data[:uri_raw])
+
+        if url_is_not_accessible?(data[:uri_raw])
+          url_warn(data[:uri_raw])
+        else
           data[:date_accessed] = { on: ::Date.today.to_s }
-        else url_warn(data[:uri_raw])
         end
       end
 
