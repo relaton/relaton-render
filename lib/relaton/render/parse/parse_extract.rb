@@ -159,7 +159,8 @@ module Relaton
       end
 
       def status(doc)
-        doc&.status&.stage&.value
+        v = doc&.status&.stage&.value
+        @i18n.get.dig("stage", v) || v
       end
     end
   end

@@ -24,6 +24,9 @@ qq-open: <underline style="wavy">
 qq-close: </underline>
 q-open: 〈
 q-close: 〉
+stage:
+  valid: 有效的
+  withdrawn: 取消
 extent:
   page:
     sg: "第%頁"

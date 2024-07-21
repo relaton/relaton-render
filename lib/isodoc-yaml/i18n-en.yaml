@@ -24,6 +24,9 @@ qq-open: <em>
 qq-close: </em>
 q-open:
 q-close:
+stage:
+  valid: Valid
+  withdrawn: Withdrawn
 extent:
   page:
     sg: "p. %"

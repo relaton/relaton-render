@@ -25,6 +25,9 @@ qq-open: 《
 qq-close: 》
 q-open: 〈
 q-close: 〉
+stage:
+  valid: 有效
+  withdrawn: 已撤回
 extent:
   page:
     sg: "第%页"

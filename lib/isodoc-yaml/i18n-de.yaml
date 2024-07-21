@@ -33,6 +33,9 @@ qq-open: <em>
 qq-close: </em>
 q-open:
 q-close: 
+stage:
+  valid: Gültig
+  withdrawn: Zurückgezogen
 size:
   page:
     sg: "% S."

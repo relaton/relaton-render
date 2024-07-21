@@ -20,6 +20,9 @@ draft: "مشروع؜ %؜"
 editor:
   sg: محرر
   pl: محرران
+stage:
+  valid: صالح
+  withdrawn: انسحبت
 extent:
   page:
     sg: "% ص"

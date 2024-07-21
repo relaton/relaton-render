@@ -30,6 +30,9 @@ qq-open: <em>
 qq-close: </em>
 q-open:
 q-close:
+stage:
+  valid: Действительный
+  withdrawn: Снято
 extent:
   page:
     sg: "стр. %"

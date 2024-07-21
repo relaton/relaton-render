@@ -1104,6 +1104,9 @@ RSpec.describe Relaton::Render do
             <name><surname>Bradner</surname><initials>S.</initials></name>
           </person>
         </contributor>
+        <status>
+          <stage>valid</stage>
+        </status>
         <medium>
           <carrier>Online</carrier>
         </medium>

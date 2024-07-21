@@ -24,6 +24,9 @@ qq-open:
 qq-close: 
 q-open:
 q-close:
+stage:
+  valid: 有効です
+  withdrawn: 取り消されました
 extent:
   page:
     sg: "ページ%"

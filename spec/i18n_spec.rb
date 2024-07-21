@@ -156,4 +156,39 @@ RSpec.describe Relaton::Render do
     expect(HTMLEntities.new.decode(p.render(input)))
       .to be_equivalent_to output
   end
+
+  it "processes status" do
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <edition>1</edition>
+            <contributor>
+              <role type="publisher"/>
+              <organization>
+                <name>Cambridge University Press</name>
+                <abbreviation>CUP</abbreviation>
+              </organization>
+            </contributor>
+            <status>
+            <stage>valid</stage>
+            </status>
+            <place>Cambridge, UK</place>
+      </bibitem>
+    INPUT
+    template = <<~TEMPLATE
+      {{ status }}
+    TEMPLATE
+    output = "<formattedref>Valid</formattedref>"
+    p = Relaton::Render::General
+      .new(template: { book: template })
+    expect(p.render(input))
+      .to be_equivalent_to output
+    output = "<formattedref>有効です</formattedref>"
+    p = Relaton::Render::General
+      .new(language: "ja", template: { book: template })
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
 end
