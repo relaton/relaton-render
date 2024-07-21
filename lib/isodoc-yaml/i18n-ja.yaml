@@ -20,8 +20,8 @@ draft: "下書き %"
 editor:
   sg: 編
   pl: 編
-qq-open: <em>
-qq-close: </em>
+qq-open: 
+qq-close: 
 q-open:
 q-close:
 extent:
