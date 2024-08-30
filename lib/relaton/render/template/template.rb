@@ -45,7 +45,7 @@ module Relaton
 
         def punct_field?(name)
           name or return false
-          name = name.gsub("'", '"')
+          name = name.tr("'", '"')
           %w(labels["qq-open"] labels["qq-close"] labels["q-open"]
              labels["q-close"]).include?(name)
         end
@@ -62,7 +62,7 @@ module Relaton
               a[3] = "}}#{FIELD_DELIM}"
             end
             a.join
-          end.join.gsub("\t", " ")
+          end.join.tr("\t", " ")
           t.gsub(/\}\}#{FIELD_DELIM}\|/o, "}}#{FIELD_DELIM}\t")
             .gsub(/\|#{FIELD_DELIM}\{\{/o, "\t#{FIELD_DELIM}{{")
         end
@@ -112,7 +112,7 @@ module Relaton
           when Array
             hash.map { |v| liquid_hash(v) }
           when String
-            hash.empty? ? nil : hash.gsub("_", "\\_").gsub(/ /, "_")
+            hash.empty? ? nil : hash.gsub("_", "\\_").tr(" ", "_")
           else hash
           end
         end
