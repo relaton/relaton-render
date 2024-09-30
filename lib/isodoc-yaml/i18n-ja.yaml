@@ -1,9 +1,9 @@
 in: 
 at: 
 and: と
-author_and: と
+author_and: ,
 updated: 更新しました
-viewed: 見た
+viewed: 参照
 version: バージョン
 also_pub_as: 次のようにも出版されています
 no_date: 日付なし。
@@ -29,8 +29,8 @@ stage:
   withdrawn: 取り消されました
 extent:
   page:
-    sg: "ページ%"
-    pl: "ページ%"
+    sg: "p. %"
+    pl: "pp. %"
   volume:
     sg: "巻%"
     pl: "巻%"
@@ -39,8 +39,8 @@ extent:
     pl: "いいえ%"
 size:
   page:
-    sg: "ページ%"
-    pl: "ページ%"
+    sg: "% p."
+    pl: "% pp."
   volume:
     sg: "巻%"
     pl: "巻%"
