@@ -8,8 +8,11 @@ module Relaton
       class CacheManager
         include Singleton
 
+        attr_accessor :mutex
+
         def initialize
           @cache = {}
+          @mutex = Mutex.new
         end
 
         def store(key, value)
@@ -74,9 +77,14 @@ module Relaton
 
         def template_process(template)
           template.is_a?(String) or return template
-          t = @templatecache.retrieve(template) and return t
-          t = ::Liquid::Template.parse(add_field_delim_to_template(template))
-          @templatecache.store(template, t)
+          t = nil
+          @templatecache.mutex.synchronize do
+            unless t = @templatecache.retrieve(template)
+              t = ::Liquid::Template
+                .parse(add_field_delim_to_template(template))
+              @templatecache.store(template, t)
+            end
+          end
           t
         end
 
