@@ -75,7 +75,7 @@ RSpec.describe Relaton::Render do
     INPUT
   end
 
-  it "renders incollection, two authors, with Arabic internationalisation" do
+  it "renders incollection, two authors, with Arabic i18n" do
     output = <<~OUTPUT
       <formattedref>RAMSEY, J. K. و W. C. MCGREW. Object play in great apes: Studies in nature and captivity. في: PELLEGRINI, Anthony D. و Peter Kenneth SMITH (محرران): «The nature of play: Great apes and humans» [electronic resource, 8vo]. الطبعة؜ ٣. New York, NY: Guilford Press. 2005. ؜89–112 ص؜. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>. [ينظر: 3 سبتمبر 2019].</formattedref>
     OUTPUT
@@ -84,7 +84,7 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
-  it "renders incollection, two authors, with German internationalisation" do
+  it "renders incollection, two authors, with German i18n" do
     output = <<~OUTPUT
       <formattedref>RAMSEY, J. K. und W. C. MCGREW. Object play in great apes: Studies in nature and captivity. In: PELLEGRINI, Anthony D. und Peter Kenneth SMITH (Hrsg.): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. 3 Ausg. New York, NY: Guilford Press. 2005. S. 89–112. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>. [angesehen: 3. September 2019].</formattedref>
     OUTPUT
@@ -103,7 +103,7 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
-  it "renders incollection, two authors, with Spanish internationalisation" do
+  it "renders incollection, two authors, with Spanish i18n" do
     output = <<~OUTPUT
       <formattedref>RAMSEY, J. K. y W. C. MCGREW. Object play in great apes: Studies in nature and captivity. En: PELLEGRINI, Anthony D. y Peter Kenneth SMITH (eds.): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. 3.ª ed. New York, NY: Guilford Press. 2005. págs. 89–112. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>. [visto: 3 de septiembre de 2019].</formattedref>
     OUTPUT
@@ -112,7 +112,7 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
-  it "renders incollection, two authors, with French internationalisation" do
+  it "renders incollection, two authors, with French i18n" do
     output = <<~OUTPUT
       <formattedref>RAMSEY, J. K. et W. C. MCGREW. Object play in great apes : Studies in nature and captivity. Dans : PELLEGRINI, Anthony D. et Peter Kenneth SMITH (éd.): <em>The nature of play : Great apes and humans</em> [electronic resource, 8vo]. 3e édition. New York, NY : Guilford Press. 2005. p. 89–112. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>. [vu : 3 septembre 2019].</formattedref>
     OUTPUT
@@ -121,7 +121,7 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
-  it "renders incollection, two authors, with Russian internationalisation" do
+  it "renders incollection, two authors, with Russian i18n" do
     output = <<~OUTPUT
       <formattedref>RAMSEY, J. K. и W. C. MCGREW. Object play in great apes: Studies in nature and captivity. В: PELLEGRINI, Anthony D. и Peter Kenneth SMITH (изд.): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. Третье издание. New York, NY: Guilford Press. 2005. стр. 89–112. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>. [просмотрено: 3 сентября 2019 г.].</formattedref>
     OUTPUT
@@ -130,27 +130,27 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
-  it "renders incollection, two authors, with Traditional Chinese internationalisation" do
+  it "renders incollection, two authors, with Traditional Chinese i18n" do
     output = <<~OUTPUT
-      <formattedref>RAMSEY，J．K．與W．C． MCGREW．〈Object play in great apes： Studies in nature and captivity〉．在： PELLEGRINI， Anthony D．與 Peter Kenneth SMITH （編輯）： <underline style="wavy">The nature of play： Great apes and humans</underline> ［electronic resource，8vo］．第第3版． New York， NY： Guilford Press．2005．第89～112頁． <link target="https://eprints.soton.ac.uk/338791/">https：//eprints．soton．ac．uk/338791/</link>．［閱：2019年9月3日］．</formattedref>
+      <formattedref>RAMSEY, J. K. 與 W. C. MCGREW. 〈Object play in great apes: Studies in nature and captivity〉．在: PELLEGRINI, Anthony D. 與 Peter Kenneth SMITH (編輯): <underline style="wavy">The nature of play: Great apes and humans</underline> [electronic resource, 8vo]. 第第3版. New York, NY: Guilford Press. 2005. 第89～112頁． <link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</link>．［閱: 2019年9月3日］．</formattedref>
     OUTPUT
     p = Relaton::Render::General.new(language: "zh", script: "Hant")
     expect(HTMLEntities.new.decode(p.render(input)))
       .to be_equivalent_to output
   end
 
-  it "renders incollection, two authors, with Simplified Chinese internationalisation" do
+  it "renders incollection, two authors, with Simplified Chinese i18n" do
     output = <<~OUTPUT
-      <formattedref>RAMSEY，J．K．和W．C． MCGREW．〈Object play in great apes： Studies in nature and captivity〉．在： PELLEGRINI， Anthony D．和 Peter Kenneth SMITH （编）：《The nature of play： Great apes and humans》［electronic resource，8vo］．第第3版． New York， NY： Guilford Press．2005．第89～112页． <link target="https://eprints.soton.ac.uk/338791/">https：//eprints．soton．ac．uk/338791/</link>．［阅：2019年9月3日］．</formattedref>
+      <formattedref>RAMSEY, J. K. 和 W. C. MCGREW. 〈Object play in great apes: Studies in nature and captivity〉．在: PELLEGRINI, Anthony D. 和 Peter Kenneth SMITH (编): 《The nature of play: Great apes and humans》 [electronic resource, 8vo]. 第第3版. New York, NY: Guilford Press. 2005. 第89～112页． <link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</link>．［阅: 2019年9月3日］．</formattedref>
     OUTPUT
     p = Relaton::Render::General.new(language: "zh", script: "Hans")
     expect(HTMLEntities.new.decode(p.render(input)))
       .to be_equivalent_to output
   end
 
-  it "renders incollection, two authors, with Japanese internationalisation" do
+  it "renders incollection, two authors, with Japanese i18n" do
     output = <<~OUTPUT
-      <formattedref>RAMSEY, J. K., W. C. MCGREW. Object play in great apes: Studies in nature and captivity. PELLEGRINI, Anthony D., Peter Kenneth SMITH (編): The nature of play: Great apes and humans [electronic resource, 8vo]. 第3版. New York, NY: Guilford Press. 2005. pp. 89–112. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>. [参照: 2019年9月3日].</formattedref>
+      <formattedref>RAMSEY, J. K., W. C. MCGREW. Object play in great apes: Studies in nature and captivity. PELLEGRINI, Anthony D., Peter Kenneth SMITH (編): The nature of play: Great apes and humans [electronic resource, 8vo]. 第3版. New York, NY: Guilford Press. 2005. pp. 89–112. <link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</link>．［参照: 2019年9月3日］．</formattedref>
     OUTPUT
     p = Relaton::Render::General.new(language: "ja")
     expect(HTMLEntities.new.decode(p.render(input)))
