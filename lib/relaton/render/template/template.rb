@@ -1,14 +1,39 @@
 require_relative "../utils/utils"
 require_relative "liquid"
+require "singleton"
 
 module Relaton
   module Render
     module Template
+      class CacheManager
+        include Singleton
+
+        attr_accessor :mutex
+
+        def initialize
+          @cache = {}
+          @mutex = Mutex.new
+        end
+
+        def store(key, value)
+          @cache[key] = value
+        end
+
+        def retrieve(key)
+          @cache[key]
+        end
+
+        def clear
+          @cache.clear
+        end
+      end
+
       class General
         attr_reader :template_raw
 
         def initialize(opt = {})
           @htmlentities = HTMLEntities.new
+          @templatecache = CacheManager.instance
           customise_liquid
           parse_options(opt)
         end
@@ -52,7 +77,15 @@ module Relaton
 
         def template_process(template)
           template.is_a?(String) or return template
-          ::Liquid::Template.parse(add_field_delim_to_template(template))
+          t = nil
+          @templatecache.mutex.synchronize do
+            unless t = @templatecache.retrieve(template)
+              t = ::Liquid::Template
+                .parse(add_field_delim_to_template(template))
+              @templatecache.store(template, t)
+            end
+          end
+          t
         end
 
         def add_field_delim_to_template(template)
