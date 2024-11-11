@@ -34,5 +34,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "relaton-bib", ">= 1.13.0"
   spec.add_dependency "twitter_cldr"
   spec.add_dependency "tzinfo-data" # we need this for windows only
+  spec.add_dependency "base64" # Liquid
+  spec.add_dependency "bigdecimal" # Liquid
   #spec.metadata["rubygems_mfa_required"] = "true"
 end

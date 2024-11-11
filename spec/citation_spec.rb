@@ -61,36 +61,32 @@ RSpec.describe Relaton::Render::Citations do
     etal = <<~TEMPLATE
       {% if nonpersonal[0] %}{{ nonpersonal[0] }}{% else %}{{surname[0] }}{% endif %}, {% if nonpersonal[1] %}{{ nonpersonal[1] }}{% else %}{{surname[1] }}{% endif %} <em>et al.</em>
     TEMPLATE
-    output = <<~OUTPUT
+    output = 
       {"A"=>{:author=>"Aluffi, Anderson, Hering, Mustaţă <em>et al.</em>", :date=>"2022", :citation=>"Aluffi, Anderson, Hering, Mustaţă <em>et al.</em> 2022", :formattedref=>"ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol."}}
-    OUTPUT
     p = Relaton::Render::General.new(
       authorcitetemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4,
                             etal: etal },
     )
     expect(p.render_all(input, type: "author-date"))
       .to be_equivalent_to output
-    output = <<~OUTPUT
+    output = 
       {"A"=>{:author=>"Aluffi, Anderson, Hering <em>et al.</em>", :date=>"2022", :citation=>"Aluffi, Anderson, Hering <em>et al.</em> 2022", :formattedref=>"ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol."}}
-    OUTPUT
     p = Relaton::Render::General.new(
       authorcitetemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4,
                             etal_display: 3, etal: etal },
     )
     expect(p.render_all(input, type: "author-date"))
       .to be_equivalent_to output
-    output = <<~OUTPUT
+    output = 
       {"A"=>{:author=>"Aluffi, Anderson <em>et al.</em>", :date=>"2022", :citation=>"Aluffi, Anderson <em>et al.</em> 2022", :formattedref=>"ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol."}}
-    OUTPUT
     p = Relaton::Render::General.new(
       authorcitetemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4,
                             etal_display: 2, etal: etal },
     )
     expect(p.render_all(input, type: "author-date"))
       .to be_equivalent_to output
-    output = <<~OUTPUT
+    output = 
       {"A"=>{:author=>"Aluffi <em>et al.</em>", :date=>"2022", :citation=>"Aluffi <em>et al.</em> 2022", :formattedref=>"ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol."}}
-    OUTPUT
     p = Relaton::Render::General.new(
       authorcitetemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4,
                             etal_display: 1, etal: etal },
@@ -286,12 +282,11 @@ RSpec.describe Relaton::Render::Citations do
         </bibitem>
       </references>
     INPUT
-    output = <<~OUTPUT
+    output = 
       {"A"=>{:author=>"Aluffi, Anderson, Hering, Mustaţă and Payne", :date=>"2022a", :citation=>"Aluffi, Anderson, Hering, Mustaţă and Payne 2022a", :formattedref=>"ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022a. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol."},
       "B"=>{:author=>"Aluffi, Anderson, Hering, Mustaţă and Payne", :date=>"2022b", :citation=>"Aluffi, Anderson, Hering, Mustaţă and Payne 2022b", :formattedref=>"ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022b. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol."},
       "C"=>{:author=>"Aluffi, Anderson, Hering, Mustaţă and Payne", :date=>"2021", :citation=>"Aluffi, Anderson, Hering, Mustaţă and Payne 2021", :formattedref=>"ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2021. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol."},
       "D"=>{:author=>"Aluffi and Anderson", :date=>"2022", :citation=>"Aluffi and Anderson 2022", :formattedref=>"ALUFFI, Paolo and David ANDERSON (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol."}}
-    OUTPUT
     p = Relaton::Render::General.new
     expect(p.render_all(input, type: "author-date"))
       .to be_equivalent_to output
@@ -380,12 +375,11 @@ RSpec.describe Relaton::Render::Citations do
     template2 = <<~TEMPLATE
       {{ creatornames }} ({{date}}) . <em>{{ title }}</em> {{ uri }}. Accessed: {{ date_accessed }}.
     TEMPLATE
-    output = <<~OUTPUT
+    output = 
       {"A"=>{:author=>"Aluffi", :date=>"2021", :citation=>"Aluffi 2021", :formattedref=>"ALUFFI, Paolo (2021). <em>Book 1</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>."},
       "B"=>{:author=>"Aluffi", :date=>"2022", :citation=>"Aluffi 2022", :formattedref=>"ALUFFI, Paolo (2022). <em>Book 2</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>."},
       "C"=>{:author=>"Aluffi", :date=>"2023", :citation=>"Aluffi 2023", :formattedref=>"ALUFFI, Paolo (2023). <em>Standard 1</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>. Accessed: #{Date.today.strftime('%B %-d, %Y')}."},
       "D"=>{:author=>"Aluffi", :date=>"2024", :citation=>"Aluffi 2024", :formattedref=>"ALUFFI, Paolo (2024). <em>Standard 2</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>. Accessed: #{Date.today.strftime('%B %-d, %Y')}."}}
-    OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template1, standard: template2 })
     expect(p.render_all(input, type: "author-date"))
@@ -445,10 +439,9 @@ RSpec.describe Relaton::Render::Citations do
         </bibitem>
       </references>
     INPUT
-    output = <<~OUTPUT
+    output = 
       {"A"=>{:citation=>nil, :formattedref=>"ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC1. 1 vol."},
       "B"=>{:citation=>nil, :formattedref=>"ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC2. 1 vol."}}
-    OUTPUT
     p = Relaton::Render::General.new
     expect(p.render_all(input, type: nil))
       .to be_equivalent_to output
