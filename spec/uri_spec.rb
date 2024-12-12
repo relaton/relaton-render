@@ -140,7 +140,7 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
-  xit "supply missing accessed date" do
+  it "do not supply missing accessed date" do
     input = <<~INPUT
       <bibitem type="software">
         <title>metanorma-standoc</title>
@@ -161,8 +161,9 @@ RSpec.describe Relaton::Render do
         <edition>1.3.1</edition>
       </bibitem>
     INPUT
+      # <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <link target="https://github.com/metanorma/metanorma-standoc">https://github.com/metanorma/metanorma-standoc</link>. [viewed: #{Date.today.strftime('%B %-d, %Y')}].</formattedref>
     output = <<~OUTPUT
-      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <link target="https://github.com/metanorma/metanorma-standoc">https://github.com/metanorma/metanorma-standoc</link>. [viewed: #{Date.today.strftime('%B %-d, %Y')}].</formattedref>
+      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <link target="https://github.com/metanorma/metanorma-standoc">https://github.com/metanorma/metanorma-standoc</link>.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -195,6 +196,7 @@ RSpec.describe Relaton::Render do
     output = <<~OUTPUT
       <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <link target="https://completely.broken.url.com">https://completely.broken.url.com</link>.</formattedref>
     OUTPUT
+=begin
     p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to output
@@ -202,6 +204,7 @@ RSpec.describe Relaton::Render do
     expect { p.render(input) }
       .to output(%r{BIBLIOGRAPHY WARNING: cannot access https://completely.broken.url.com})
       .to_stderr
+=end
 
     input = <<~INPUT
       <bibitem type="software">
@@ -223,8 +226,9 @@ RSpec.describe Relaton::Render do
         <edition>1.3.1</edition>
       </bibitem>
     INPUT
+      # <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <link target="file/file.xml">file/file.xml</link>. [viewed: #{Date.today.strftime('%B %-d, %Y')}].</formattedref>
     output = <<~OUTPUT
-      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <link target="file/file.xml">file/file.xml</link>. [viewed: #{Date.today.strftime('%B %-d, %Y')}].</formattedref>
+      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <link target="file/file.xml">file/file.xml</link>.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))

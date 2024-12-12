@@ -203,9 +203,10 @@ module Relaton
       # add to liquid data based on template
       def enhance_data(data, template)
         template.is_a?(String) or return
-        add_date_accessed(data, template)
+        # add_date_accessed(data, template)
       end
 
+      # functionality removed: date needs to be given explicitly
       def add_date_accessed(data, template)
         (/\{\{\s*date_accessed\s*\}\}/.match?(template) &&
           /\{\{\s*uri\s*\}\}/.match?(template) &&
