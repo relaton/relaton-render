@@ -23,9 +23,10 @@ module Relaton
       def enhance_data(cites)
         ret = extract_uris_for_lookup(cites)
         ret.empty? and return
-        @renderer.urls_exist_concurrent(ret.keys).each do |k, v|
-          ret[k].each { |u| add_date_accessed(cites[u], k, v) }
-        end
+        # functionality removed: date needs to be given explicitly
+        #@renderer.urls_exist_concurrent(ret.keys).each do |k, v|
+          #ret[k].each { |u| add_date_accessed(cites[u], k, v) }
+          #end
       end
 
       def extract_uris_for_lookup(cites)

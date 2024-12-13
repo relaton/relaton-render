@@ -292,7 +292,7 @@ RSpec.describe Relaton::Render::Citations do
       .to be_equivalent_to output
   end
 
-  it "adds date accessed as required to set of citations" do
+  it "does not add date accessed by default to set of citations" do
     input = <<~INPUT
       <references>
         <bibitem type="book" id="A">
@@ -373,13 +373,13 @@ RSpec.describe Relaton::Render::Citations do
       {{ creatornames }} ({{date}}) . <em>{{ title }}</em> {{ uri }}.
     TEMPLATE
     template2 = <<~TEMPLATE
-      {{ creatornames }} ({{date}}) . <em>{{ title }}</em> {{ uri }}. Accessed: {{ date_accessed }}.
+      {{ creatornames }} ({{date}}) . <em>{{ title }}</em> {{ uri }}. Accessed:_{{ date_accessed }}.
     TEMPLATE
     output = 
       {"A"=>{:author=>"Aluffi", :date=>"2021", :citation=>"Aluffi 2021", :formattedref=>"ALUFFI, Paolo (2021). <em>Book 1</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>."},
       "B"=>{:author=>"Aluffi", :date=>"2022", :citation=>"Aluffi 2022", :formattedref=>"ALUFFI, Paolo (2022). <em>Book 2</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>."},
-      "C"=>{:author=>"Aluffi", :date=>"2023", :citation=>"Aluffi 2023", :formattedref=>"ALUFFI, Paolo (2023). <em>Standard 1</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>. Accessed: #{Date.today.strftime('%B %-d, %Y')}."},
-      "D"=>{:author=>"Aluffi", :date=>"2024", :citation=>"Aluffi 2024", :formattedref=>"ALUFFI, Paolo (2024). <em>Standard 2</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>. Accessed: #{Date.today.strftime('%B %-d, %Y')}."}}
+      "C"=>{:author=>"Aluffi", :date=>"2023", :citation=>"Aluffi 2023", :formattedref=>"ALUFFI, Paolo (2023). <em>Standard 1</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>."},
+      "D"=>{:author=>"Aluffi", :date=>"2024", :citation=>"Aluffi 2024", :formattedref=>"ALUFFI, Paolo (2024). <em>Standard 2</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>."}}
     p = Relaton::Render::General
       .new(template: { book: template1, standard: template2 })
     expect(p.render_all(input, type: "author-date"))
