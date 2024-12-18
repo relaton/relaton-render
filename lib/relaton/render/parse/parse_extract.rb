@@ -140,8 +140,14 @@ module Relaton
       def extent(doc)
         doc.extent.each_with_object([]) do |e, acc|
           case e
-          when RelatonBib::LocalityStack
-            acc << extent1(e.locality)
+          when RelatonBib::Extent, RelatonBib::LocalityStack
+            e.locality.each do |e1|
+              if e1.is_a?(RelatonBib::LocalityStack)
+                acc << extent1(e1.locality)
+              else
+                acc << extent1(Array(e1))
+              end
+            end
           when RelatonBib::Locality
             acc << extent1(Array(e))
           end
