@@ -128,13 +128,15 @@ module Relaton
       end
 
       def extentformat(extent, hash)
-        extent.map do |e|
+        extent.map do |stack|
+        stack.map do |e|
           e1 = e.transform_values { |v| v.is_a?(Hash) ? range(v) : v }
           ret = e.each_with_object({}) do |(k, v), m|
             extentformat1(k, v, m, e1)
             m
           end
           @r.extenttemplate.render(hash.merge(ret))
+        end.join(" ")
         end.join("; ")
       end
 

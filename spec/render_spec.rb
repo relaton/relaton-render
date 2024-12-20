@@ -866,7 +866,85 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to output
+    expect(p.render(input.gsub(%r{</?localityStack>}m, "")))
+      .to be_equivalent_to output
   end
+
+    it "renders article with multiple extents" do
+    input = <<~INPUT
+      <bibitem type="article">
+              <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <docidentifier type="ISBN">9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+          </person>
+        </contributor>
+                <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Anderson</surname><forename>David</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Hering</surname><forename>Milena</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Mustaţă</surname><forename>Mircea</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Payne</surname><forename>Sam</forename></name>
+          </person>
+        </contributor>
+        <edition>1</edition>
+        <series>
+        <title>London Mathematical Society Lecture Note Series</title>
+        <number>472</number>
+        <partnumber>472</partnumber>
+        <run>N.S.</run>
+        </series>
+            <contributor>
+              <role type="publisher"/>
+              <organization>
+                <name>Cambridge University Press</name>
+              </organization>
+            </contributor>
+            <place>Cambridge, UK</place>
+            <extent>
+                  <locality type="volume"><referenceFrom>1</referenceFrom></locality>
+                  <locality type="issue"><referenceFrom>7</referenceFrom></locality>
+        <locality type="page">
+          <referenceFrom>89</referenceFrom>
+          <referenceTo>112</referenceTo>
+        </locality>
+            </extent>
+            <extent>
+                  <locality type="issue"><referenceFrom>8</referenceFrom></locality>
+        <locality type="page">
+          <referenceFrom>90</referenceFrom>
+        </locality>
+            </extent>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+    <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. <em>London Mathematical Society Lecture Note Series</em> (N.S.). 1st edition. vol. 1 no. 7, pp. 89–112; no. 8, p. 90. Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
 
   it "renders article, with extended extent template incorporating year" do
     input = <<~INPUT

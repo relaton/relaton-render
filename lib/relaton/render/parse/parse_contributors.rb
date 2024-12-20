@@ -5,6 +5,8 @@ module Relaton
         node.nil? and return node
         node.content.is_a?(Array) and return node.content.map { |x| content(x) }
         node.content.strip
+        #node.children.map { |n| n.text? ? n.content : n.to_xml }.join
+        #node.text? ? node.content.strip : node.to_xml.strip
       end
 
       def extract_orgname(org)
