@@ -6,8 +6,8 @@ module Relaton
         node.content.is_a?(Array) and return node.content.map { |x| content(x) }
         node.content.strip
           .gsub("</title>", "").gsub("<title>", "")
-        #node.children.map { |n| n.text? ? n.content : n.to_xml }.join
-        #node.text? ? node.content.strip : node.to_xml.strip
+        # node.children.map { |n| n.text? ? n.content : n.to_xml }.join
+        # node.text? ? node.content.strip : node.to_xml.strip
       end
 
       def extract_orgname(org)
@@ -24,16 +24,19 @@ module Relaton
       end
 
       def given_and_middle_name(person)
-        forenames = person.name.forename.map do |x|
-          x.content.empty? ? "#{x.initial}." : content(x)
-        end
+        forenames = forenames_parse(person)
+        initials = extract_initials(person)
+        forenames.empty? and initials.empty? and return [nil, nil, nil]
+        initials.empty? and initials = initials_from_forenames(forenames)
+        [forenames.first, forenames[1..-1], Array(initials)]
+      end
+
+      def extract_initials(person)
         initials = content(person.name.initials)&.sub(/(.)\.?$/, "\\1.")
           &.split /(?<=\.) /
         initials ||= person.name.forename.map(&:initial)
           .compact.map { |x| x.sub(/(.)\.?$/, "\\1.") }
-        forenames.empty? and initials.empty? and return [nil, nil, nil]
-        initials.empty? and initials = forenames.map { |x| "#{x[0]}." }
-        [forenames.first, forenames[1..-1], Array(initials)]
+        initials
       end
 
       def forenames_parse(person)
@@ -50,6 +53,10 @@ module Relaton
 
         i.sub(/(.)\.?$/, "\\1.")
           .scan(/.+?\.(?=(?:$|\s|\p{Alpha}))/).map(&:strip)
+      end
+
+      def initials_from_forenames(forenames)
+        forenames.map(&:split).flatten.map { |x| "#{x[0]}." }
       end
 
       def extractname(contributor)

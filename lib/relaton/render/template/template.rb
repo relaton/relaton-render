@@ -187,7 +187,7 @@ module Relaton
         end
 
         def template_select_etal(names)
-          if @etal_count && names[:surname].size >= @etal_count
+          if @etal_count && names[:surname].size > @etal_count
             expand_nametemplate(@template_raw[:etal], @etal_display)
           else
             expand_nametemplate(@template_raw[:more], names[:surname].size)

@@ -42,25 +42,25 @@ RSpec.describe Relaton::Render do
                 <contributor>
           <role type="editor"/>
           <person>
-            <name><surname>Anderson</surname><forename>David</forename></name>
+            <name><surname>Anderson</surname><forename>David</forename><forename>Herbert</forename></name>
           </person>
         </contributor>
         <contributor>
           <role type="editor"/>
           <person>
-            <name><surname>Hering</surname><forename>Milena</forename></name>
+            <name><surname>Hering</surname><forename>Milena Marie</forename></name>
           </person>
         </contributor>
         <contributor>
           <role type="editor"/>
           <person>
-            <name><surname>Mustaţă</surname><forename>Mircea</forename></name>
+            <name><surname>Mustaţă</surname><forename>Mircea</forename><forename>H.</forename></name>
           </person>
         </contributor>
         <contributor>
           <role type="editor"/>
           <person>
-            <name><surname>Payne</surname><forename>Sam</forename></name>
+            <name><surname>Payne</surname><forename>Sam H.</forename></name>
           </person>
         </contributor>
         <edition>1</edition>
@@ -78,7 +78,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) n.p.: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.
+      ALUFFI, Paolo, David Herbert ANDERSON, Milena Marie HERING, Mircea H. MUSTAŢĂ and Sam H. PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) n.p.: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -90,13 +90,17 @@ RSpec.describe Relaton::Render do
       authorcite: "Aluffi, Anderson, Hering, Mustaţă and Payne",
       authorizer: "Cambridge University Press",
       authorizer_raw: [{ nonpersonal: "Cambridge University Press" }],
-      creatornames: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE",
+      creatornames: "ALUFFI, Paolo, David Herbert ANDERSON, Milena Marie HERING, Mircea H. MUSTAŢĂ and Sam H. PAYNE",
       creators: [
         { given: "Paolo", initials: ["P."], middle: [], surname: "Aluffi" },
-        { given: "David", initials: ["D."], middle: [], surname: "Anderson" },
-        { given: "Milena", initials: ["M."], middle: [], surname: "Hering" },
-        { given: "Mircea", initials: ["M."], middle: [], surname: "Mustaţă" },
-        { given: "Sam", initials: ["S."], middle: [], surname: "Payne" },
+        { given: "David", initials: ["D.", "H."], middle: ["Herbert"],
+          surname: "Anderson" },
+        { given: "Milena Marie", initials: ["M.", "M."], middle: [],
+          surname: "Hering" },
+        { given: "Mircea", initials: ["M.", "H."], middle: ["H."],
+          surname: "Mustaţă" },
+        { given: "Sam H.", initials: ["S.", "H."], middle: [],
+          surname: "Payne" },
       ],
       date: "2022",
       doi: ["https://doi.org/10.1017/9781108877831"],
@@ -245,7 +249,7 @@ RSpec.describe Relaton::Render do
   end
 
   it "renders book, five editors with manual configuration, " \
-     "et al. rendering, convert forenames to initials" do
+     "et al. rendering, convert forenames to initials #1" do
     input = <<~INPUT
       <bibitem type="book">
         <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
@@ -301,7 +305,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
+      <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă and S Payne, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
     OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ,_{{role}} ({{date}}) . <em>{{ title }}</em> [{{medium}}] ,_{{ edition }} .
@@ -310,6 +314,25 @@ RSpec.describe Relaton::Render do
     etal = <<~TEMPLATE
       {{surname[0] }}, {{initials[0] | join: "" | remove: "." | remove: "_" }}, {{initials[1]  | join: "" | remove: "." | remove: "_" }} {{surname[1] }}, {{initials[2]  | join: "" | remove: "." | remove: "_" }} {{surname[2] }},  {{initials[3]  | join: "" | remove: "." | remove: "_" }} {{surname[3] }} <em>et al.</em>
     TEMPLATE
+    more = <<~TEMPLATE
+      {{surname[0] }}, {{initials[0] | join: "" | remove: "." | remove: "_" }}, {{initials[1]  | join: "" | remove: "." | remove: "_" }} {{surname[1] }} {{ labels['author_and'] }} {{initials[2]  | join: "" | remove: "." | remove: "_" }} {{surname[2] }}
+    TEMPLATE
+    p = Relaton::Render::General
+      .new(template: { book: template },
+           nametemplate: { one: "{{ nonpersonal[0] }}",
+                           more: more,
+                           etal_count: 5, etal: etal },
+           sizetemplate: "{{ page_raw }} pages",
+           language: "en",
+           edition_number: ["SpelloutRules", "spellout-ordinal"],
+           edition: "% edition",
+           date: { month_year: "MMMd", day_month_year: "yMMMd",
+                   date_time: "to_long_s" })
+    expect(p.render(input))
+      .to be_equivalent_to output
+    output = <<~OUTPUT
+      <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
+    OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template },
            nametemplate: { one: "{{ nonpersonal[0] }}",
@@ -359,6 +382,85 @@ RSpec.describe Relaton::Render do
       .new(template: { book: template },
            nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4,
                            etal_display: 1, etal: etal },
+           sizetemplate: "{{ page_raw }} pages",
+           language: "en",
+           edition_number: ["SpelloutRules", "spellout-ordinal"],
+           edition: "% edition",
+           date: { month_year: "MMMd", day_month_year: "yMMMd",
+                   date_time: "to_long_s" })
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
+
+  it "renders book, convert forenames to initials #2" do
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <docidentifier type="ISBN">9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+          </person>
+        </contributor>
+                <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Anderson</surname><forename>David</forename><forename>Herbert</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Hering</surname><forename>Milena Marie</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Mustaţă</surname><forename>Mircea</forename><forename>H.</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Payne</surname><forename>Sam H.</forename></name>
+          </person>
+        </contributor>
+        <edition>1</edition>
+        <series>
+        <title>London Mathematical Society Lecture Note Series</title>
+        <number>472</number>#{' '}
+        </series>
+            <contributor>#{'  '}
+              <role type="publisher"/>
+              <organization>
+                <name>Cambridge University Press</name>
+              </organization>
+            </contributor>
+          <size><value type="volume">1</value></size>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>Aluffi, P, DH Anderson, MM Hering, MH Mustaţă and SH Payne, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition.: Cambridge University Press. DOI: https://doi.org/10.1017/9781108877831</formattedref>
+    OUTPUT
+    template = <<~TEMPLATE
+      {{ creatornames }} ,_{{role}} ({{date}}) . <em>{{ title }}</em> [{{medium}}] ,_{{ edition }} .
+      {{ place }} : {{ publisher_abbrev }} . {{ uri }}. At:_{{ access_location }}. DOI:_{{ doi | join: ", " }}
+    TEMPLATE
+    etal = <<~TEMPLATE
+      {{surname[0] }}, {{initials[0] | join: "" | remove: "." | remove: "_" }}, {{initials[1]  | join: "" | remove: "." | remove: "_" }} {{surname[1] }}, {{initials[2]  | join: "" | remove: "." | remove: "_" }} {{surname[2] }},  {{initials[3]  | join: "" | remove: "." | remove: "_" }} {{surname[3] }} <em>et al.</em>
+    TEMPLATE
+    more = <<~TEMPLATE
+      {{surname[0] }}, {{initials[0] | join: "" | remove: "." | remove: "_" }}, {{initials[1]  | join: "" | remove: "." | remove: "_" }} {{surname[1] }} {{ labels['author_and'] }} {{initials[2]  | join: "" | remove: "." | remove: "_" }} {{surname[2] }}
+    TEMPLATE
+    p = Relaton::Render::General
+      .new(template: { book: template },
+           nametemplate: { one: "{{ nonpersonal[0] }}",
+                           more: more,
+                           etal_count: 5, etal: etal },
            sizetemplate: "{{ page_raw }} pages",
            language: "en",
            edition_number: ["SpelloutRules", "spellout-ordinal"],
@@ -913,7 +1015,7 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
-    it "renders article with multiple extents" do
+  it "renders article with multiple extents" do
     input = <<~INPUT
       <bibitem type="article">
               <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
@@ -981,13 +1083,12 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-    <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. <em>London Mathematical Society Lecture Note Series</em> (N.S.). 1st edition. vol. 1 no. 7, pp. 89–112; no. 8, p. 90. Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831.</formattedref>
+      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. <em>London Mathematical Society Lecture Note Series</em> (N.S.). 1st edition. vol. 1 no. 7, pp. 89–112; no. 8, p. 90. Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to output
   end
-
 
   it "renders article, with extended extent template incorporating year" do
     input = <<~INPUT
