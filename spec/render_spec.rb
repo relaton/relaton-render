@@ -390,6 +390,28 @@ RSpec.describe Relaton::Render do
                    date_time: "to_long_s" })
     expect(p.render(input))
       .to be_equivalent_to output
+    output = <<~OUTPUT
+      <formattedref>Aluffi, P _et al._, eds. (2022). _Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday_, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
+    OUTPUT
+    template = <<~TEMPLATE
+      {{ creatornames }} ,_{{role}} ({{date}}) . \\_{{ title }}\\_ [{{medium}}] ,_{{ edition }} .
+      {{ place }} : {{ publisher_abbrev }} . {{ uri }}. At:_{{ access_location }}. DOI:_{{ doi | join: ", " }}
+    TEMPLATE
+    etal = <<~TEMPLATE
+      {{surname[0] }}, {{initials[0] | join: "" | remove: "." | remove: "_" }}, {{initials[1]  | join: "" | remove: "." | remove: "_" }} {{surname[1] }}, {{initials[2]  | join: "" | remove: "." | remove: "_" }} {{surname[2] }},  {{initials[3]  | join: "" | remove: "." | remove: "_" }} {{surname[3] }} \\_et al.\\_
+    TEMPLATE
+    p = Relaton::Render::General
+      .new(template: { book: template },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 4,
+                           etal_display: 1, etal: etal },
+           sizetemplate: "{{ page_raw }} pages",
+           language: "en",
+           edition_number: ["SpelloutRules", "spellout-ordinal"],
+           edition: "% edition",
+           date: { month_year: "MMMd", day_month_year: "yMMMd",
+                   date_time: "to_long_s" })
+    expect(p.render(input))
+      .to be_equivalent_to output
   end
 
   it "renders book, convert forenames to initials #2" do
