@@ -53,7 +53,7 @@ module Relaton
 
         def customise_liquid
           ::Liquid::Template
-            .register_filter(::Relaton::Render::Template::CapitalizeFirst)
+            .register_filter(::Relaton::Render::Template::CustomFilters)
         end
 
         # denote start and end of field,

@@ -432,9 +432,9 @@ RSpec.describe Relaton::Render do
         <edition>1</edition>
         <series>
         <title>London Mathematical Society Lecture Note Series</title>
-        <number>472</number>#{' '}
+        <number>472</number>
         </series>
-            <contributor>#{'  '}
+            <contributor>
               <role type="publisher"/>
               <organization>
                 <name>Cambridge University Press</name>
@@ -672,6 +672,69 @@ RSpec.describe Relaton::Render do
       .new(template: { book: template }, language: "en")
     expect(p.render(input))
       .to be_equivalent_to output
+  end
+
+  it "processes selective filters" do
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <docidentifier type="ISBN">9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <date type="accessed"><on>2022-04-02</on></date>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Anderson</surname><formatted-initials>D. X.</formatted-initials></name>
+          </person>
+        </contributor>
+        <edition>1</edition>
+        <series>
+        <title>London Mathematical Society Lecture Note Series</title>
+        <number>472</number>
+        </series>
+            <contributor>
+              <role type="publisher"/>
+              <organization>
+                <name>Cambridge University Press</name>
+                <abbreviation>CUP</abbreviation>
+              </organization>
+            </contributor>
+            <place>Cambridge, UK</place>
+          <size><value type="page">lxii</value><value type="page">500</value></size>
+      </bibitem>
+    INPUT
+    template = <<~TEMPLATE
+      {{ creatornames | selective_upcase }} ,_{{role}} ({{date}}) . <em>{{ title }}</em>.
+    TEMPLATE
+    two = <<~TEMPLATE
+      {{surname[0] }}, {{initials[0] | join: " " }} +++and+++ {{initials[1]  | join: " " | remove: "." }} {{surname[1] }}
+    TEMPLATE
+    output = <<~OUTPUT
+      <formattedref>ALUFFI, P. and D X ANDERSON, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General
+      .new(template: { book: template },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3,
+                           two: two })
+    expect(p.render(input)).to be_equivalent_to output
+    template = <<~TEMPLATE
+      {{ creatornames | selective_tag: "<smallcap>" }} ,_{{role}} ({{date}}) . <em>{{ title }}</em>.
+    TEMPLATE
+    output = <<~OUTPUT
+      <formattedref><smallcap>Aluffi, P. </smallcap>and<smallcap> D X Anderson</smallcap>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General
+      .new(template: { book: template },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3,
+                           two: two })
+    expect(p.render(input)).to be_equivalent_to output
   end
 
   it "sanitises tags in bibliographic content" do
