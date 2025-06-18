@@ -14,7 +14,6 @@ module Relaton
           return nil if text.nil?
 
           ret = text.split(/(\+\+\+[^+]+?\+\+\+)/)
-          require "debug"; binding.b
           ret.map do |n|
             if m = /^\+\+\+(.+)\+\+\+$/.match(n)
               m[1]
