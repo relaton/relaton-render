@@ -34,7 +34,7 @@ module Relaton
         def initialize(opt = {})
           @htmlentities = HTMLEntities.new
           @templatecache = CacheManager.instance
-          customise_liquid
+          @liquid_env = create_liquid_environment
           parse_options(opt)
         end
 
@@ -51,9 +51,10 @@ module Relaton
             end
         end
 
-        def customise_liquid
-          ::Liquid::Template
-            .register_filter(::Relaton::Render::Template::CustomFilters)
+        def create_liquid_environment
+          env = ::Liquid::Environment.new
+          env.register_filter(::Relaton::Render::Template::CustomFilters)
+          env
         end
 
         # denote start and end of field,
@@ -81,7 +82,7 @@ module Relaton
           @templatecache.mutex.synchronize do
             unless t = @templatecache.retrieve(template)
               t = ::Liquid::Template
-                .parse(add_field_delim_to_template(template))
+                .parse(add_field_delim_to_template(template), environment: @liquid_env)
               @templatecache.store(template, t)
             end
           end
