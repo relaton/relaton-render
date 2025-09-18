@@ -3,9 +3,7 @@ module Relaton
     class Parse
       # filter applied across full list of auth_id
       def auth_id_filter(ids)
-        id_scope_filter(ids).reject do |i|
-          i.type == "title"
-        end
+        id_scope_filter(ids)
       end
 
       def id_scope_filter(ids)
@@ -66,7 +64,7 @@ module Relaton
       end
 
       def authoritative_identifier_exclude
-        %w(METANORMA METANORMA-ORDINAL) + other_identifier_include
+        %w(METANORMA METANORMA-ORDINAL TITLE) + other_identifier_include
       end
 
       def other_identifier(doc)
