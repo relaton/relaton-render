@@ -15,6 +15,7 @@ RSpec.describe Relaton::Render do
       <docidentifier type="ISBN">9783031015847</docidentifier>
       <docidentifier type="issn.print">1939-4608</docidentifier>
       <docidentifier type="issn.electronic">1939-4616</docidentifier>
+      <docidentifier type="title">An Introduction to the Planning Domain Definition Language</docidentifier>
       </bibitem>
     INPUT
     p = Relaton::Render::General.new

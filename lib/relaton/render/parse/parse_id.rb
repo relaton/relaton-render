@@ -3,7 +3,9 @@ module Relaton
     class Parse
       # filter applied across full list of auth_id
       def auth_id_filter(ids)
-        id_scope_filter(ids)
+        id_scope_filter(ids).reject do |i|
+          i.type == "title"
+        end
       end
 
       def id_scope_filter(ids)

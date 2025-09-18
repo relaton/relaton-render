@@ -2,7 +2,7 @@
 
 image:https://img.shields.io/gem/v/relaton-render.svg["Gem Version", link="https://rubygems.org/gems/relaton-render"]
 image:https://github.com/metanorma/relaton-render/workflows/rake/badge.svg["Build Status", link="https://github.com/metanorma/relaton-render/actions?workflow=rake"]
-image:https://codeclimate.com/github/metanorma/relaton-render/badges/gpa.svg["Code Climate", link="https://codeclimate.com/github/metanorma/relaton-render"]
+// image:https://codeclimate.com/github/metanorma/relaton-render/badges/gpa.svg["Code Climate", link="https://codeclimate.com/github/metanorma/relaton-render"]
 
 Gem that takes a https://github.com/relaton/relaton[Relaton] bibliographic description and 
 a configuration, and generates a https://www.metanorma.org[Metanorma] XML rendering of that description.
