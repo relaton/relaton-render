@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "simplecov"
 
-  spec.add_dependency "isodoc-i18n", "~> 1.3.0"
+  spec.add_dependency "isodoc-i18n", "~> 1.4.0"
   spec.add_dependency "liquid", "~> 5"
   spec.add_dependency "nokogiri"
   spec.add_dependency "relaton-bib", ">= 1.20.0"
