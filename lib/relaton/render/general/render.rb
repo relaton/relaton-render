@@ -139,11 +139,18 @@ module Relaton
         ret
       end
 
+      # <esc> in field can get capitalised in filters
+     def esc_cleanup(text)
+       text.gsub(/<esc>/i, "<esc>").gsub(/<\/esc>/i, "</esc>")
+     end
+
       def render1(doc)
         r = doc.relation.select { |x| x.type == "hasRepresentation" }
           .map { |x| @i18n.also_pub_as + render_single_bibitem(x.bibitem) }
         out = [render_single_bibitem(doc)] + r
-        @i18n.l10n(out.join(". ").gsub(".. ", ". "))
+        #warn out.join(". ")
+        @i18n.l10n(esc_cleanup(out.join(". ")).gsub(".</esc>.", ".</esc>")
+          .gsub(".. ", ". "))
       end
 
       def render_single_bibitem(doc)
@@ -152,7 +159,7 @@ module Relaton
       end
 
       def liquid(data_liquid, renderer)
-        valid_parse(@i18n.l10n(renderer.render(data_liquid)))
+        valid_parse(renderer.render(data_liquid))
       end
 
       def parse(doc)

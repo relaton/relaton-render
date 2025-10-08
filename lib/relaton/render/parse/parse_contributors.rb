@@ -28,7 +28,16 @@ module Relaton
         initials = extract_initials(person)
         forenames.empty? and initials.empty? and return [nil, nil, nil]
         initials.empty? and initials = initials_from_forenames(forenames)
-        [forenames.first, forenames[1..-1], Array(initials)]
+        [forenames.first, forenames[1..-1],
+         wrap_in_esc(Array(initials))]
+      end
+
+      def wrap_in_esc(obj)
+        case obj
+        when String then "<esc>#{obj}</esc>"
+        when Array then obj.map { |e| wrap_in_esc(e) }
+        else obj
+        end
       end
 
       def extract_initials(person)
@@ -41,7 +50,7 @@ module Relaton
 
       def forenames_parse(person)
         person.name.forename.map do |x|
-          x.content.empty? ? "#{x.initial}." : content(x)
+          x.content.empty? ? "<esc>#{x.initial}.</esc>" : content(x)
         end
       end
 

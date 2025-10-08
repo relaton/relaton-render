@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require "spec_helper"
+require_relative "../spec_helper"
 
 RSpec.describe Relaton::Render do
   it "ignore non-authoritative identifiers" do
@@ -21,7 +21,7 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General.new
     data, = p.parse(input)
     expect(data[:authoritative_identifier])
-      .to eq ["ISO 123"]
+      .to eq ["<esc>ISO 123</esc>"]
 
     input = <<~INPUT
       <bibitem id="ref_pddl" type="book" schema-version="v1.2.4">
@@ -52,15 +52,15 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General.new(language: "en")
     data, = p.parse(input)
     expect(data[:authoritative_identifier])
-      .to eq ["A"]
+      .to eq ["<esc>A</esc>"]
     p = Relaton::Render::General.new(language: "fr")
     data, = p.parse(input)
     expect(data[:authoritative_identifier])
-      .to eq ["B"]
+      .to eq ["<esc>B</esc>"]
     p = Relaton::Render::General.new(language: "de")
     data, = p.parse(input)
     expect(data[:authoritative_identifier])
-      .to eq ["A", "B", "C"]
+      .to eq ["<esc>A</esc>", "<esc>B</esc>", "<esc>C</esc>"]
 
     input = <<~INPUT
       <bibitem id="ref_pddl" type="book" schema-version="v1.2.4">  <fetched>2023-09-29</fetched>
@@ -73,15 +73,15 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General.new(language: "en")
     data, = p.parse(input)
     expect(data[:authoritative_identifier])
-      .to eq ["B", "C"]
+      .to eq ["<esc>B</esc>", "<esc>C</esc>"]
     p = Relaton::Render::General.new(language: "fr")
     data, = p.parse(input)
     expect(data[:authoritative_identifier])
-      .to eq ["B"]
+      .to eq ["<esc>B</esc>"]
     p = Relaton::Render::General.new(language: "de")
     data, = p.parse(input)
     expect(data[:authoritative_identifier])
-      .to eq ["C"]
+      .to eq ["<esc>C</esc>"]
   end
 
   it "ignore untrademarked IEEE identifiers" do
@@ -96,7 +96,7 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General.new
     data, = p.parse(input)
     expect(data[:authoritative_identifier])
-      .to eq ["IEEE-TM 2"]
+      .to eq ["<esc>IEEE-TM 2</esc>"]
 
     input.sub!(
       '<docidentifier type="IEEE" scope="trademark">IEEE-TM 2</docidentifier>',
@@ -104,7 +104,7 @@ RSpec.describe Relaton::Render do
     )
     data, = p.parse(input)
     expect(data[:authoritative_identifier])
-      .to eq ["IEEE 2"]
+      .to eq ["<esc>IEEE 2</esc>"]
   end
 
   it "ignore non-IEEE scopes" do
@@ -119,7 +119,7 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General.new
     data, = p.parse(input)
     expect(data[:authoritative_identifier])
-      .to eq ["IEEE 2"]
+      .to eq ["<esc>IEEE 2</esc>"]
 
     input = <<~INPUT
         <bibitem id="ref_pddl" type="book" schema-version="v1.2.4">  <fetched>2023-09-29</fetched>
@@ -132,7 +132,7 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General.new
     data, = p.parse(input)
     expect(data[:authoritative_identifier])
-      .to eq ["IEEE 2"]
+      .to eq ["<esc>IEEE 2</esc>"]
   end
 
   it "drop ISSN/ISBN type from docidentifier prefixing" do

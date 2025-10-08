@@ -1,12 +1,8 @@
 # encoding: utf-8
 
-require "spec_helper"
+require_relative "../spec_helper"
 
 RSpec.describe Relaton::Render do
-  it "has a version number" do
-    expect(Relaton::Render::VERSION).not_to be nil
-  end
-
   it "copes with multiple uris in citation" do
     input = <<~INPUT
       <bibitem type="book">

@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require "spec_helper"
+require_relative "../spec_helper"
 
 RSpec.describe Relaton::Render::Citations do
   it "apply et al. to author-date citations" do

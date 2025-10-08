@@ -48,7 +48,8 @@ module Relaton
           out = authoritative_identifier_select(a)
           out.empty? or break
         end
-        out.map(&:id)
+        # prevent l10n of identifier contents
+        out.map(&:id).map { |i| "<esc>#{i}</esc>" }
       end
 
       def authoritative_identifier_select(idents)
@@ -71,7 +72,7 @@ module Relaton
         doc.docidentifier.each_with_object([]) do |id, ret|
           type = id_type_norm(id)
           other_identifier_include.include? type or next
-          ret << @i18n.l10n("#{type}: #{id.id}")
+          ret << @i18n.l10n("#{type}: <esc>#{id.id}</esc>")
         end
       end
 
@@ -85,7 +86,7 @@ module Relaton
           type.casecmp("doi").zero? or next
           ret << id.id
         end
-        out.empty? ? nil : out
+        out.empty? ? nil : out.map { |i| "<esc>#{i}</esc>" }
       end
 
       def id_type_norm(id)

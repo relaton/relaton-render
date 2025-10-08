@@ -1,6 +1,7 @@
 # encoding: utf-8
 
-require "spec_helper"
+require_relative "../spec_helper"
+require "isodoc"
 
 RSpec.describe Relaton::Render do
   let(:input) do
@@ -132,27 +133,35 @@ RSpec.describe Relaton::Render do
 
   it "renders incollection, two authors, with Traditional Chinese i18n" do
     output = <<~OUTPUT
-    <formattedref>RAMSEY, J. K. 與 W. C. MCGREW. 〈Object play in great apes: Studies in nature and captivity〉。在： PELLEGRINI, Anthony D. 與 Peter Kenneth SMITH （編輯）： <underline style="wavy">The nature of play: Great apes and humans</underline> [electronic resource, 8vo]. 第第3版。 New York, NY: Guilford Press. 2005. 第89～112頁。 <link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</link>. ［閱：2019年9月3日］。</formattedref>
+      <formattedref>RAMSEY， J. K. 與 W. C. MCGREW。〈Object play in great apes： Studies in nature and captivity〉。在： PELLEGRINI， Anthony D. 與 Peter Kenneth SMITH （編輯）： <underline style="wavy">The nature of play： Great apes and humans</underline> ［electronic resource，8vo］。第第3版。 New York， NY： Guilford Press。2005。第89〜112頁。 <link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</link>。［閱：2019年9月3日］。</formattedref>
     OUTPUT
-    p = Relaton::Render::General.new(language: "zh", script: "Hant")
+    i = IsoDoc::PresentationXMLConvert.new(language: "zh", script: "Hant")
+    i.i18n_init("zh", "Hant", nil)
+    p = Relaton::Render::General.new(language: "zh", script: "Hant",
+                                     i18nhash: i.i18n.get)
     expect(HTMLEntities.new.decode(p.render(input)))
       .to be_equivalent_to output
   end
 
   it "renders incollection, two authors, with Simplified Chinese i18n" do
     output = <<~OUTPUT
-      <formattedref>RAMSEY, J. K. 和 W. C. MCGREW. 〈Object play in great apes: Studies in nature and captivity〉。在： PELLEGRINI, Anthony D. 和 Peter Kenneth SMITH （编）：《The nature of play: Great apes and humans》 [electronic resource, 8vo]. 第第3版。 New York, NY: Guilford Press. 2005. 第89～112页。 <link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</link>. ［阅：2019年9月3日］。</formattedref>
+      <formattedref>RAMSEY，J. K.和W. C. MCGREW。〈Object play in great apes：Studies in nature and captivity〉。在：PELLEGRINI，Anthony D.和Peter Kenneth SMITH（编）：《The nature of play：Great apes and humans》［electronic resource，8vo］。第第三版。New York，NY：Guilford Press。2005。第89〜112页。<link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</link>。［阅：2019年9月3日］。</formattedref>
     OUTPUT
-    p = Relaton::Render::General.new(language: "zh", script: "Hans")
+    i = IsoDoc::PresentationXMLConvert.new(language: "zh", script: "Hans")
+    i.i18n_init("zh", "Hans", nil)
+    p = Relaton::Render::General.new(language: "zh", script: "Hans",
+                                     i18nhash: i.i18n.get)
     expect(HTMLEntities.new.decode(p.render(input)))
       .to be_equivalent_to output
   end
 
   it "renders incollection, two authors, with Japanese i18n" do
     output = <<~OUTPUT
-      <formattedref>RAMSEY, J. K., W. C. MCGREW. Object play in great apes: Studies in nature and captivity. PELLEGRINI, Anthony D., Peter Kenneth SMITH （編）： The nature of play: Great apes and humans [electronic resource, 8vo]. 第3版。 New York, NY: Guilford Press. 2005. pp. 89–112. <link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</link>. ［参照：2019年9月3日］。</formattedref>
+      <formattedref>RAMSEY、 J. K.、 W. C. MCGREW。 Object play in great apes： Studies in nature and captivity。 PELLEGRINI、 Anthony D.、 Peter Kenneth SMITH （編）： The nature of play： Great apes and humans ［electronic resource、 8vo］。第3版。 New York、 NY： Guilford Press。 2005。 pp。 89〜112。 <link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</link>。［参照： 2019年9月3日］。</formattedref>
     OUTPUT
-    p = Relaton::Render::General.new(language: "ja")
+    i = IsoDoc::PresentationXMLConvert.new(language: "ja", script: "Jpan")
+    i.i18n_init("ja", "Jpan", nil)
+    p = Relaton::Render::General.new(language: "ja", i18nhash: i.i18n.get)
     expect(HTMLEntities.new.decode(p.render(input)))
       .to be_equivalent_to output
   end

@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require "spec_helper"
+require_relative "../spec_helper"
 
 RSpec.describe Relaton::Render do
   it "has a version number" do
@@ -92,18 +92,19 @@ RSpec.describe Relaton::Render do
       authorizer_raw: [{ nonpersonal: "Cambridge University Press" }],
       creatornames: "ALUFFI, Paolo, David Herbert ANDERSON, Milena Marie HERING, Mircea H. MUSTAŢĂ and Sam H. PAYNE",
       creators: [
-        { given: "Paolo", initials: ["P."], middle: [], surname: "Aluffi" },
-        { given: "David", initials: ["D.", "H."], middle: ["Herbert"],
-          surname: "Anderson" },
-        { given: "Milena Marie", initials: ["M.", "M."], middle: [],
-          surname: "Hering" },
-        { given: "Mircea", initials: ["M.", "H."], middle: ["H."],
-          surname: "Mustaţă" },
-        { given: "Sam H.", initials: ["S.", "H."], middle: [],
-          surname: "Payne" },
+        { given: "Paolo", initials: ["<esc>P.</esc>"], middle: [],
+          surname: "Aluffi" },
+        { given: "David", initials: ["<esc>D.</esc>", "<esc>H.</esc>"],
+          middle: ["Herbert"], surname: "Anderson" },
+        { given: "Milena Marie", initials: ["<esc>M.</esc>", "<esc>M.</esc>"],
+          middle: [], surname: "Hering" },
+        { given: "Mircea", initials: ["<esc>M.</esc>", "<esc>H.</esc>"],
+          middle: ["H."], surname: "Mustaţă" },
+        { given: "Sam H.", initials: ["<esc>S.</esc>", "<esc>H.</esc>"],
+          middle: [], surname: "Payne" },
       ],
       date: "2022",
-      doi: ["https://doi.org/10.1017/9781108877831"],
+      doi: ["<esc>https://doi.org/10.1017/9781108877831</esc>"],
       draft_raw: { iteration: nil, status: nil },
       edition: "1st edition",
       edition_raw: "1",
