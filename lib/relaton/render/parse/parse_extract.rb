@@ -79,7 +79,7 @@ module Relaton
       end
 
       def series_num(series, _doc)
-        series.number.strip
+        series.number&.strip
       end
 
       def series_partnumber(series, _doc)
