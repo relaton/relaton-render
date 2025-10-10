@@ -77,7 +77,7 @@ module Relaton
       def generic_citation(ret)
         ret.each_with_object({}) do |b, m|
           m[b[:id]] = { data_liquid: b[:data_liquid], type: b[:type],
-                        citation: b[:data_liquid][:docidentifier] }
+                        citation: @i18n.l10n(b[:data_liquid][:docidentifier]) }
         end
       end
 
@@ -126,8 +126,8 @@ module Relaton
         ret.each_with_object({}) do |(_k, v), m|
           v.each_value do |v1|
             v1.each do |b|
-              m[b[:id]] = { author: b[:author], date: b[:date],
-                            citation: "#{b[:author]} #{b[:date]}",
+              m[b[:id]] = { author: @i18n.l10n(b[:author]), date: b[:date],
+                            citation: @i18n.l10n("#{b[:author]} #{b[:date]}"),
                             data_liquid: b[:data_liquid], type: b[:type] }
             end
           end

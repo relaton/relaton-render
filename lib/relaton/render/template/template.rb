@@ -137,6 +137,7 @@ module Relaton
             .gsub(/(?<!\\)_/, " ")
             .gsub("\\_", "_")
             .gsub(/#{NON_SPACING_DELIM}/o, "").gsub(/\s+/, " ")
+            .gsub(/<(\/)?esc>/i, "<\\1esc>")
         end
 
         # need non-breaking spaces in fields: "Updated:_nil" ---

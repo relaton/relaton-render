@@ -84,25 +84,17 @@ RSpec.describe Relaton::Render do
     expect(p.render(input))
       .to be_equivalent_to "<formattedref>#{output}</formattedref>"
     data, template = p.parse(input)
+    output = <<~OUTPUT
+      <esc>ALUFFI</esc>, Paolo, David Herbert <esc>ANDERSON</esc>, Milena Marie <esc>HERING</esc>, Mircea H. <esc>MUSTAŢĂ</esc> and Sam H. <esc>PAYNE</esc> (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) n.p.: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.
+    OUTPUT
     expect(p.liquid(data, template))
       .to be_equivalent_to output
     hash = {
-      authorcite: "Aluffi, Anderson, Hering, Mustaţă and Payne",
+      authorcite: "<esc>Aluffi</esc>, <esc>Anderson</esc>, <esc>Hering</esc>, <esc>Mustaţă</esc> and <esc>Payne</esc>",
       authorizer: "Cambridge University Press",
       authorizer_raw: [{ nonpersonal: "Cambridge University Press" }],
-      creatornames: "ALUFFI, Paolo, David Herbert ANDERSON, Milena Marie HERING, Mircea H. MUSTAŢĂ and Sam H. PAYNE",
-      creators: [
-        { given: "Paolo", initials: ["<esc>P.</esc>"], middle: [],
-          surname: "Aluffi" },
-        { given: "David", initials: ["<esc>D.</esc>", "<esc>H.</esc>"],
-          middle: ["Herbert"], surname: "Anderson" },
-        { given: "Milena Marie", initials: ["<esc>M.</esc>", "<esc>M.</esc>"],
-          middle: [], surname: "Hering" },
-        { given: "Mircea", initials: ["<esc>M.</esc>", "<esc>H.</esc>"],
-          middle: ["H."], surname: "Mustaţă" },
-        { given: "Sam H.", initials: ["<esc>S.</esc>", "<esc>H.</esc>"],
-          middle: [], surname: "Payne" },
-      ],
+      creatornames: "<esc>ALUFFI</esc>, Paolo, David Herbert <esc>ANDERSON</esc>, Milena Marie <esc>HERING</esc>, Mircea H. <esc>MUSTAŢĂ</esc> and Sam H. <esc>PAYNE</esc>",
+      creators: [{given: "Paolo", initials: ["<esc>P.</esc>"], middle: [], surname: "<esc>Aluffi</esc>"}, {given: "David", initials: ["<esc>D.</esc>", "<esc>H.</esc>"], middle: ["Herbert"], surname: "<esc>Anderson</esc>"}, {given: "Milena Marie", initials: ["<esc>M.</esc>", "<esc>M.</esc>"], middle: [], surname: "<esc>Hering</esc>"}, {given: "Mircea", initials: ["<esc>M.</esc>", "<esc>H.</esc>"], middle: ["H."], surname: "<esc>Mustaţă</esc>"}, {given: "Sam H.", initials: ["<esc>S.</esc>", "<esc>H.</esc>"], middle: [], surname: "<esc>Payne</esc>"}],
       date: "2022",
       doi: ["<esc>https://doi.org/10.1017/9781108877831</esc>"],
       draft_raw: { iteration: nil, status: nil },

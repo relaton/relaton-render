@@ -17,7 +17,7 @@ module Relaton
       def extract_personname(person)
         surname = person.name.surname || person.name.completename
         given, middle, initials = given_and_middle_name(person)
-        { surname: content(surname),
+        { surname: wrap_in_esc(content(surname)),
           given: given,
           middle: middle,
           initials: initials }
