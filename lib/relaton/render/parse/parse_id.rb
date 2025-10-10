@@ -49,7 +49,7 @@ module Relaton
           out.empty? or break
         end
         # prevent l10n of identifier contents
-        out.map(&:id).map { |i| "<esc>#{i}</esc>" }
+        out.map(&:id).map { |i| "<esc>#{i.strip}</esc>" }
       end
 
       def authoritative_identifier_select(idents)
@@ -86,7 +86,7 @@ module Relaton
           type.casecmp("doi").zero? or next
           ret << id.id
         end
-        out.empty? ? nil : out.map { |i| "<esc>#{i}</esc>" }
+        out.empty? ? nil : out.map { |i| "<esc>#{i.strip}</esc>" }
       end
 
       def id_type_norm(id)
