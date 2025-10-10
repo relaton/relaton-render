@@ -29,8 +29,8 @@ stage:
   withdrawn: 取り消されました
 extent:
   page:
-    sg: "p. %"
-    pl: "pp. %"
+    sg: "%頁"
+    pl: "%頁"
   volume:
     sg: "巻%"
     pl: "巻%"
@@ -39,8 +39,8 @@ extent:
     pl: "いいえ%"
 size:
   page:
-    sg: "% p."
-    pl: "% pp."
+    sg: "%頁"
+    pl: "%頁"
   volume:
     sg: "巻%"
     pl: "巻%"
