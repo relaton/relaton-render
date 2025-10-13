@@ -112,7 +112,6 @@ module Relaton
       end
 
       def render(bib, embedded: false)
-        require "debug"; binding.b
         bib = xml2relaton(bib)
         f = bib.formattedref and
           return embedded ? f.content : fmtref(f.content)
