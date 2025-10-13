@@ -112,6 +112,7 @@ module Relaton
       end
 
       def render(bib, embedded: false)
+        require "debug"; binding.b
         bib = xml2relaton(bib)
         f = bib.formattedref and
           return embedded ? f.content : fmtref(f.content)
@@ -140,15 +141,14 @@ module Relaton
       end
 
       # <esc> in field can get capitalised in filters
-     def esc_cleanup(text)
-       text.gsub(/<esc>/i, "<esc>").gsub(/<\/esc>/i, "</esc>")
-     end
+      def esc_cleanup(text)
+        text.gsub(/<esc>/i, "<esc>").gsub(/<\/esc>/i, "</esc>")
+      end
 
       def render1(doc)
         r = doc.relation.select { |x| x.type == "hasRepresentation" }
           .map { |x| @i18n.also_pub_as + render_single_bibitem(x.bibitem) }
         out = [render_single_bibitem(doc)] + r
-        #warn out.join(". ")
         @i18n.l10n(esc_cleanup(out.join(". ")).gsub(".</esc>.", ".</esc>")
           .gsub(".. ", ". "))
       end
@@ -208,7 +208,7 @@ module Relaton
       end
 
       # add to liquid data based on template
-      def enhance_data(data, template)
+      def enhance_data(_data, template)
         template.is_a?(String) or return
         # add_date_accessed(data, template)
       end

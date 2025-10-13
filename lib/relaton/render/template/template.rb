@@ -97,8 +97,8 @@ module Relaton
             end
             a.join
           end.join.tr("\t", " ")
-          t.gsub(/\}\}#{FIELD_DELIM}\|/o, "}}#{FIELD_DELIM}\t")
-            .gsub(/\|#{FIELD_DELIM}\{\{/o, "\t#{FIELD_DELIM}{{")
+          t.gsub(/\}\}#{FIELD_DELIM}\|/o, "}}#{FIELD_DELIM}#{NON_SPACING_DELIM}")
+            .gsub(/\|#{FIELD_DELIM}\{\{/o, "#{NON_SPACING_DELIM}#{FIELD_DELIM}{{")
         end
 
         def render(hash)
@@ -136,7 +136,8 @@ module Relaton
             .sub(/[,:;]\s*$/, "")
             .gsub(/(?<!\\)_/, " ")
             .gsub("\\_", "_")
-            .gsub(/#{NON_SPACING_DELIM}/o, "").gsub(/\s+/, " ")
+            .gsub(/#{NON_SPACING_DELIM}/o, "")
+            .gsub(/\s+/, " ")
             .gsub(/<(\/)?esc>/i, "<\\1esc>")
         end
 
