@@ -20,10 +20,11 @@ draft: "下書き %"
 editor:
   sg: 編
   pl: 編
-qq-open: 
-qq-close: 
-q-open:
-q-close:
+punct:
+  open-title:
+  close-title:
+  open-secondary-title:
+  close-secondary-title:
 stage:
   valid: 有効です
   withdrawn: 取り消されました

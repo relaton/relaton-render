@@ -24,10 +24,11 @@ draft: "brouillon %"
 editor:
   sg: éd.
   pl: éd.
-qq-open: <em>
-qq-close: </em>
-q-open:
-q-close:
+punct:
+  open-title: <em>
+  close-title: </em>
+  open-secondary-title:
+  close-secondary-title:
 stage:
   valid: Valide
   withdrawn: Retiré

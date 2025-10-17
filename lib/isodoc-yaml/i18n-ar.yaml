@@ -43,10 +43,11 @@ size:
   issue:
     sg: "% عدد"
     pl: "% عدد"
-qq-open: «
-qq-close: »
-q-open: 
-q-close: 
+punct:
+  open-title: «
+  close-title: »
+  open-secondary-title: 
+  close-secondary-title: 
 inflection:
   الطبعة؜:
     grammar:

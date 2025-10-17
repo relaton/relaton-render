@@ -72,8 +72,9 @@ module Relaton
         def punct_field?(name)
           name or return false
           name = name.tr("'", '"')
-          %w(labels["qq-open"] labels["qq-close"] labels["q-open"]
-             labels["q-close"]).include?(name)
+          %w(labels["punct"]["open-title"] labels["punct"]["close-title"]
+             labels["punct"]["open-secondary-title"]
+             labels["punct"]["close-secondary-title"]).include?(name)
         end
 
         def template_process(template)

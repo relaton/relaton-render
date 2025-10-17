@@ -20,10 +20,11 @@ draft: "草案%"
 editor:
   sg: 編輯
   pl: 編輯
-qq-open: <underline style="wavy">
-qq-close: </underline>
-q-open: 〈
-q-close: 〉
+punct:
+  open-title: <underline style="wavy">
+  close-title: </underline>
+  open-secondary-title: 〈
+  close-secondary-title: 〉
 stage:
   valid: 有效的
   withdrawn: 取消

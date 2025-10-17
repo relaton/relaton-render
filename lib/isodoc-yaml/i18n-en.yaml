@@ -20,10 +20,11 @@ draft: "draft %"
 editor:
   sg: ed.
   pl: eds.
-qq-open: <em>
-qq-close: </em>
-q-open:
-q-close:
+punct:
+  open-title: <em>
+  close-title: </em>
+  open-secondary-title:
+  close-secondary-title:
 stage:
   valid: Valid
   withdrawn: Withdrawn

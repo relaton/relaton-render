@@ -21,10 +21,11 @@ draft: "草案%"
 editor:
   sg: 编
   pl: 编
-qq-open: 《
-qq-close: 》
-q-open: 〈
-q-close: 〉
+punct:
+  open-title: 《
+  close-title: 》
+  open-secondary-title: 〈
+  close-secondary-title: 〉
 stage:
   valid: 有效
   withdrawn: 已撤回
