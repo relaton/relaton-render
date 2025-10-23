@@ -2,7 +2,7 @@ module Relaton
   module Render
     class Citations
       def initialize(opt = {})
-        @type = opt[:type]
+        # @type = opt[:type]
         @i18n = opt[:i18n]
         @renderer = opt[:renderer]
       end
@@ -67,13 +67,19 @@ module Relaton
       end
 
       def citations(ret)
-        case @type
-        when "author-date" then disambig_author_date_citations(ret)
-        when nil then generic_citation(ret)
-        else raise "Unimplemented citation type"
+        ret = disambig_author_date_citations(ret)
+        ret.each_value do |b|
+          # TODO: configure how multiple ids are joined, from template?
+          b[:citation][nil] = @i18n.l10n(b[:data_liquid][:authoritative_identifier]&.first || "")
+          b[:citation][:short] = @renderer.citeshorttemplate.render(b[:data_liquid].merge(citestyle: "short"))
+          @renderer.citetemplate.citation_styles.each do |style|
+            b[:citation][style] = @renderer.citetemplate.render(b.merge(citestyle: style).merge(b[:data_liquid]))
+          end
         end
+       ret
       end
 
+      # KILL
       def generic_citation(ret)
         ret.each_with_object({}) do |b, m|
           m[b[:id]] = { data_liquid: b[:data_liquid], type: b[:type],
@@ -83,10 +89,10 @@ module Relaton
 
       # takes array of { id, type, author, date, ord, data_liquid }
       def disambig_author_date_citations(ret)
-        to_hash(suffix_date(sort_ord(breakdown(ret))))
+        author_date_to_hash(suffix_date(sort_ord(author_date_breakdown(ret))))
       end
 
-      def breakdown(ret)
+      def author_date_breakdown(ret)
         ret.each_with_object({}) do |b, m|
           m[b[:author]] ||= {}
           m[b[:author]][b[:date]] ||= []
@@ -122,12 +128,16 @@ module Relaton
         end
       end
 
-      def to_hash(ret)
+      def author_date_to_hash(ret)
         ret.each_with_object({}) do |(_k, v), m|
           v.each_value do |v1|
             v1.each do |b|
+              #require "debug"; binding.b
+              #cite = @renderer.citetemplate.render(b.merge(citestyle: "author_date"))
               m[b[:id]] = { author: @i18n.l10n(b[:author]), date: b[:date],
-                            citation: @i18n.l10n("#{b[:author]} #{b[:date]}"),
+              citation: {},
+#citation: @i18n.l10n(cite),
+                            #citation: @i18n.l10n("#{b[:author]} #{b[:date]}"),
                             data_liquid: b[:data_liquid], type: b[:type] }
             end
           end

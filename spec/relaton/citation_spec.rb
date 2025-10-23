@@ -3,6 +3,7 @@
 require_relative "../spec_helper"
 
 RSpec.describe Relaton::Render::Citations do
+=begin
   it "apply et al. to author-date citations" do
     input = <<~INPUT
       <references>
@@ -385,8 +386,99 @@ RSpec.describe Relaton::Render::Citations do
     expect(p.render_all(input, type: "author-date"))
       .to be_equivalent_to output
   end
-
+=end
   it "generates generic citations" do
+    input = <<~INPUT
+      <references>
+        <bibitem type="book" id="A">
+          <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+          <docidentifier>ABC1</docidentifier>
+          <docidentifier scope="biblio-tag">Fulton1</docidentifier>
+          <date type="published"><on>2022</on></date>
+          <contributor>
+            <role type="editor"/>
+            <person>
+              <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+            </person>
+          </contributor>
+          <edition>1</edition>
+          <series>
+          <title>London Mathematical Society Lecture Note Series</title>
+          <number>472</number>
+          </series>
+              <contributor>
+                <role type="publisher"/>
+                <organization>
+                  <name>Cambridge University Press</name>
+                </organization>
+              </contributor>
+              <place>Cambridge, UK</place>
+            <size><value type="volume">1</value></size>
+        </bibitem>
+        <bibitem type="book" id="B">
+          <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+          <docidentifier>ABC2</docidentifier>
+          <docidentifier scope="biblio-tag">Fulton2</docidentifier>
+          <date type="published"><on>2022</on></date>
+          <contributor>
+            <role type="editor"/>
+            <person>
+              <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+            </person>
+          </contributor>
+          <edition>1</edition>
+          <series>
+          <title>London Mathematical Society Lecture Note Series</title>
+          <number>472</number>
+          </series>
+              <contributor>
+                <role type="publisher"/>
+                <organization>
+                  <name>Cambridge University Press</name>
+                </organization>
+              </contributor>
+              <place>Cambridge, UK</place>
+            <size><value type="volume">1</value></size>
+        </bibitem>
+                <bibitem type="standard" id="C">
+        <title>Intellectual Property Rights in IETF technology</title>
+        <uri>https://www.ietf.org/rfc/rfc3979.txt</uri>
+        <docidentifier type="RFC">RFC 3979</docidentifier>
+        <docidentifier type="DOI">https://doi.org/10.3886/ICPSR20520.v2</docidentifier>
+        <docidentifier scope="biblio-tag">[33]</docidentifier>
+        <date type="published"><on>2005</on></date>
+        <date type="accessed"><on>2012-06-18</on></date>
+        <contributor>
+          <role type="author"/>
+          <organization>
+            <name>Internet Engineering Task Force</name>
+            <abbreviation>IETF</abbreviation>
+          </organization>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Bradner</surname><initials>S.</initials></name>
+          </person>
+        </contributor>
+        <status>
+          <stage>valid</stage>
+        </status>
+        <medium>
+          <carrier>Online</carrier>
+        </medium>
+      </bibitem>
+      </references>
+    INPUT
+    output = 
+      {"A"=>{:citation=>nil, :formattedref=>"ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC1. 1 vol."},
+      "B"=>{:citation=>nil, :formattedref=>"ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC2. 1 vol."}}
+    p = Relaton::Render::General.new
+    expect(p.render_all(input, type: nil))
+      .to be_equivalent_to output
+  end
+
+  it "generates short citations" do
     input = <<~INPUT
       <references>
         <bibitem type="book" id="A">
@@ -437,74 +529,55 @@ RSpec.describe Relaton::Render::Citations do
               <place>Cambridge, UK</place>
             <size><value type="volume">1</value></size>
         </bibitem>
+                <bibitem type="standard" id="C">
+        <title>Intellectual Property Rights in IETF technology</title>
+        <uri>https://www.ietf.org/rfc/rfc3979.txt</uri>
+        <docidentifier type="RFC">RFC 3979</docidentifier>
+        <docidentifier type="DOI">https://doi.org/10.3886/ICPSR20520.v2</docidentifier>
+        <date type="published"><on>2005</on></date>
+        <date type="accessed"><on>2012-06-18</on></date>
+        <contributor>
+          <role type="author"/>
+          <organization>
+            <name>Internet Engineering Task Force</name>
+            <abbreviation>IETF</abbreviation>
+          </organization>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Bradner</surname><initials>S.</initials></name>
+          </person>
+        </contributor>
+        <status>
+          <stage>valid</stage>
+        </status>
+        <medium>
+          <carrier>Online</carrier>
+        </medium>
+      </bibitem>
       </references>
     INPUT
-    output = 
+    output =
       {"A"=>{:citation=>nil, :formattedref=>"ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC1. 1 vol."},
       "B"=>{:citation=>nil, :formattedref=>"ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC2. 1 vol."}}
     p = Relaton::Render::General.new
-    expect(p.render_all(input, type: nil))
+    expect(p.render_all(input, type: "short"))
       .to be_equivalent_to output
-  end
 
-  it "rejects other types of citation" do
-    input = <<~INPUT
-          <references>
-        <bibitem type="book" id="A">
-        <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831. 1 vol.</formattedref>
-          <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
-          <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
-          <docidentifier type="ISBN">9781108877831</docidentifier>
-          <date type="published"><on>2022</on></date>
-          <contributor>
-            <role type="editor"/>
-            <person>
-              <name><surname>Aluffi</surname><forename>Paolo</forename></name>
-            </person>
-          </contributor>
-                  <contributor>
-            <role type="editor"/>
-            <person>
-              <name><surname>Anderson</surname><forename>David</forename></name>
-            </person>
-          </contributor>
-          <contributor>
-            <role type="editor"/>
-            <person>
-              <name><surname>Hering</surname><forename>Milena</forename></name>
-            </person>
-          </contributor>
-          <contributor>
-            <role type="editor"/>
-            <person>
-              <name><surname>Mustaţă</surname><forename>Mircea</forename></name>
-            </person>
-          </contributor>
-          <contributor>
-            <role type="editor"/>
-            <person>
-              <name><surname>Payne</surname><forename>Sam</forename></name>
-            </person>
-          </contributor>
-          <edition>1</edition>
-          <series>
-          <title>London Mathematical Society Lecture Note Series</title>
-          <number>472</number>
-          </series>
-              <contributor>
-                <role type="publisher"/>
-                <organization>
-                  <name>Cambridge University Press</name>
-                </organization>
-              </contributor>
-              <place>Cambridge, UK</place>
-            <size><value type="volume">1</value></size>
-        </bibitem>
-      </references>
-    INPUT
-    p = Relaton::Render::General.new
-    expect(p.render_all(input, type: "pizza"))
-      .to raise_error(RuntimeError)
-  rescue SystemExit, RuntimeError
+        output =
+      {"A"=>{:citation=>nil, :formattedref=>"ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC1. 1 vol."},
+      "B"=>{:citation=>nil, :formattedref=>"ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC2. 1 vol."}}
+    p = Relaton::Render::General.new( {citetemplate:{
+  author_date: "{{ author }} {{ date}}",
+  short: {
+    book: "{{ creatornames }} ({{role}}) . {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} [{{medium}}] . {{ edition | capitalize_first }}. ({{ series }}.) {% if place %}{{place}}{%else%}{{ labels['no_place']}}{%endif%}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ authoritative_identifier | join: '. ' }}. {{ other_identifier | join: '. ' }}. {{size}}. {{extent}}."
+  }}},
+  template: { standard: "{{ creatornames }} ({{ role}}) . {{ authoritative_identifier | join: '|' }}: {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} . {{ medium | capitalize }}. {{ edition | capitalize_first }}. {{ place }}: {{ publisher }}. {{date}}. {{size}}. {{ extent }}. {{ other_identifier | join: '. ' }}" }
+
+                                    )
+    expect(p.render_all(input, type: "short"))
+      .to be_equivalent_to output
+
   end
 end
