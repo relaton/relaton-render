@@ -112,9 +112,9 @@ module Relaton
       end
 
       def suffix_date1(ret, key1, key2)
+        key1.nil? and return
         ret[key1][key2].each_with_index do |b, i|
-          next if b[:date].nil?
-
+          b[:date].nil? and next
           b[:date] += ("a".ord + i).chr.to_s
           b[:data_liquid][:date] = b[:date]
         end
