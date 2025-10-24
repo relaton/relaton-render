@@ -70,21 +70,13 @@ module Relaton
         ret = disambig_author_date_citations(ret)
         ret.each_value do |b|
           # TODO: configure how multiple ids are joined, from template?
-          b[:citation][nil] = @i18n.l10n(b[:data_liquid][:authoritative_identifier]&.first || "")
+          b[:citation][:default] = @i18n.l10n(b[:data_liquid][:authoritative_identifier]&.first || "")
           b[:citation][:short] = @renderer.citeshorttemplate.render(b[:data_liquid].merge(citestyle: "short"))
           @renderer.citetemplate.citation_styles.each do |style|
             b[:citation][style] = @renderer.citetemplate.render(b.merge(citestyle: style).merge(b[:data_liquid]))
           end
         end
        ret
-      end
-
-      # KILL
-      def generic_citation(ret)
-        ret.each_with_object({}) do |b, m|
-          m[b[:id]] = { data_liquid: b[:data_liquid], type: b[:type],
-                        citation: @i18n.l10n(b[:data_liquid][:docidentifier]) }
-        end
       end
 
       # takes array of { id, type, author, date, ord, data_liquid }
@@ -132,12 +124,8 @@ module Relaton
         ret.each_with_object({}) do |(_k, v), m|
           v.each_value do |v1|
             v1.each do |b|
-              #require "debug"; binding.b
-              #cite = @renderer.citetemplate.render(b.merge(citestyle: "author_date"))
               m[b[:id]] = { author: @i18n.l10n(b[:author]), date: b[:date],
               citation: {},
-#citation: @i18n.l10n(cite),
-                            #citation: @i18n.l10n("#{b[:author]} #{b[:date]}"),
                             data_liquid: b[:data_liquid], type: b[:type] }
             end
           end
