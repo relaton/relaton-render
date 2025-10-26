@@ -58,11 +58,10 @@ module Relaton
       end
 
       def render1(cit)
+        ref = cit[:renderer].render(cit[:data_liquid])
         cit[:formattedref] =
-          @renderer.valid_parse(
-            @i18n.l10n(cit[:renderer].render(cit[:data_liquid])),
-          )
-        cit[:citation][:full] = cit[:formattedref]&.sub(/\.\s*$/, "")
+          @renderer.valid_parse(@i18n.l10n(ref))
+        cit[:citation][:full] = @renderer.valid_parse(@i18n.l10n(ref&.sub(/\.\s*$/, "")))
         %i(type data_liquid renderer).each { |x| cit.delete(x) }
         cit
       end
@@ -72,8 +71,8 @@ module Relaton
         ret.each_value do |b|
           # TODO: configure how multiple ids are joined, from template?
           b[:citation][:default] = @i18n.l10n(b[:data_liquid][:authoritative_identifier]&.first || "")
-          b[:citation][:short] = @i18n.l10n(@renderer.citeshorttemplate.render(b[:data_liquid].merge(citestyle: "short")))
-                                           &.sub(/\.\s*$/, "")
+          b[:citation][:short] = @i18n.l10n(@renderer.citeshorttemplate.render(b[:data_liquid]
+            .merge(citestyle: "short"))&.sub(/\.\s*$/, ""))
           @renderer.citetemplate.citation_styles.each do |style|
             b[:citation][style] = @renderer.citetemplate.render(b.merge(citestyle: style).merge(b[:data_liquid]))
           end
