@@ -73,7 +73,7 @@ module Relaton
           # TODO: configure how multiple ids are joined, from template?
           b[:citation][:default] = @i18n.l10n(b[:data_liquid][:authoritative_identifier]&.first || "")
           b[:citation][:short] = @i18n.l10n(@renderer.citeshorttemplate.render(b[:data_liquid].merge(citestyle: "short")))
-                                           .sub(/\.\s*$/, "")
+                                           &.sub(/\.\s*$/, "")
           @renderer.citetemplate.citation_styles.each do |style|
             b[:citation][style] = @renderer.citetemplate.render(b.merge(citestyle: style).merge(b[:data_liquid]))
           end
