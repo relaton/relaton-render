@@ -62,7 +62,7 @@ module Relaton
           @renderer.valid_parse(
             @i18n.l10n(cit[:renderer].render(cit[:data_liquid])),
           )
-        cit[:citation][:full] = cit[:formattedref].sub(/\.\s*$/, "")
+        cit[:citation][:full] = cit[:formattedref]&.sub(/\.\s*$/, "")
         %i(type data_liquid renderer).each { |x| cit.delete(x) }
         cit
       end
