@@ -57,10 +57,12 @@ module Relaton
           env
         end
 
-        # denote start and end of field,
-        # so that we can detect empty fields in postprocessing
-        # FIELD_DELIM = "\u0018".freeze
-        FIELD_DELIM = "%%".freeze
+        # denote start and end of variable,
+        # so that we can detect empty variables in postprocessing
+        VARIABLE_DELIM = "%%".freeze
+
+        # denote citation components which get delimited by period conventionally
+        COMPONENT_DELIM = "$$$".freeze
 
         # escape < >
         LT_DELIM = "\u0019".freeze
@@ -93,19 +95,20 @@ module Relaton
         def add_field_delim_to_template(template)
           t = template.split(/(\{\{|\}\})/).each_slice(4).map do |a|
             unless !a[2] || punct_field?(a[2]&.strip)
-              a[1] = "#{FIELD_DELIM}{{"
-              a[3] = "}}#{FIELD_DELIM}"
+              a[1] = "#{VARIABLE_DELIM}{{"
+              a[3] = "}}#{VARIABLE_DELIM}"
             end
             a.join
           end.join.tr("\t", " ")
-          t.gsub(/\}\}#{FIELD_DELIM}\|/o, "}}#{FIELD_DELIM}#{NON_SPACING_DELIM}")
-            .gsub(/\|#{FIELD_DELIM}\{\{/o, "#{NON_SPACING_DELIM}#{FIELD_DELIM}{{")
+          t.gsub(/\}\}#{VARIABLE_DELIM}\|/o, "}}#{VARIABLE_DELIM}#{NON_SPACING_DELIM}")
+            .gsub(/\|#{VARIABLE_DELIM}\{\{/o, "#{NON_SPACING_DELIM}#{VARIABLE_DELIM}{{")
         end
 
         def render(hash)
           t = template_select(hash) or return nil
 
-          template_clean(t.render(liquid_hash(hash.merge("labels" => @i18n.get))))
+          ret = template_clean(t.render(liquid_hash(hash.merge("labels" => @i18n.get))))
+          template_components(ret, @i18n.get["punct"]["biblio-field-delimiter"] || ". ")
         end
 
         def template_select(_hash)
@@ -121,25 +124,40 @@ module Relaton
             .gsub(/&(?!#\S+?;)/, "&#x26;")
         end
 
-        # use tab internally for non-spacing delimiter
         def template_clean1(str)
-          str.gsub(/\S*#{FIELD_DELIM}#{FIELD_DELIM}\S*/o, "")
-            .gsub(/#{FIELD_DELIM}/o, "")
-            .gsub(/([,:;]\s*)+<\/esc>([,:;])(\s|_|$)/, "\\2</esc>\\3")
+          str = strip_empty_variables(str)
+            str.gsub(/([,:;]\s*)+<\/esc>([,:;])(\s|_|$)/, "\\2</esc>\\3")
             .gsub(/([,:;]\s*)+([,:;](\s|_|$))/, "\\2")
-            .gsub(/([,.:;]\s*)+<\/esc>([.])(\s|_|$)/, "\\2</esc>\\3")
-            .gsub(/([,.:;]\s*)+([.](\s|_|$))/, "\\2")
+            .gsub(/([,.:;]\s*)+<\/esc>([.])(\s|_|$)/, "\\2</esc>\\3") # move outside
+            .gsub(/([,.:;]\s*)+([.](\s|_|$))/, "\\2") # move outside
             .gsub(/([,:;]\s*)+<\/esc>(,)(\s|_|$)/, "\\2</esc>\\3")
             .gsub(/([,:;]\s*)+(,(\s|_|$))/, "\\2")
             .gsub(/(:\s+)(&\s)/, "\\2")
-            .gsub(/\s+([,.:;)])/, "\\1")
-            .sub(/^\s*[,.:;]\s*/, "")
+            .gsub(/\s+([,.:;)])/, "\\1") # trim around $$$
+            .sub(/^\s*[,.:;]\s*/, "") # no init $$$
             .sub(/[,:;]\s*$/, "")
             .gsub(/(?<!\\)_/, " ")
             .gsub("\\_", "_")
             .gsub(/#{NON_SPACING_DELIM}/o, "")
             .gsub(/\s+/, " ")
             .gsub(/<(\/)?esc>/i, "<\\1esc>")
+        end
+
+        # get rid of all empty variables, and any text around them,
+          # including component delimiters:
+          # [{{}}]$$$ => ""
+          # [{{}}] $$$ => " $$$"
+        def strip_empty_variables(str)
+          str.gsub(/\S*#{VARIABLE_DELIM}#{VARIABLE_DELIM}\S*/o, "")
+            .gsub(/#{VARIABLE_DELIM}/o, "")
+        end
+
+        def template_components(str, delim)
+          str or return str
+          ret = str.split(COMPONENT_DELIM).map(&:strip).reject(&:empty?)
+            .map { |s| s.sub(/#{delim}$/, "") }
+          # delim = ". " : ({{ series }}$$$|) => (series1.)
+          ret.join(delim).gsub(/#{delim}\|/, delim.strip)
         end
 
         # need non-breaking spaces in fields: "Updated:_nil" ---

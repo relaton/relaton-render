@@ -26,6 +26,7 @@ punct:
   close-title: 》
   open-secondary-title: 〈
   close-secondary-title: 〉
+  biblio-terminator: "。"
 stage:
   valid: 有效
   withdrawn: 已撤回

@@ -130,11 +130,11 @@ module Relaton
                                                           i18nhash: i18nhash)
       end
 
-      def render(bib, embedded: false)
+      def render(bib, embedded: false, terminator: true)
         bib = xml2relaton(bib)
         f = bib.formattedref and
           return embedded ? f.content : fmtref(f.content)
-        ret = render1(bib) or return nil
+        ret = render1(bib, terminator) or return nil
         embedded and return ret
         fmtref(ret)
       end
@@ -163,12 +163,17 @@ module Relaton
         text.gsub(/<esc>/i, "<esc>").gsub(/<\/esc>/i, "</esc>")
       end
 
-      def render1(doc)
+      def render1(doc, terminator)
         r = doc.relation.select { |x| x.type == "hasRepresentation" }
           .map { |x| @i18n.also_pub_as + render_single_bibitem(x.bibitem) }
         out = [render_single_bibitem(doc)] + r
-        @i18n.l10n(esc_cleanup(out.join(". ")).gsub(".</esc>.", ".</esc>")
+        ret1 = out.join(@i18n.get["punct"]["biblio-field-delimiter"] || ". ")
+        ret = @i18n.l10n(esc_cleanup(ret1)
+          .gsub(".</esc>.", ".</esc>")
           .gsub(".. ", ". "))
+          final = (@i18n.get["punct"]["biblio-terminator" ] || ".")
+        terminator && !ret.end_with?(final) && !ret.empty? and ret += final
+          ret
       end
 
       def render_single_bibitem(doc)

@@ -275,7 +275,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă and S Payne, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
+      <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă and S Payne, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
     OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ,_{{role}} ({{date}}) . <em>{{ title }}</em> [{{medium}}] ,_{{ edition }} .
@@ -301,7 +301,7 @@ RSpec.describe Relaton::Render do
     expect(p.render(input))
       .to be_equivalent_to output
     output = <<~OUTPUT
-      <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
+      <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template },
@@ -316,7 +316,7 @@ RSpec.describe Relaton::Render do
     expect(p.render(input))
       .to be_equivalent_to output
     output = <<~OUTPUT
-      <formattedref>Aluffi, P, DX Anderson, MS Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
+      <formattedref>Aluffi, P, DX Anderson, MS Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template },
@@ -331,7 +331,7 @@ RSpec.describe Relaton::Render do
     expect(p.render(input))
       .to be_equivalent_to output
     output = <<~OUTPUT
-      <formattedref>Aluffi, P, DX Anderson <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
+      <formattedref>Aluffi, P, DX Anderson <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template },
@@ -346,7 +346,7 @@ RSpec.describe Relaton::Render do
     expect(p.render(input))
       .to be_equivalent_to output
     output = <<~OUTPUT
-      <formattedref>Aluffi, P <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
+      <formattedref>Aluffi, P <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template },
@@ -361,7 +361,7 @@ RSpec.describe Relaton::Render do
     expect(p.render(input))
       .to be_equivalent_to output
     output = <<~OUTPUT
-      <formattedref>Aluffi, P _et al._, eds. (2022). _Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday_, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
+      <formattedref>Aluffi, P _et al._, eds. (2022). _Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday_, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
     OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ,_{{role}} ({{date}}) . \\_{{ title }}\\_ [{{medium}}] ,_{{ edition }} .
@@ -436,7 +436,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>Aluffi, P, DH Anderson, MM Hering, MH Mustaţă and SH Payne, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition.: Cambridge University Press. DOI: https://doi.org/10.1017/9781108877831</formattedref>
+      <formattedref>Aluffi, P, DH Anderson, MM Hering, MH Mustaţă and SH Payne, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition.: Cambridge University Press. DOI: https://doi.org/10.1017/9781108877831.</formattedref>
     OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ,_{{role}} ({{date}}) . <em>{{ title }}</em> [{{medium}}] ,_{{ edition }} .
@@ -493,7 +493,7 @@ RSpec.describe Relaton::Render do
     output = "<formattedref>The Illuminati</formattedref>"
     p = Relaton::Render::General
       .new(template: { book: template })
-    expect(p.render(input))
+    expect(p.render(input, terminator: false))
       .to be_equivalent_to output
 
     input = <<~INPUT
@@ -518,7 +518,7 @@ RSpec.describe Relaton::Render do
     output = "<formattedref>Cambridge University Press</formattedref>"
     p = Relaton::Render::General
       .new(template: { book: template })
-    expect(p.render(input))
+    expect(p.render(input, terminator: false))
       .to be_equivalent_to output
   end
 

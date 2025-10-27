@@ -192,12 +192,12 @@ RSpec.describe Relaton::Render do
     output = "<formattedref>Valid</formattedref>"
     p = Relaton::Render::General
       .new(template: { book: template })
-    expect(p.render(input))
+    expect(p.render(input, terminator: false))
       .to be_equivalent_to output
     output = "<formattedref>有効です</formattedref>"
     p = Relaton::Render::General
       .new(language: "ja", template: { book: template })
-    expect(p.render(input))
+    expect(p.render(input, terminator: false))
       .to be_equivalent_to output
   end
 end
