@@ -12,18 +12,23 @@ module Relaton
   module Render
     class General
       attr_reader :template, :journaltemplate, :seriestemplate, :nametemplate,
-                  :authorcitetemplate, :extenttemplate, :sizetemplate, 
-                  :citetemplate, :citeshorttemplate,
-                  :lang, :script, :i18n,
-                  :edition, :edition_ordinal, :date, :fieldsklass, :dateklass
+                  :authorcitetemplate, :extenttemplate, :sizetemplate,
+                  :citetemplate, :citeshorttemplate, :lang, :script, :i18n,
+                  :edition, :edition_ordinal, :date, :fieldsklass, :dateklass,
+                  :config
 
       def initialize(opt = {})
-        options = read_config.merge(Utils::string_keys(opt))
+        @config = read_config
+        options = @config.merge(Utils::string_keys(opt))
         @type = self.class.name.downcase.split("::").last
         klass_initialize(options)
         root_initalize(options)
         render_initialize(options)
         @parse ||= options["parse"]
+        init_misc
+      end
+
+      def init_misc
         @semaphore = Mutex.new
         @urlcache = {}
         @url_warned = {}
