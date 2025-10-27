@@ -2,7 +2,7 @@ module Relaton
   module Render
     class Citations
       def initialize(opt = {})
-        @type = opt[:type]
+        # @type = opt[:type]
         @i18n = opt[:i18n]
         @renderer = opt[:renderer]
       end
@@ -58,35 +58,34 @@ module Relaton
       end
 
       def render1(cit)
+        ref = cit[:renderer].render(cit[:data_liquid])
         cit[:formattedref] =
-          @renderer.valid_parse(
-            @i18n.l10n(cit[:renderer].render(cit[:data_liquid])),
-          )
+          @renderer.valid_parse(@i18n.l10n(ref))
+        cit[:citation][:full] = @renderer.valid_parse(@i18n.l10n(ref&.sub(/\.\s*$/, "")))
         %i(type data_liquid renderer).each { |x| cit.delete(x) }
         cit
       end
 
       def citations(ret)
-        case @type
-        when "author-date" then disambig_author_date_citations(ret)
-        when nil then generic_citation(ret)
-        else raise "Unimplemented citation type"
+        ret = disambig_author_date_citations(ret)
+        ret.each_value do |b|
+          # TODO: configure how multiple ids are joined, from template?
+          b[:citation][:default] = @i18n.l10n(b[:data_liquid][:authoritative_identifier]&.first || "")
+          b[:citation][:short] = @i18n.l10n(@renderer.citeshorttemplate.render(b[:data_liquid]
+            .merge(citestyle: "short"))&.sub(/\.\s*$/, ""))
+          @renderer.citetemplate.citation_styles.each do |style|
+            b[:citation][style] = @renderer.citetemplate.render(b.merge(citestyle: style).merge(b[:data_liquid]))
+          end
         end
-      end
-
-      def generic_citation(ret)
-        ret.each_with_object({}) do |b, m|
-          m[b[:id]] = { data_liquid: b[:data_liquid], type: b[:type],
-                        citation: @i18n.l10n(b[:data_liquid][:docidentifier]) }
-        end
+       ret
       end
 
       # takes array of { id, type, author, date, ord, data_liquid }
       def disambig_author_date_citations(ret)
-        to_hash(suffix_date(sort_ord(breakdown(ret))))
+        author_date_to_hash(suffix_date(sort_ord(author_date_breakdown(ret))))
       end
 
-      def breakdown(ret)
+      def author_date_breakdown(ret)
         ret.each_with_object({}) do |b, m|
           m[b[:author]] ||= {}
           m[b[:author]][b[:date]] ||= []
@@ -114,20 +113,20 @@ module Relaton
       end
 
       def suffix_date1(ret, key1, key2)
+        key1.nil? and return
         ret[key1][key2].each_with_index do |b, i|
-          next if b[:date].nil?
-
+          b[:date].nil? and next
           b[:date] += ("a".ord + i).chr.to_s
           b[:data_liquid][:date] = b[:date]
         end
       end
 
-      def to_hash(ret)
+      def author_date_to_hash(ret)
         ret.each_with_object({}) do |(_k, v), m|
           v.each_value do |v1|
             v1.each do |b|
               m[b[:id]] = { author: @i18n.l10n(b[:author]), date: b[:date],
-                            citation: @i18n.l10n("#{b[:author]} #{b[:date]}"),
+              citation: {},
                             data_liquid: b[:data_liquid], type: b[:type] }
             end
           end

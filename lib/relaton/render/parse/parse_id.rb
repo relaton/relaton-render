@@ -95,6 +95,14 @@ module Relaton
         m[1].upcase
       end
 
+      def biblio_tag(doc)
+        #require "debug"; binding.b
+        ret = doc.docidentifier.detect do |id|
+          id.scope&.downcase == "biblio-tag"
+        end
+        ret&.id
+      end
+
       def uri(doc)
         uri = nil
         %w(citation uri src).each do |t|

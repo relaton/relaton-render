@@ -28,6 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", ">= 12.3.3"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "simplecov"
+  spec.add_development_dependency "openssl"
 
   spec.add_dependency "isodoc-i18n", "~> 1.4.0"
   spec.add_dependency "liquid", "~> 5"

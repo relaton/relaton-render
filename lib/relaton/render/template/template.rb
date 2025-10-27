@@ -255,6 +255,20 @@ module Relaton
 
       class AuthorCite < Name
       end
+
+      class Cite < General
+        def template_select(hash)
+          if hash[:citestyle].to_sym == :short
+            @template[hash[:type].to_sym]
+          else
+            @template[hash[:citestyle].to_sym]
+          end
+        end
+
+        def citation_styles
+          @template.keys
+        end
+      end
     end
   end
 end

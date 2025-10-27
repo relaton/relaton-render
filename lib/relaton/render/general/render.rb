@@ -13,16 +13,22 @@ module Relaton
     class General
       attr_reader :template, :journaltemplate, :seriestemplate, :nametemplate,
                   :authorcitetemplate, :extenttemplate, :sizetemplate,
-                  :lang, :script, :i18n,
-                  :edition, :edition_ordinal, :date, :fieldsklass, :dateklass
+                  :citetemplate, :citeshorttemplate, :lang, :script, :i18n,
+                  :edition, :edition_ordinal, :date, :fieldsklass, :dateklass,
+                  :config
 
       def initialize(opt = {})
-        options = read_config.merge(Utils::string_keys(opt))
+        @config = read_config
+        options = @config.merge(Utils::string_keys(opt))
         @type = self.class.name.downcase.split("::").last
         klass_initialize(options)
         root_initalize(options)
         render_initialize(options)
         @parse ||= options["parse"]
+        init_misc
+      end
+
+      def init_misc
         @semaphore = Mutex.new
         @urlcache = {}
         @url_warned = {}
@@ -35,6 +41,8 @@ module Relaton
       def klass_initialize(_options)
         @nametemplateklass = Relaton::Render::Template::Name
         @authorcitetemplateklass = Relaton::Render::Template::AuthorCite
+        @citetemplateklass = Relaton::Render::Template::Cite
+        @citeshorttemplateklass = Relaton::Render::Template::Cite
         @seriestemplateklass = Relaton::Render::Template::Series
         @extenttemplateklass = Relaton::Render::Template::Extent
         @sizetemplateklass = Relaton::Render::Template::Size
@@ -49,6 +57,7 @@ module Relaton
         @parse = @parseklass.new(lang: @lang, script: @script, i18n: @i18n)
         @nametemplate = @nametemplateklass
           .new(template: opt["nametemplate"], i18n: @i18n)
+        @citetemplate,  @citeshorttemplate = citerenderers(opt)
         @authorcitetemplate = @authorcitetemplateklass
           &.new(template: opt["authorcitetemplate"], i18n: @i18n)
         @seriestemplate = @seriestemplateklass
@@ -100,6 +109,16 @@ module Relaton
       def sizerenderers(opt)
         @sizetemplateklass
           .new(template: template_hash_fill(opt["sizetemplate"]), i18n: @i18n)
+      end
+
+      def citerenderers(opt)
+        s = opt["citetemplate"]["short"]
+        r = opt["citetemplate"].reject { |k, _| k == "short" }
+        short = @citetemplateklass
+          &.new(template: template_hash_fill(s), i18n: @i18n)
+        ret = @citetemplateklass
+          &.new(template: r, i18n: @i18n)
+        [ret, short]
       end
 
       def default_template
