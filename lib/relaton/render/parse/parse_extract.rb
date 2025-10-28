@@ -31,7 +31,9 @@ module Relaton
       end
 
       def edition(doc, host)
-        content(doc.edition || host&.edition)
+        ret = content(doc.edition || host&.edition)
+        ret &&= "<esc>#{ret}</esc>"
+        ret
       end
 
       def edition_num(doc, host)

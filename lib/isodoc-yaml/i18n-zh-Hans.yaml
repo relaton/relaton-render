@@ -16,6 +16,7 @@ ordinal_keys: []
 OrdinalRules: digits-ordinal
 SpelloutRules: spellout-ordinal
 edition_ordinal: "第{{ var1 | ordinal_num: '', '' }}版"
+edition_cardinal: "第{{ var1 }}版"
 edition: 版
 draft: "草案%"
 editor:

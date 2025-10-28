@@ -19,6 +19,7 @@ OrdinalRules:
   m.pl: digits-ordinal-masculine-plural
   f.pl: digits-ordinal-feminine-plural
 edition_ordinal: "{{ var1 | ordinal_num: 'edition', '' }} édition"
+edition_cardinal: "Édition {{ var1 }}"
 edition: édition
 draft: "brouillon %"
 editor:

@@ -166,6 +166,28 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
+  it "renders cardinal editions" do
+    input1 = input
+      .sub("<edition>3</edition>", "<edition>3.0</edition>")
+    output = <<~OUTPUT
+      <formattedref>RAMSEY, J. K. and W. C. MCGREW. Object play in great apes: Studies in nature and captivity. In: PELLEGRINI, Anthony D. and Peter Kenneth SMITH (eds.): <em>The nature of play: Great apes and humans</em> [electronic resource, 8vo]. Edition 3.0. New York, NY: Guilford Press. 2005. pp. 89–112. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>. [viewed: September 3, 2019].</formattedref>
+    OUTPUT
+    i = IsoDoc::PresentationXMLConvert.new(language: "en", script: "Latn")
+    i.i18n_init("en", "Latn", nil)
+    p = Relaton::Render::General.new(language: "en", i18nhash: i.i18n.get)
+    expect(HTMLEntities.new.decode(p.render(input1)))
+      .to be_equivalent_to output
+
+    output = <<~OUTPUT
+      <formattedref>RAMSEY、 J. K.、 W. C. MCGREW。 Object play in great apes： Studies in nature and captivity。 PELLEGRINI、 Anthony D.、 Peter Kenneth SMITH （編）： The nature of play： Great apes and humans ［electronic resource、 8vo］。第3.0版。 New York、 NY： Guilford Press。 2005。 89〜112頁。 <link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</link>。［参照： 2019年9月3日］。</formattedref>
+    OUTPUT
+    i = IsoDoc::PresentationXMLConvert.new(language: "ja", script: "Jpan")
+    i.i18n_init("ja", "Jpan", nil)
+    p = Relaton::Render::General.new(language: "ja", i18nhash: i.i18n.get)
+    expect(HTMLEntities.new.decode(p.render(input1)))
+      .to be_equivalent_to output
+  end
+
   it "processes status" do
     input = <<~INPUT
       <bibitem type="book">

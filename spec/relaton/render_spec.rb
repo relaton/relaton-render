@@ -76,7 +76,7 @@ RSpec.describe Relaton::Render do
       doi: ["<esc>https://doi.org/10.1017/9781108877831</esc>"],
       draft_raw: { iteration: nil, status: nil },
       edition: "1st edition",
-      edition_raw: "1",
+      edition_raw: "<esc>1</esc>",
       other_identifier: ["DOI: https://doi.org/10.1017/9781108877831",
                          "ISBN: 9781108877831"],
       publisher: "Cambridge University Press",

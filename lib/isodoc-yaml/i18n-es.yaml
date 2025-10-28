@@ -17,6 +17,7 @@ OrdinalRules:
   m: digits-ordinal-masculine
   f: digits-ordinal-feminine
 edition_ordinal: "{{ var1 | ordinal_num: 'edition', '' }} ed."
+edition_cardinal: "Ed. {{ var1 }}"
 edition: edición
 draft: "borrador %"
 editor:

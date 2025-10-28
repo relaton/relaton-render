@@ -116,8 +116,12 @@ module Relaton
       end
 
       def editionformat(edn, num)
-        num || /^\d+$/.match?(edn) or return edn
-        @r.i18n.populate("edition_ordinal", { "var1" => num || edn.to_i })
+        num || edn && !edn.empty? or return
+        edn_num = edn&.gsub(/<\/?esc>/, "")
+        num || /^\d+$/.match?(edn_num) and
+          return @r.i18n.populate("edition_ordinal",
+                                  { "var1" => num || edn_num.to_i })
+        @r.i18n.populate("edition_cardinal", { "var1" => edn })
       end
 
       def draftformat(num, _hash)
@@ -129,14 +133,14 @@ module Relaton
 
       def extentformat(extent, hash)
         extent.map do |stack|
-        stack.map do |e|
-          e1 = e.transform_values { |v| v.is_a?(Hash) ? range(v) : v }
-          ret = e.each_with_object({}) do |(k, v), m|
-            extentformat1(k, v, m, e1)
-            m
-          end
-          @r.extenttemplate.render(hash.merge(ret))
-        end.join(" ")
+          stack.map do |e|
+            e1 = e.transform_values { |v| v.is_a?(Hash) ? range(v) : v }
+            ret = e.each_with_object({}) do |(k, v), m|
+              extentformat1(k, v, m, e1)
+              m
+            end
+            @r.extenttemplate.render(hash.merge(ret))
+          end.join(" ")
         end.join("; ")
       end
 

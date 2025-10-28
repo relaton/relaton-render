@@ -16,6 +16,7 @@ ordinal_keys: []
 OrdinalRules: digits-ordinal
 edition: 版
 edition_ordinal: "第{{ var1 }}版"
+edition_cardinal: "第{{ var1 }}版"
 draft: "下書き %"
 editor:
   sg: 編
