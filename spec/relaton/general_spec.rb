@@ -216,6 +216,7 @@ RSpec.describe Relaton::Render do
            nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3,
                            etal: etal })
     expect(p.render(input)).to be_equivalent_to output
+
     etal = <<~TEMPLATE
       {{surname[0] }}, {{initials[0] | join: "" }}, {{initials[1]  | join: "" }} {{surname[1] }}, {{initials[2]  | join: "" }} {{surname[2] }} <em>et al.</em>
     TEMPLATE
@@ -227,16 +228,31 @@ RSpec.describe Relaton::Render do
            nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3,
                            etal: etal })
     expect(p.render(input)).to be_equivalent_to output
+
     template = <<~TEMPLATE
       {{ creatornames }}$$$ ({{date}}) $$$ <em>{{ title }}</em>.
     TEMPLATE
     output = <<~OUTPUT
-      <formattedref>Aluffi, D.-J.de X., D.X. Anderson, M.S. Hering <em>et al.</em>. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>.</formattedref>
+      <formattedref>Aluffi, D.-J.de X., D.X. Anderson, M.S. Hering <em>et al</em>. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>.</formattedref>
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template },
            nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3,
                            etal: etal })
+    expect(p.render(input)).to be_equivalent_to output
+
+    output = <<~OUTPUT
+    <formattedref>Aluffi, D.-J.de X., D.X. Anderson, M.S. Hering <em>et al.</em>, (2022), <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General
+      .new(template: { book: template },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3,
+                           etal: etal },
+           "i18nhash" => {
+             "punct" => {
+               "biblio-field-delimiter" => ", ",
+             },
+           })
     expect(p.render(input)).to be_equivalent_to output
   end
 

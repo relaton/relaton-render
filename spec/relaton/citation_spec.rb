@@ -1245,18 +1245,19 @@ RSpec.describe Relaton::Render::Citations do
         formattedref: "Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2.",
       },
     }
-    p = Relaton::Render::General.new(citetemplate: {
-                                       author_date: "{{ author }} {{ date}}",
-                                       short: {
-                                         book: "{{ creatornames }} ({{role}}) . {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} [{{medium}}] . {{ edition | capitalize_first }}. ({{ series }}.) {% if place %}{{place}}{%else%}{{ labels['no_place']}}{%endif%}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ authoritative_identifier | join: '. ' }}. {{ other_identifier | join: '. ' }}. {{size}}. {{extent}}.",
-                                       },
-                                     },
-                                     template: { standard: "{{ creatornames }} ({{ role}}) . {{ authoritative_identifier | join: '|' }}: {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} . {{ medium | capitalize }}. {{ edition | capitalize_first }}. {{ place }}: {{ publisher }}. {{date}}. {{size}}. {{ extent }}. {{ other_identifier | join: '. ' }}" })
+    p = Relaton::Render::General
+      .new(citetemplate: {
+             author_date: "{{ author }} {{ date}}",
+             short: {
+               book: "{{ creatornames }} ({{role}}) . {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} [{{medium}}] . {{ edition | capitalize_first }}. ({{ series }}.) {% if place %}{{place}}{%else%}{{ labels['no_place']}}{%endif%}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ authoritative_identifier | join: '. ' }}. {{ other_identifier | join: '. ' }}. {{size}}. {{extent}}.",
+             },
+           },
+           template: { standard: "{{ creatornames }} ({{ role}}) . {{ authoritative_identifier | join: '|' }}: {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} . {{ medium | capitalize }}. {{ edition | capitalize_first }}. {{ place }}: {{ publisher }}. {{date}}. {{size}}. {{ extent }}. {{ other_identifier | join: '. ' }}" })
     expect(p.render_all(input, type: "short"))
       .to match_hash_pp output
   end
 
-   it "configures bibliographic delimiters" do
+  it "configures bibliographic delimiters" do
     input = <<~INPUT
       <references>
         <bibitem type="book" id="A">
@@ -1301,14 +1302,14 @@ RSpec.describe Relaton::Render::Citations do
         </bibitem>
         </references>
     INPUT
-    output = 
-        {"A" =>
-         {author: nil,
+    output =
+      { "A" =>
+        { author: nil,
           date: "2022",
           citation:
-           {default: "",
+          { default: "",
             short:
-             "<em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>,1st edition,(London Mathematical Society Lecture Note Series 472,) Cambridge, UK: Cambridge University Press,2022,DOI: https://doi.org/10.1017/9781108877831,ISBN: 9781108877831,1 vol.",
+            "<em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>,1st edition,(London Mathematical Society Lecture Note Series 472,) Cambridge, UK: Cambridge University Press,2022,DOI: https://doi.org/10.1017/9781108877831,ISBN: 9781108877831,1 vol.",
             author_date: "2022",
             author_date_br: "(2022)",
             author: nil,
@@ -1317,16 +1318,16 @@ RSpec.describe Relaton::Render::Citations do
             title: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
             title_reference_tag: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
             full:
-             "<em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>,1st edition,(London Mathematical Society Lecture Note Series 472,) Cambridge, UK: Cambridge University Press,2022,DOI: https://doi.org/10.1017/9781108877831,ISBN: 9781108877831,1 vol."},
+            "<em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>,1st edition,(London Mathematical Society Lecture Note Series 472,) Cambridge, UK: Cambridge University Press,2022,DOI: https://doi.org/10.1017/9781108877831,ISBN: 9781108877831,1 vol." },
           formattedref:
-           "<em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>,1st edition,(London Mathematical Society Lecture Note Series 472,) Cambridge, UK: Cambridge University Press,2022,DOI: https://doi.org/10.1017/9781108877831,ISBN: 9781108877831,1 vol.$"},
+          "<em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>,1st edition,(London Mathematical Society Lecture Note Series 472,) Cambridge, UK: Cambridge University Press,2022,DOI: https://doi.org/10.1017/9781108877831,ISBN: 9781108877831,1 vol.$" },
         "B" =>
-         {author: nil,
+        { author: nil,
           date: "2022",
           citation:
-           {default: "",
+          { default: "",
             short:
-             "<em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>,1st edition,(London Mathematical Society Lecture Note Series 472,) Cambridge, UK: Cambridge University Press,2022,DOI: https://doi.org/10.1017/9781108877831,ISBN: 9781108877831,1 vol.",
+            "<em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>,1st edition,(London Mathematical Society Lecture Note Series 472,) Cambridge, UK: Cambridge University Press,2022,DOI: https://doi.org/10.1017/9781108877831,ISBN: 9781108877831,1 vol.",
             author_date: "2022",
             author_date_br: "(2022)",
             author: nil,
@@ -1335,19 +1336,17 @@ RSpec.describe Relaton::Render::Citations do
             title: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
             title_reference_tag: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
             full:
-             "<em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>,1st edition,(London Mathematical Society Lecture Note Series 472,) Cambridge, UK: Cambridge University Press,2022,DOI: https://doi.org/10.1017/9781108877831,ISBN: 9781108877831,1 vol."},
+            "<em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>,1st edition,(London Mathematical Society Lecture Note Series 472,) Cambridge, UK: Cambridge University Press,2022,DOI: https://doi.org/10.1017/9781108877831,ISBN: 9781108877831,1 vol." },
           formattedref:
-           "<em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>,1st edition,(London Mathematical Society Lecture Note Series 472,) Cambridge, UK: Cambridge University Press,2022,DOI: https://doi.org/10.1017/9781108877831,ISBN: 9781108877831,1 vol.$"
-          }
-        }
-    
+          "<em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>,1st edition,(London Mathematical Society Lecture Note Series 472,) Cambridge, UK: Cambridge University Press,2022,DOI: https://doi.org/10.1017/9781108877831,ISBN: 9781108877831,1 vol.$" } }
+
     p = Relaton::Render::General.new(
       "i18nhash" => {
         "punct" => {
           "biblio-field-delimiter" => ",",
-          "biblio-terminator" => "$"
-        }
-      }
+          "biblio-terminator" => "$",
+        },
+      },
     )
     expect(p.render_all(input, type: "author-date"))
       .to match_hash_pp output
