@@ -108,7 +108,8 @@ module Relaton
           t = template_select(hash) or return nil
 
           ret = template_clean(t.render(liquid_hash(hash.merge("labels" => @i18n.get))))
-          template_components(ret, @i18n.get["punct"]["biblio-field-delimiter"] || ". ")
+          template_components(ret,
+                              @i18n.get["punct"]["biblio-field-delimiter"] || ". ")
         end
 
         def template_select(_hash)
@@ -126,7 +127,7 @@ module Relaton
 
         def template_clean1(str)
           str = strip_empty_variables(str)
-            str.gsub(/([,:;]\s*)+<\/esc>([,:;])(\s|_|$)/, "\\2</esc>\\3")
+          str.gsub(/([,:;]\s*)+<\/esc>([,:;])(\s|_|$)/, "\\2</esc>\\3")
             .gsub(/([,:;]\s*)+([,:;](\s|_|$))/, "\\2")
             .gsub(/([,.:;]\s*)+<\/esc>([.])(\s|_|$)/, "\\2</esc>\\3") # move outside
             .gsub(/([,.:;]\s*)+([.](\s|_|$))/, "\\2") # move outside
@@ -144,19 +145,26 @@ module Relaton
         end
 
         # get rid of all empty variables, and any text around them,
-          # including component delimiters:
-          # [{{}}]$$$ => ""
-          # [{{}}] $$$ => " $$$"
+        # including component delimiters:
+        # [{{}}]$$$ => ""
+        # [{{}}] $$$ => " $$$"
         def strip_empty_variables(str)
           str.gsub(/\S*#{VARIABLE_DELIM}#{VARIABLE_DELIM}\S*/o, "")
             .gsub(/#{VARIABLE_DELIM}/o, "")
         end
 
+        # delim = punct.biblio-field-terminator must not be i18n'ised:
+        # .</esc>. deletes first .
+        # .</esc>。does not delete first .
+        # So we do not want to pass delim in as .,
+        # and then have it i18n to 。after we are done parsing
         def template_components(str, delim)
           str or return str
           ret = str.split(COMPONENT_DELIM).map(&:strip).reject(&:empty?)
-            .map { |s| s.sub(/#{delim}$/, "") }
-          # delim = ". " : ({{ series }}$$$|) => (series1.)
+            .map do |s|
+              s.sub(/#{delim}$/, "").sub(%r{#{delim}(</[^>]+>)$}, "\\1")
+            end
+          # if delim = ". " , then: ({{ series }}$$$|) => (series1.)
           ret.join(delim).gsub(/#{delim}\|/, delim.strip)
         end
 

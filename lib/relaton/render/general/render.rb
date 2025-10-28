@@ -171,9 +171,9 @@ module Relaton
         ret = @i18n.l10n(esc_cleanup(ret1)
           .gsub(".</esc>.", ".</esc>")
           .gsub(".. ", ". "))
-          final = (@i18n.get["punct"]["biblio-terminator" ] || ".")
+        final = @i18n.get["punct"]["biblio-terminator"] || "."
         terminator && !ret.end_with?(final) && !ret.empty? and ret += final
-          ret
+        ret
       end
 
       def render_single_bibitem(doc)
