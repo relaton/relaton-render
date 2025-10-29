@@ -76,20 +76,25 @@ module Relaton
         [ref, ref1]
       end
 
+      # TODO: configure how multiple ids are joined, from template?
       def citations(ret)
         ret = disambig_author_date_citations(ret)
         ret.each_value do |b|
-          # TODO: configure how multiple ids are joined, from template?
           b[:citation][:default] =
             @i18n.l10n(b[:data_liquid][:authoritative_identifier]&.first || "")
-          b[:citation][:short] = @i18n.l10n(@renderer.citeshorttemplate.render(b[:data_liquid]
-            .merge(citestyle: "short")))
-          @renderer.citetemplate.citation_styles.each do |style|
-            b[:citation][style] =
-              @renderer.citetemplate.render(b.merge(citestyle: style).merge(b[:data_liquid]))
-          end
+          b[:citation][:short] = @i18n.l10n(@renderer.citeshorttemplate
+            .render(b[:data_liquid].merge(citestyle: "short")))
+          citations_iterate_cite_styles(b)
         end
         ret
+      end
+
+      def citations_iterate_cite_styles(bib)
+        @renderer.citetemplate.citation_styles.each do |style|
+          bib[:citation][style] =
+            @i18n.l10n(@renderer.citetemplate.render(bib.merge(citestyle: style)
+            .merge(bib[:data_liquid])))
+        end
       end
 
       # takes array of { id, type, author, date, ord, data_liquid }

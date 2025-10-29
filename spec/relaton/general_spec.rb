@@ -148,6 +148,110 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to output
   end
 
+  it "processes capitalize_first with XML tags" do
+    # Test with XML tags at the beginning - should capitalize first word, not tag
+    input1 = <<~INPUT
+      <bibitem type="book">
+        <title>hello, dolly</title>
+        <date type="published"><on>2022</on></date>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Test</surname><forename>Author</forename></name>
+          </person>
+        </contributor>
+      </bibitem>
+    INPUT
+    output1 = <<~OUTPUT
+      <formattedref>TEST, Author. <em>Hello, dolly</em>. 2022.</formattedref>
+    OUTPUT
+    template = <<~TEMPLATE
+      {{ creatornames }}. <em>{{ title | capitalize_first }}</em>. {{ place }}: {{ publisher }}. {{date}}.
+    TEMPLATE
+    p = Relaton::Render::General.new(template: { book: template }, language: "en")
+    expect(p.render(input1)).to be_equivalent_to output1
+
+    # Title, which is rendered with <esc> tags, respects them under i18n
+    output1 = <<~OUTPUT
+      <formattedref>TEST, Author. <em>Hello, dolly</em>. 2022.。</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new(template: { book: template }, language: "ja")
+    expect(p.render(input1)).to be_equivalent_to output1
+
+    # Test with multiple tags
+    input2 = <<~INPUT
+      <bibitem type="book">
+        <title><em><strong>test</strong></em> word</title>
+        <date type="published"><on>2022</on></date>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Test</surname><forename>Author</forename></name>
+          </person>
+        </contributor>
+      </bibitem>
+    INPUT
+    output2 = <<~OUTPUT
+      <formattedref>TEST, Author. <em><em><strong>Test</strong></em> word</em>. 2022.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new(template: { book: template }, language: "en")
+    expect(p.render(input2)).to be_equivalent_to output2
+
+    # Test with leading spaces before tag
+    input3 = <<~INPUT
+      <bibitem type="book">
+        <title>  <tag>hello world</tag></title>
+        <date type="published"><on>2022</on></date>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Test</surname><forename>Author</forename></name>
+          </person>
+        </contributor>
+      </bibitem>
+    INPUT
+    output3 = <<~OUTPUT
+      <formattedref>TEST, Author. <em><tag>Hello world</tag></em>. 2022.</formattedref>
+    OUTPUT
+    expect(p.render(input3)).to be_equivalent_to output3
+
+    # Test with underscores before tag
+    input4 = <<~INPUT
+      <bibitem type="book">
+        <title>_<tag>hello world</tag></title>
+        <date type="published"><on>2022</on></date>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Test</surname><forename>Author</forename></name>
+          </person>
+        </contributor>
+      </bibitem>
+    INPUT
+    output4 = <<~OUTPUT
+      <formattedref>TEST, Author. <em>_<tag>hello world</tag></em>. 2022.</formattedref>
+    OUTPUT
+    expect(p.render(input4)).to be_equivalent_to output4
+
+    # Test without tags - backward compatibility
+    input5 = <<~INPUT
+      <bibitem type="book">
+        <title>hello world</title>
+        <date type="published"><on>2022</on></date>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Test</surname><forename>Author</forename></name>
+          </person>
+        </contributor>
+      </bibitem>
+    INPUT
+    output5 = <<~OUTPUT
+      <formattedref>TEST, Author. <em>Hello world</em>. 2022.</formattedref>
+    OUTPUT
+    expect(p.render(input5)).to be_equivalent_to output5
+  end
+
   it "processes formatted initials" do
     input = <<~INPUT
       <bibitem type="book">

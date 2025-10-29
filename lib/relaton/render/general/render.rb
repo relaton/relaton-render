@@ -141,7 +141,8 @@ module Relaton
 
       def xml2relaton(bib)
         bib.is_a?(Nokogiri::XML::Element) and
-          bib = bib.to_xml
+          bib = bib.to_xml(encoding: "UTF-8", indent: 0,
+                    save_with: Nokogiri::XML::Node::SaveOptions::AS_XML)
         bib.is_a?(String) && Nokogiri::XML(bib).errors.empty? and
           bib = RelatonBib::XMLParser.from_xml(bib) or bib
       end

@@ -4,8 +4,10 @@ module Relaton
       def content(node)
         node.nil? and return node
         node.content.is_a?(Array) and return node.content.map { |x| content(x) }
-        node.content.strip
+        ret = node.content.strip
           .gsub("</title>", "").gsub("<title>", "")
+        # safeguard against indented XML
+        ret.gsub(/>\n\s*</, "><").gsub(/\n\s*/, " ")
         # node.children.map { |n| n.text? ? n.content : n.to_xml }.join
         # node.text? ? node.content.strip : node.to_xml.strip
       end

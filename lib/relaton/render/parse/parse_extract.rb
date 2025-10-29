@@ -12,7 +12,8 @@ module Relaton
         t.empty? and t = doc.title
         t1 = t.select { |x| x.type == "main" }
         t1.empty? and t1 = t
-        content(t1.first&.title)
+        t1.first or return
+        "<esc>#{content(t1.first.title)}</esc>"
       end
 
       def medium(doc, host)
