@@ -13,7 +13,7 @@ module Relaton
         t1 = t.select { |x| x.type == "main" }
         t1.empty? and t1 = t
         t1.first or return
-        "<esc>#{content(t1.first.title)}</esc>"
+        esc(content(t1.first.title))
       end
 
       def medium(doc, host)
@@ -33,7 +33,7 @@ module Relaton
 
       def edition(doc, host)
         ret = content(doc.edition || host&.edition)
-        ret &&= "<esc>#{ret}</esc>"
+        ret &&= esc(ret)
         ret
       end
 

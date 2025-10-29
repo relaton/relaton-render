@@ -62,7 +62,7 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to "<formattedref>#{output}</formattedref>"
     data, template = p.parse(input)
     output = <<~OUTPUT
-      <esc>ALUFFI</esc>, Paolo, David Herbert <esc>ANDERSON</esc>, Milena Marie <esc>HERING</esc>, Mircea H. <esc>MUSTAŢĂ</esc> and Sam H. <esc>PAYNE</esc> (eds.). <em><esc>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</esc></em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) n.p.: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.
+      <esc>ALUFFI</esc>, Paolo, David Herbert <esc>ANDERSON</esc>, Milena Marie <esc>HERING</esc>, Mircea H. <esc>MUSTAŢĂ</esc> and Sam H. <esc>PAYNE</esc> (eds.). <em><esc>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</esc></em>. 1st edition. (<esc>London Mathematical Society Lecture Note Series</esc> 472.) n.p.: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.
     OUTPUT
     expect(p.liquid(data, template))
       .to be_equivalent_to output
@@ -85,9 +85,9 @@ RSpec.describe Relaton::Render do
       publisher_raw: [{ nonpersonal: "Cambridge University Press" }],
       role: "eds.",
       role_raw: "editor",
-      series: "London Mathematical Society Lecture Note Series 472",
+      series: "<esc>London Mathematical Society Lecture Note Series</esc> 472",
       series_num: "472",
-      series_title: "London Mathematical Society Lecture Note Series",
+      series_title: "<esc>London Mathematical Society Lecture Note Series</esc>",
       size: "1 vol.",
       size_raw: { "volume" => ["1"] },
       title: "<esc>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</esc>",

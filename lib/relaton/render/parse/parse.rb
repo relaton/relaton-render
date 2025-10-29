@@ -54,23 +54,41 @@ module Relaton
       end
 
       def series_xml2hash1(series, doc)
-        return {} unless series
-
-        { series_formatted: series_formatted(series, doc),
-          series_title: series_title(series, doc),
-          series_abbr: series_abbr(series, doc),
-          series_run: series_run(series, doc),
-          series_num: series_num(series, doc),
-          series_partnumber: series_partnumber(series, doc),
-          series_place: series_place(series, doc),
-          series_org: series_org(series, doc),
-          series_dates: series_dates(series, doc) }
+        series or return {}
+        ret = { series_formatted: series_formatted(series, doc),
+                series_title: series_title(series, doc),
+                series_abbr: series_abbr(series, doc),
+                series_run: series_run(series, doc),
+                series_num: series_num(series, doc),
+                series_partnumber: series_partnumber(series, doc),
+                series_place: series_place(series, doc),
+                series_org: series_org(series, doc),
+                series_dates: series_dates(series, doc) }
+        #require "debug"; binding.b
+        ret.each do |k, v|
+          %i(series_num series_dates).include?(k) and next
+          ret[k] = esc(v)
+        end
+        ret
       end
 
       private
 
       def blank?(text)
         text.nil? || text.empty?
+      end
+
+      def esc(text)
+        blank?(text) and return text
+        "<esc>#{text}</esc>"
+      end
+
+      def wrap_in_esc(obj)
+        case obj
+        when String then esc(obj)
+        when Array then obj.map { |e| wrap_in_esc(e) }
+        else obj
+        end
       end
     end
   end

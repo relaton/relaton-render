@@ -34,14 +34,6 @@ module Relaton
          wrap_in_esc(Array(initials))]
       end
 
-      def wrap_in_esc(obj)
-        case obj
-        when String then "<esc>#{obj}</esc>"
-        when Array then obj.map { |e| wrap_in_esc(e) }
-        else obj
-        end
-      end
-
       def extract_initials(person)
         initials = content(person.name.initials)&.sub(/(.)\.?$/, "\\1.")
           &.split /(?<=\.) /
@@ -52,7 +44,7 @@ module Relaton
 
       def forenames_parse(person)
         person.name.forename.map do |x|
-          x.content.empty? ? "<esc>#{x.initial}.</esc>" : content(x)
+          x.content.empty? ? esc("#{x.initial}.") : content(x)
         end
       end
 
