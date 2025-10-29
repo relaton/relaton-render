@@ -4,14 +4,18 @@ module Relaton
       def initialize(opt = {})
         # @type = opt[:type]
         @i18n = opt[:i18n]
-        @renderer = opt[:renderer]
+        @renderer = opt[:renderer] # hash of renderers
+      end
+
+      def renderer(_cite)
+        @renderer[:default]
       end
 
       # takes array of { id, type, author, date, ord, data_liquid }
       def render(ret)
         cites = citations(ret)
         cites.each_value do |v|
-          v[:renderer] = @renderer.renderer(v[:type] || "misc")
+          v[:renderer] = renderer(v).renderer(v[:type] || "misc")
         end
         enhance_data(cites)
         cites.each_key do |k|
@@ -48,20 +52,21 @@ module Relaton
       end
 
       def add_date_accessed(data, uri, status)
+        r = renderer(data)
         if status
           data[:data_liquid][:date_accessed] = { on: ::Date.today.to_s }
-          data[:data_liquid] = @renderer.fieldsklass.new(renderer: @renderer)
+          data[:data_liquid] = r.fieldsklass.new(renderer: r)
             .compound_fields_format(data[:data_liquid])
         else
-          @renderer.url_warn(uri)
+          r.url_warn(uri)
         end
       end
 
       def render1(cit)
-        ref, ref1 = render1_prep(cit)
+        ref, ref1, r = render1_prep(cit)
         cit[:formattedref] =
-          @renderer.valid_parse(@i18n.l10n(ref1))
-        cit[:citation][:full] = @renderer.valid_parse(@i18n.l10n(ref))
+          r.valid_parse(@i18n.l10n(ref1))
+        cit[:citation][:full] = r.valid_parse(@i18n.l10n(ref))
         %i(type data_liquid renderer).each { |x| cit.delete(x) }
         cit
       end
@@ -73,7 +78,7 @@ module Relaton
         unless !ref1 || ref1.empty?
           ref1.end_with?(final) or ref1 += final
         end
-        [ref, ref1]
+        [ref, ref1, renderer(cit)]
       end
 
       # TODO: configure how multiple ids are joined, from template?
@@ -82,7 +87,7 @@ module Relaton
         ret.each_value do |b|
           b[:citation][:default] =
             @i18n.l10n(b[:data_liquid][:authoritative_identifier]&.first || "")
-          b[:citation][:short] = @i18n.l10n(@renderer.citeshorttemplate
+          b[:citation][:short] = @i18n.l10n(renderer(b).citeshorttemplate
             .render(b[:data_liquid].merge(citestyle: "short")))
           citations_iterate_cite_styles(b)
         end
@@ -90,9 +95,10 @@ module Relaton
       end
 
       def citations_iterate_cite_styles(bib)
-        @renderer.citetemplate.citation_styles.each do |style|
+        r = renderer(bib)
+        r.citetemplate.citation_styles.each do |style|
           bib[:citation][style] =
-            @i18n.l10n(@renderer.citetemplate.render(bib.merge(citestyle: style)
+            @i18n.l10n(r.citetemplate.render(bib.merge(citestyle: style)
             .merge(bib[:data_liquid])))
         end
       end
