@@ -205,7 +205,8 @@ module Relaton
       # enhance_data is skipped here, and is done in batch inside Citations
       def render_all(bib, type: "author-date")
         bib = sanitise_citations_input(bib) or return
-        Citations.new(type: type, renderer: citation_renderers, i18n: @i18n)
+        Citations.new(type: type, renderer: citation_renderers,
+                      i18n: @i18n, lang: @lang, script: @script)
           .render(citations1(bib))
       end
 

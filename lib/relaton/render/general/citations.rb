@@ -4,6 +4,8 @@ module Relaton
       def initialize(opt = {})
         # @type = opt[:type]
         @i18n = opt[:i18n]
+        @lang = opt[:lang]
+        @script = opt[:script]
         @renderer = opt[:renderer] # hash of renderers
       end
 
