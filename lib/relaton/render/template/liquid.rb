@@ -24,11 +24,17 @@ module Relaton
         def selective_upcase(text)
           return nil if text.nil?
 
-          ret = text.split(/(\+\+\+[^+]+?\+\+\+)/)
+          # Split to extract both +++...+++ sections and XML tags
+          ret = text.split(/(\+\+\+[^+]+?\+\+\+|<[^>]+>)/)
           ret.map do |n|
             if m = /^\+\+\+(.+)\+\+\+$/.match(n)
+              # Keep content inside +++ unchanged
               m[1]
+            elsif n.match?(/^<[^>]+>$/)
+              # Keep XML tags unchanged
+              n
             else
+              # Upcase everything else
               n.upcase
             end
           end.join

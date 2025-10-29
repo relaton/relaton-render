@@ -466,6 +466,95 @@ RSpec.describe Relaton::Render do
     expect(p.render(input)).to be_equivalent_to output
   end
 
+  it "processes selective_upcase with XML tags" do
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>Facets of Algebraic Geometry</title>
+        <date type="published"><on>2022</on></date>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Anderson</surname><formatted-initials>D. X.</formatted-initials></name>
+          </person>
+        </contributor>
+      </bibitem>
+    INPUT
+    
+    # Test with XML tags - should preserve tags while uppercasing text
+    template = <<~TEMPLATE
+      {{ creatornames | selective_upcase }} ,_{{role}} ({{date}}) . <em>{{ title }}</em>.
+    TEMPLATE
+    two = <<~TEMPLATE
+      {{surname[0] }}, <tag>{{initials[0] | join: " " }}</tag> +++and+++ {{initials[1]  | join: " " | remove: "." }} {{surname[1] }}
+    TEMPLATE
+    output = <<~OUTPUT
+      <formattedref>ALUFFI, <tag>P. </tag> and D X ANDERSON, eds. (2022). <em>Facets of Algebraic Geometry</em>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General
+      .new(template: { book: template },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3,
+                           two: two })
+    expect(p.render(input)).to be_equivalent_to output
+
+    # Test with multiple XML tags
+    two = <<~TEMPLATE
+      <em>{{surname[0] }}</em>, {{initials[0] | join: " " }} +++and+++ <strong>{{initials[1]  | join: " " | remove: "." }}</strong> {{surname[1] }}
+    TEMPLATE
+    output = <<~OUTPUT
+      <formattedref><em>ALUFFI</em>, P. and <strong>D X</strong> ANDERSON, eds. (2022). <em>Facets of Algebraic Geometry</em>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General
+      .new(template: { book: template },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3,
+                           two: two })
+    expect(p.render(input)).to be_equivalent_to output
+
+    # Test with nested XML tags
+    two = <<~TEMPLATE
+      {{surname[0] }}, <outer><inner>{{initials[0] | join: " " }}</inner></outer> +++and+++ {{initials[1]  | join: " " | remove: "." }} {{surname[1] }}
+    TEMPLATE
+    output = <<~OUTPUT
+      <formattedref>ALUFFI, <outer><inner>P. </inner></outer> and D X ANDERSON, eds. (2022). <em>Facets of Algebraic Geometry</em>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General
+      .new(template: { book: template },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3,
+                           two: two })
+    expect(p.render(input)).to be_equivalent_to output
+
+    # Test without +++ markers - should upcase all text but preserve XML tags
+    two = <<~TEMPLATE
+      {{surname[0] }}, <tag>{{initials[0] | join: " " }}</tag> and {{initials[1]  | join: " " | remove: "." }} {{surname[1] }}
+    TEMPLATE
+    output = <<~OUTPUT
+      <formattedref>ALUFFI, <tag>P. </tag> AND D X ANDERSON, eds. (2022). <em>Facets of Algebraic Geometry</em>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General
+      .new(template: { book: template },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3,
+                           two: two })
+    expect(p.render(input)).to be_equivalent_to output
+
+    # Test backward compatibility without XML tags
+    two = <<~TEMPLATE
+      {{surname[0] }}, {{initials[0] | join: " " }} +++and+++ {{initials[1]  | join: " " | remove: "." }} {{surname[1] }}
+    TEMPLATE
+    output = <<~OUTPUT
+      <formattedref>ALUFFI, P. and D X ANDERSON, eds. (2022). <em>Facets of Algebraic Geometry</em>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General
+      .new(template: { book: template },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3,
+                           two: two })
+    expect(p.render(input)).to be_equivalent_to output
+  end
+
   it "sanitises tags in bibliographic content" do
     input = <<~INPUT
       <bibitem type="book">
