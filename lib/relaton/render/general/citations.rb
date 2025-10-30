@@ -16,9 +16,9 @@ module Relaton
       # takes array of { id, type, author, date, ord, data_liquid }
       def render(ret)
         cites = citations(ret)
-        cites.each_value do |v|
-          v[:renderer] = renderer(v).renderer(v[:type] || "misc")
-        end
+        #cites.each_value do |v|
+        #  v[:renderer] = renderer(v).renderer(v[:type] || "misc")
+        #end
         enhance_data(cites)
         cites.each_key do |k|
           cites[k] = render1(cites[k])
@@ -44,7 +44,7 @@ module Relaton
       end
 
       def extract_uri_for_lookup(cite)
-        t = cite[:renderer].template_raw
+        t = renderer(cite).renderer(cite[:type] || "misc").template_raw
         c = cite[:data_liquid]
         t.is_a?(String) or return
         (/\{\{\s*date_accessed\s*\}\}/.match?(t) &&
@@ -74,13 +74,15 @@ module Relaton
       end
 
       def render1_prep(cit)
-        ref = cit[:renderer].render(cit[:data_liquid])
+        #ref = cit[:renderer].render(cit[:data_liquid])
+        r = renderer(cit)
+        ref = r.renderer(cit[:type] || "misc").render(cit[:data_liquid])
         final = @i18n.get["punct"]["biblio-terminator"] || "."
         ref1 = ref
         unless !ref1 || ref1.empty?
           ref1.end_with?(final) or ref1 += final
         end
-        [ref, ref1, renderer(cit)]
+        [ref, ref1, r]
       end
 
       # TODO: configure how multiple ids are joined, from template?
