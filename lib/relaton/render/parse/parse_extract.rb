@@ -124,6 +124,19 @@ module Relaton
         "book"
       end
 
+      def language(doc)
+        doc.language&.first || @lang
+      end
+
+      def script(doc)
+        doc.script&.first || @script
+      end
+
+      def locale(doc)
+        # TODO not yet implemented in relaton-bib
+        # doc.locale&.first
+      end
+
       def extent1(localities)
         localities.each_with_object({}) do |l, ret|
           ret[(l.type || "page").to_sym] = {

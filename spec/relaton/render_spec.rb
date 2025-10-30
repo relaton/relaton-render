@@ -66,35 +66,6 @@ RSpec.describe Relaton::Render do
     OUTPUT
     expect(p.liquid(data, template))
       .to be_equivalent_to output
-    hash = {
-      authorcite: "<esc>Aluffi</esc>, <esc>Anderson</esc>, <esc>Hering</esc>, <esc>Mustaţă</esc> and <esc>Payne</esc>",
-      authorizer: "Cambridge University Press",
-      authorizer_raw: [{ nonpersonal: "Cambridge University Press" }],
-      creatornames: "<esc>ALUFFI</esc>, Paolo, David Herbert <esc>ANDERSON</esc>, Milena Marie <esc>HERING</esc>, Mircea H. <esc>MUSTAŢĂ</esc> and Sam H. <esc>PAYNE</esc>",
-      creators: [{given: "Paolo", initials: ["<esc>P.</esc>"], middle: [], surname: "<esc>Aluffi</esc>"}, {given: "David", initials: ["<esc>D.</esc>", "<esc>H.</esc>"], middle: ["Herbert"], surname: "<esc>Anderson</esc>"}, {given: "Milena Marie", initials: ["<esc>M.</esc>", "<esc>M.</esc>"], middle: [], surname: "<esc>Hering</esc>"}, {given: "Mircea", initials: ["<esc>M.</esc>", "<esc>H.</esc>"], middle: ["H."], surname: "<esc>Mustaţă</esc>"}, {given: "Sam H.", initials: ["<esc>S.</esc>", "<esc>H.</esc>"], middle: [], surname: "<esc>Payne</esc>"}],
-      date: "2022",
-      doi: ["<esc>https://doi.org/10.1017/9781108877831</esc>"],
-      draft_raw: { iteration: nil, status: nil },
-      edition: "1st edition",
-      edition_raw: "<esc>1</esc>",
-      other_identifier: ["DOI: https://doi.org/10.1017/9781108877831",
-                         "ISBN: 9781108877831"],
-      publisher: "Cambridge University Press",
-      publisher_abbrev: "Cambridge University Press",
-      publisher_abbrev_raw: ["Cambridge University Press"],
-      publisher_raw: [{ nonpersonal: "Cambridge University Press" }],
-      role: "eds.",
-      role_raw: "editor",
-      series: "<esc>London Mathematical Society Lecture Note Series</esc> 472",
-      series_num: "472",
-      series_title: "<esc>London Mathematical Society Lecture Note Series</esc>",
-      size: "1 vol.",
-      size_raw: { "volume" => ["1"] },
-      title: "<esc>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</esc>",
-      type: "book",
-    }
-    expect(metadata(data))
-      .to eq(hash)
   end
 
   it "renders book, five editors with specific class, broken down place" do

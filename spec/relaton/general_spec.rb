@@ -7,6 +7,98 @@ RSpec.describe Relaton::Render do
     expect(Relaton::Render::VERSION).not_to be nil
   end
 
+  it "parses a citation" do
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <docidentifier type="ISBN">9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+          </person>
+        </contributor>
+                <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Anderson</surname><forename>David</forename><forename>Herbert</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Hering</surname><forename>Milena Marie</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Mustaţă</surname><forename>Mircea</forename><forename>H.</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Payne</surname><forename>Sam H.</forename></name>
+          </person>
+        </contributor>
+        <edition>1</edition>
+        <series>
+        <title>London Mathematical Society Lecture Note Series</title>
+        <number>472</number>
+        </series>
+            <contributor>
+              <role type="publisher"/>
+              <organization>
+                <name>Cambridge University Press</name>
+              </organization>
+            </contributor>
+          <size><value type="volume">1</value></size>
+      </bibitem>
+    INPUT
+    p = Relaton::Render::General.new
+    data, = p.parse(input)
+    hash = {
+      authorcite: "<esc>Aluffi</esc>, <esc>Anderson</esc>, <esc>Hering</esc>, <esc>Mustaţă</esc> and <esc>Payne</esc>",
+      authorizer: "Cambridge University Press",
+      authorizer_raw: [{ nonpersonal: "Cambridge University Press" }],
+      creatornames: "<esc>ALUFFI</esc>, Paolo, David Herbert <esc>ANDERSON</esc>, Milena Marie <esc>HERING</esc>, Mircea H. <esc>MUSTAŢĂ</esc> and Sam H. <esc>PAYNE</esc>",
+      creators: [{given: "Paolo", initials: ["<esc>P.</esc>"], middle: [], surname: "<esc>Aluffi</esc>"}, {given: "David", initials: ["<esc>D.</esc>", "<esc>H.</esc>"], middle: ["Herbert"], surname: "<esc>Anderson</esc>"}, {given: "Milena Marie", initials: ["<esc>M.</esc>", "<esc>M.</esc>"], middle: [], surname: "<esc>Hering</esc>"}, {given: "Mircea", initials: ["<esc>M.</esc>", "<esc>H.</esc>"], middle: ["H."], surname: "<esc>Mustaţă</esc>"}, {given: "Sam H.", initials: ["<esc>S.</esc>", "<esc>H.</esc>"], middle: [], surname: "<esc>Payne</esc>"}],
+      date: "2022",
+      doi: ["<esc>https://doi.org/10.1017/9781108877831</esc>"],
+      draft_raw: { iteration: nil, status: nil },
+      edition: "1st edition",
+      edition_raw: "<esc>1</esc>",
+      language: "en",
+      other_identifier: ["DOI: https://doi.org/10.1017/9781108877831",
+                         "ISBN: 9781108877831"],
+      publisher: "Cambridge University Press",
+      publisher_abbrev: "Cambridge University Press",
+      publisher_abbrev_raw: ["Cambridge University Press"],
+      publisher_raw: [{ nonpersonal: "Cambridge University Press" }],
+      role: "eds.",
+      role_raw: "editor",
+      script: "Latn",
+      series: "<esc>London Mathematical Society Lecture Note Series</esc> 472",
+      series_num: "472",
+      series_title: "<esc>London Mathematical Society Lecture Note Series</esc>",
+      size: "1 vol.",
+      size_raw: { "volume" => ["1"] },
+      title: "<esc>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</esc>",
+      type: "book",
+    }
+    expect(metadata(data)).to eq(hash)
+
+    hash[:language] = "ja"
+    hash[:script] = "Jpan"
+    data, = p.parse(input
+      .sub('</edition>',
+           '</edition><language>ja</language><script>Jpan</script><locale>JP</locale>'))
+    expect(metadata(data)).to eq(hash)
+  end
+
   it "returns formattedref" do
     input = <<~INPUT
       <bibitem type="book">

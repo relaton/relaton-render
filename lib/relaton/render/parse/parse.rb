@@ -26,7 +26,8 @@ module Relaton
           size_raw: size(doc), uri_raw: uri(doc), doi: doi(doc),
           authoritative_identifier: authoritative_identifier(doc),
           other_identifier: other_identifier(doc), biblio_tag: biblio_tag(doc),
-          status: status(doc), creators: creators, role_raw: role }
+          status: status(doc), creators: creators, role_raw: role,
+          language: language(doc), script: script(doc), locale: locale(doc) }
       end
 
       def simple_or_host_xml2hash(doc, host)

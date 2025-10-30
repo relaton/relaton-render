@@ -188,6 +188,7 @@ module Relaton
 
       def parse(doc)
         doc = xml2relaton(doc)
+        #require "debug"; binding.b
         r = renderer(doc.type || "misc")
         data = @parse.extract(doc)
         enhance_data(data, r.template_raw)
