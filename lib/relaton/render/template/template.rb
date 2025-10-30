@@ -178,7 +178,9 @@ module Relaton
         end
 
         def template_components_prep(delim)
-          [delim.rstrip, Regexp.quote(delim), Regexp.quote(delim.rstrip)]
+          [delim.rstrip, Regexp.quote(delim),
+           # if delim is esc'd, ignore the escs in the preceding span
+           Regexp.quote(delim.rstrip.gsub(%r{</?esc>}, ""))]
         end
 
         # need non-breaking spaces in fields: "Updated:_nil" ---

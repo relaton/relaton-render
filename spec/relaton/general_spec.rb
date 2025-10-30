@@ -65,7 +65,10 @@ RSpec.describe Relaton::Render do
       authorizer: "Cambridge University Press",
       authorizer_raw: [{ nonpersonal: "Cambridge University Press" }],
       creatornames: "<esc>ALUFFI</esc>, Paolo, David Herbert <esc>ANDERSON</esc>, Milena Marie <esc>HERING</esc>, Mircea H. <esc>MUSTAŢĂ</esc> and Sam H. <esc>PAYNE</esc>",
-      creators: [{given: "Paolo", initials: ["<esc>P.</esc>"], middle: [], surname: "<esc>Aluffi</esc>"}, {given: "David", initials: ["<esc>D.</esc>", "<esc>H.</esc>"], middle: ["Herbert"], surname: "<esc>Anderson</esc>"}, {given: "Milena Marie", initials: ["<esc>M.</esc>", "<esc>M.</esc>"], middle: [], surname: "<esc>Hering</esc>"}, {given: "Mircea", initials: ["<esc>M.</esc>", "<esc>H.</esc>"], middle: ["H."], surname: "<esc>Mustaţă</esc>"}, {given: "Sam H.", initials: ["<esc>S.</esc>", "<esc>H.</esc>"], middle: [], surname: "<esc>Payne</esc>"}],
+      creators: [
+        { given: "Paolo", initials: ["<esc>P.</esc>"], middle: [],
+          surname: "<esc>Aluffi</esc>" }, { given: "David", initials: ["<esc>D.</esc>", "<esc>H.</esc>"], middle: ["Herbert"], surname: "<esc>Anderson</esc>" }, { given: "Milena Marie", initials: ["<esc>M.</esc>", "<esc>M.</esc>"], middle: [], surname: "<esc>Hering</esc>" }, { given: "Mircea", initials: ["<esc>M.</esc>", "<esc>H.</esc>"], middle: ["H."], surname: "<esc>Mustaţă</esc>" }, { given: "Sam H.", initials: ["<esc>S.</esc>", "<esc>H.</esc>"], middle: [], surname: "<esc>Payne</esc>" }
+      ],
       date: "2022",
       doi: ["<esc>https://doi.org/10.1017/9781108877831</esc>"],
       draft_raw: { iteration: nil, status: nil },
@@ -94,8 +97,8 @@ RSpec.describe Relaton::Render do
     hash[:language] = "ja"
     hash[:script] = "Jpan"
     data, = p.parse(input
-      .sub('</edition>',
-           '</edition><language>ja</language><script>Jpan</script><locale>JP</locale>'))
+      .sub("</edition>",
+           "</edition><language>ja</language><script>Jpan</script><locale>JP</locale>"))
     expect(metadata(data)).to eq(hash)
   end
 
@@ -260,14 +263,16 @@ RSpec.describe Relaton::Render do
     template = <<~TEMPLATE
       {{ creatornames }}. <em>{{ title | capitalize_first }}</em>. {{ place }}: {{ publisher }}. {{date}}.
     TEMPLATE
-    p = Relaton::Render::General.new(template: { book: template }, language: "en")
+    p = Relaton::Render::General.new(template: { book: template },
+                                     language: "en")
     expect(p.render(input1)).to be_equivalent_to output1
 
     # Title, which is rendered with <esc> tags, respects them under i18n
     output1 = <<~OUTPUT
       <formattedref>TEST, Author. <em>Hello, dolly</em>. 2022.。</formattedref>
     OUTPUT
-    p = Relaton::Render::General.new(template: { book: template }, language: "ja")
+    p = Relaton::Render::General.new(template: { book: template },
+                                     language: "ja")
     expect(p.render(input1)).to be_equivalent_to output1
 
     # Test with multiple tags
@@ -286,7 +291,8 @@ RSpec.describe Relaton::Render do
     output2 = <<~OUTPUT
       <formattedref>TEST, Author. <em><em><strong>Test</strong></em> word</em>. 2022.</formattedref>
     OUTPUT
-    p = Relaton::Render::General.new(template: { book: template }, language: "en")
+    p = Relaton::Render::General.new(template: { book: template },
+                                     language: "en")
     expect(p.render(input2)).to be_equivalent_to output2
 
     # Test with leading spaces before tag
@@ -438,7 +444,7 @@ RSpec.describe Relaton::Render do
     expect(p.render(input)).to be_equivalent_to output
 
     output = <<~OUTPUT
-    <formattedref>Aluffi, D.-J.de X., D.X. Anderson, M.S. Hering <em>et al.</em>, (2022), <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>.</formattedref>
+      <formattedref>Aluffi, D.-J.de X., D.X. Anderson, M.S. Hering <em>et al.</em>, (2022), <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>.</formattedref>
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template },
@@ -447,6 +453,20 @@ RSpec.describe Relaton::Render do
            "i18nhash" => {
              "punct" => {
                "biblio-field-delimiter" => ", ",
+             },
+           })
+    expect(p.render(input)).to be_equivalent_to output
+
+    output = <<~OUTPUT
+      <formattedref>Aluffi, D.-J.de X., D.X. Anderson, M.S. Hering <em>et al</em>. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General
+      .new(template: { book: template },
+           nametemplate: { one: "{{ nonpersonal[0] }}", etal_count: 3,
+                           etal: etal },
+           "i18nhash" => {
+             "punct" => {
+               "biblio-field-delimiter" => "<esc>.</esc> ",
              },
            })
     expect(p.render(input)).to be_equivalent_to output
@@ -577,7 +597,7 @@ RSpec.describe Relaton::Render do
         </contributor>
       </bibitem>
     INPUT
-    
+
     # Test with XML tags - should preserve tags while uppercasing text
     template = <<~TEMPLATE
       {{ creatornames | selective_upcase }} ,_{{role}} ({{date}}) . <em>{{ title }}</em>.
