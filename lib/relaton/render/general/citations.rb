@@ -4,15 +4,21 @@ module Relaton
       def initialize(opt = {})
         # @type = opt[:type]
         @i18n = opt[:i18n]
-        @renderer = opt[:renderer]
+        @lang = opt[:lang]
+        @script = opt[:script]
+        @renderer = opt[:renderer] # hash of renderers
+      end
+
+      def renderer(_cite)
+        @renderer[:default]
       end
 
       # takes array of { id, type, author, date, ord, data_liquid }
       def render(ret)
         cites = citations(ret)
-        cites.each_value do |v|
-          v[:renderer] = @renderer.renderer(v[:type] || "misc")
-        end
+        #cites.each_value do |v|
+        #  v[:renderer] = renderer(v).renderer(v[:type] || "misc")
+        #end
         enhance_data(cites)
         cites.each_key do |k|
           cites[k] = render1(cites[k])
@@ -38,7 +44,7 @@ module Relaton
       end
 
       def extract_uri_for_lookup(cite)
-        t = cite[:renderer].template_raw
+        t = renderer(cite).renderer(cite[:type] || "misc").template_raw
         c = cite[:data_liquid]
         t.is_a?(String) or return
         (/\{\{\s*date_accessed\s*\}\}/.match?(t) &&
@@ -48,36 +54,57 @@ module Relaton
       end
 
       def add_date_accessed(data, uri, status)
+        r = renderer(data)
         if status
           data[:data_liquid][:date_accessed] = { on: ::Date.today.to_s }
-          data[:data_liquid] = @renderer.fieldsklass.new(renderer: @renderer)
+          data[:data_liquid] = r.fieldsklass.new(renderer: r)
             .compound_fields_format(data[:data_liquid])
         else
-          @renderer.url_warn(uri)
+          r.url_warn(uri)
         end
       end
 
       def render1(cit)
-        ref = cit[:renderer].render(cit[:data_liquid])
+        ref, ref1, r = render1_prep(cit)
         cit[:formattedref] =
-          @renderer.valid_parse(@i18n.l10n(ref))
-        cit[:citation][:full] = @renderer.valid_parse(@i18n.l10n(ref&.sub(/\.\s*$/, "")))
+          r.valid_parse(@i18n.l10n(ref1))
+        cit[:citation][:full] = r.valid_parse(@i18n.l10n(ref))
         %i(type data_liquid renderer).each { |x| cit.delete(x) }
         cit
       end
 
+      def render1_prep(cit)
+        #ref = cit[:renderer].render(cit[:data_liquid])
+        r = renderer(cit)
+        ref = r.renderer(cit[:type] || "misc").render(cit[:data_liquid])
+        final = @i18n.get["punct"]["biblio-terminator"] || "."
+        ref1 = ref
+        unless !ref1 || ref1.empty?
+          ref1.end_with?(final) or ref1 += final
+        end
+        [ref, ref1, r]
+      end
+
+      # TODO: configure how multiple ids are joined, from template?
       def citations(ret)
         ret = disambig_author_date_citations(ret)
         ret.each_value do |b|
-          # TODO: configure how multiple ids are joined, from template?
-          b[:citation][:default] = @i18n.l10n(b[:data_liquid][:authoritative_identifier]&.first || "")
-          b[:citation][:short] = @i18n.l10n(@renderer.citeshorttemplate.render(b[:data_liquid]
-            .merge(citestyle: "short"))&.sub(/\.\s*$/, ""))
-          @renderer.citetemplate.citation_styles.each do |style|
-            b[:citation][style] = @renderer.citetemplate.render(b.merge(citestyle: style).merge(b[:data_liquid]))
-          end
+          b[:citation][:default] =
+            @i18n.l10n(b[:data_liquid][:authoritative_identifier]&.first || "")
+          b[:citation][:short] = @i18n.l10n(renderer(b).citeshorttemplate
+            .render(b[:data_liquid].merge(citestyle: "short")))
+          citations_iterate_cite_styles(b)
         end
-       ret
+        ret
+      end
+
+      def citations_iterate_cite_styles(bib)
+        r = renderer(bib)
+        r.citetemplate.citation_styles.each do |style|
+          bib[:citation][style] =
+            @i18n.l10n(r.citetemplate.render(bib.merge(citestyle: style)
+            .merge(bib[:data_liquid])))
+        end
       end
 
       # takes array of { id, type, author, date, ord, data_liquid }
@@ -126,7 +153,7 @@ module Relaton
           v.each_value do |v1|
             v1.each do |b|
               m[b[:id]] = { author: @i18n.l10n(b[:author]), date: b[:date],
-              citation: {},
+                            citation: {},
                             data_liquid: b[:data_liquid], type: b[:type] }
             end
           end

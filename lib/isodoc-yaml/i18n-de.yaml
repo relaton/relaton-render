@@ -14,6 +14,7 @@ date_formats:
   date_time: to_long_s
 draft: "Entwurf %"
 edition_ordinal: "{{ var1 }} Ausg."
+edition_cardinal: "Ausg. {{ var1 }}"
 ordinal_keys: []
 edition: Ausgabe
 editor:

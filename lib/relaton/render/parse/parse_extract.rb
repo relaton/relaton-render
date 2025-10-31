@@ -12,7 +12,8 @@ module Relaton
         t.empty? and t = doc.title
         t1 = t.select { |x| x.type == "main" }
         t1.empty? and t1 = t
-        content(t1.first&.title)
+        t1.first or return
+        esc(content(t1.first.title))
       end
 
       def medium(doc, host)
@@ -31,7 +32,9 @@ module Relaton
       end
 
       def edition(doc, host)
-        content(doc.edition || host&.edition)
+        ret = content(doc.edition || host&.edition)
+        ret &&= esc(ret)
+        ret
       end
 
       def edition_num(doc, host)
@@ -119,6 +122,19 @@ module Relaton
         type = doc.type and return type
         doc.relation.any? { |r| r.type == "includedIn" } and return "inbook"
         "book"
+      end
+
+      def language(doc)
+        doc.language&.first || @lang
+      end
+
+      def script(doc)
+        doc.script&.first || @script
+      end
+
+      def locale(doc)
+        # TODO not yet implemented in relaton-bib
+        # doc.locale&.first
       end
 
       def extent1(localities)

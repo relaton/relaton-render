@@ -16,6 +16,7 @@ ordinal_keys: []
 OrdinalRules: digits-ordinal
 edition: edition
 edition_ordinal: "{{ var1 | ordinal_num: '', '' }} edition"
+edition_cardinal: "Edition {{ var1 }}"
 draft: "draft %"
 editor:
   sg: ed.

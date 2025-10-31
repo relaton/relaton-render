@@ -21,6 +21,7 @@ SpelloutRules:
   f.pl: spellout-ordinal-plural
   n.pl: spellout-ordinal-plural
 edition_ordinal: "{{ var1 | ordinal_word: 'edition', '' }} издание"
+edition_cardinal: "Издание {{ var1 }}"
 edition: издание
 draft: "проект %"
 editor:

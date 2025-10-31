@@ -57,10 +57,12 @@ module Relaton
           env
         end
 
-        # denote start and end of field,
-        # so that we can detect empty fields in postprocessing
-        # FIELD_DELIM = "\u0018".freeze
-        FIELD_DELIM = "%%".freeze
+        # denote start and end of variable,
+        # so that we can detect empty variables in postprocessing
+        VARIABLE_DELIM = "%%".freeze
+
+        # denote citation components which get delimited by period conventionally
+        COMPONENT_DELIM = "$$$".freeze
 
         # escape < >
         LT_DELIM = "\u0019".freeze
@@ -93,19 +95,21 @@ module Relaton
         def add_field_delim_to_template(template)
           t = template.split(/(\{\{|\}\})/).each_slice(4).map do |a|
             unless !a[2] || punct_field?(a[2]&.strip)
-              a[1] = "#{FIELD_DELIM}{{"
-              a[3] = "}}#{FIELD_DELIM}"
+              a[1] = "#{VARIABLE_DELIM}{{"
+              a[3] = "}}#{VARIABLE_DELIM}"
             end
             a.join
           end.join.tr("\t", " ")
-          t.gsub(/\}\}#{FIELD_DELIM}\|/o, "}}#{FIELD_DELIM}#{NON_SPACING_DELIM}")
-            .gsub(/\|#{FIELD_DELIM}\{\{/o, "#{NON_SPACING_DELIM}#{FIELD_DELIM}{{")
+          t.gsub(/\}\}#{VARIABLE_DELIM}\|/o, "}}#{VARIABLE_DELIM}#{NON_SPACING_DELIM}")
+            .gsub(/\|#{VARIABLE_DELIM}\{\{/o, "#{NON_SPACING_DELIM}#{VARIABLE_DELIM}{{")
         end
 
         def render(hash)
           t = template_select(hash) or return nil
 
-          template_clean(t.render(liquid_hash(hash.merge("labels" => @i18n.get))))
+          ret = template_clean(t.render(liquid_hash(hash.merge("labels" => @i18n.get))))
+          template_components(ret,
+                              @i18n.get["punct"]["biblio-field-delimiter"] || ". ")
         end
 
         def template_select(_hash)
@@ -121,25 +125,62 @@ module Relaton
             .gsub(/&(?!#\S+?;)/, "&#x26;")
         end
 
-        # use tab internally for non-spacing delimiter
         def template_clean1(str)
-          str.gsub(/\S*#{FIELD_DELIM}#{FIELD_DELIM}\S*/o, "")
-            .gsub(/#{FIELD_DELIM}/o, "")
-            .gsub(/([,:;]\s*)+<\/esc>([,:;])(\s|_|$)/, "\\2</esc>\\3")
+          str = strip_empty_variables(str)
+          str.gsub(/([,:;]\s*)+<\/esc>([,:;])(\s|_|$)/, "\\2</esc>\\3")
             .gsub(/([,:;]\s*)+([,:;](\s|_|$))/, "\\2")
-            .gsub(/([,.:;]\s*)+<\/esc>([.])(\s|_|$)/, "\\2</esc>\\3")
-            .gsub(/([,.:;]\s*)+([.](\s|_|$))/, "\\2")
+            .gsub(/([,.:;]\s*)+<\/esc>([.])(\s|_|$)/, "\\2</esc>\\3") # move outside
+            .gsub(/([,.:;]\s*)+([.](\s|_|$))/, "\\2") # move outside
             .gsub(/([,:;]\s*)+<\/esc>(,)(\s|_|$)/, "\\2</esc>\\3")
             .gsub(/([,:;]\s*)+(,(\s|_|$))/, "\\2")
             .gsub(/(:\s+)(&\s)/, "\\2")
-            .gsub(/\s+([,.:;)])/, "\\1")
-            .sub(/^\s*[,.:;]\s*/, "")
+            .gsub(/\s+([,.:;)])/, "\\1") # trim around $$$
+            .sub(/^\s*[,.:;]\s*/, "") # no init $$$
             .sub(/[,:;]\s*$/, "")
             .gsub(/(?<!\\)_/, " ")
             .gsub("\\_", "_")
             .gsub(/#{NON_SPACING_DELIM}/o, "")
             .gsub(/\s+/, " ")
             .gsub(/<(\/)?esc>/i, "<\\1esc>")
+        end
+
+        # get rid of all empty variables, and any text around them,
+        # including component delimiters:
+        # [{{}}]$$$ => ""
+        # [{{}}] $$$ => " $$$"
+        def strip_empty_variables(str)
+          str.gsub(/\S*#{VARIABLE_DELIM}#{VARIABLE_DELIM}\S*/o, "")
+            .gsub(/#{VARIABLE_DELIM}/o, "")
+        end
+
+        # delim = punct.biblio-field-terminator must not be i18n'ised:
+        # .</esc>. deletes first .
+        # .</esc>。does not delete first .
+        # So we do not want to pass delim in as .,
+        # and then have it i18n to 。after we are done parsing
+        #
+        # Do not strip any delimiters from final field in string
+        #
+        # if delim = ". " , then: ({{ series }}$$$|) => (series1.)
+        def template_components(str, delim)
+          str or return str
+          delimrstrip, delimre, delimrstripre = template_components_prep(delim)
+          ret = str.split(COMPONENT_DELIM).map(&:strip).reject(&:empty?)
+          ret = ret[0...-1].map do |s|
+            s.sub(/#{delimre}$/, "").sub(%r[#{delimre}(</[^>]+>)$], "\\1")
+          end + [ret.last]
+          delim != delimrstrip and # "." in field followed by ". " in delim
+            ret = ret[0...-1].map do |s|
+              s.sub(/#{delimrstripre}$/, "")
+                .sub(%r[#{delimrstripre}(</[^>]+>)$], "\\1")
+            end + [ret.last]
+          ret.join(delim).gsub(/#{delim}\|/, delimrstrip)
+        end
+
+        def template_components_prep(delim)
+          [delim.rstrip, Regexp.quote(delim),
+           # if delim is esc'd, ignore the escs in the preceding span
+           Regexp.quote(delim.rstrip.gsub(%r{</?esc>}, ""))]
         end
 
         # need non-breaking spaces in fields: "Updated:_nil" ---
@@ -157,118 +198,8 @@ module Relaton
           end
         end
       end
-
-      class Series < General
-      end
-
-      class Extent < General
-        def template_select(hash)
-          @template[hash[:type].to_sym]
-        end
-      end
-
-      class Size < General
-        def template_select(hash)
-          @template[hash[:type].to_sym]
-        end
-      end
-
-      class Name < General
-        def initialize(opt = {})
-          @etal_count = opt[:template]["etal_count"]
-          @etal_display = opt[:template]["etal_display"] || @etal_count
-          opt[:template].delete("etal_count")
-          opt[:template].delete("etal_display")
-          super
-        end
-
-        def template_select(names)
-          return nil if names.nil? || names.empty?
-
-          case names[:surname].size
-          when 1 then @template[:one]
-          when 2 then @template[:two]
-          when 3 then @template[:more]
-          else template_select_etal(names)
-          end
-        end
-
-        def template_select_etal(names)
-          if @etal_count && names[:surname].size > @etal_count
-            expand_nametemplate(@template_raw[:etal], @etal_display)
-          else
-            expand_nametemplate(@template_raw[:more], names[:surname].size)
-          end
-        end
-
-        # assumes that template contains, consecutively and not interleaved,
-        # ...[0], ...[1], ...[2]
-        def expand_nametemplate(template, size)
-          t = nametemplate_split(template)
-
-          mid = (1..size - 2).each_with_object([]) do |i, m|
-            m << t[1].gsub("[1]", "[#{i}]")
-          end
-          t[1] = mid.join
-          t[2].gsub!(/\[\d+\]/, "[#{size - 1}]")
-          template_process(combine_nametemplate(t, size))
-        end
-
-        def combine_nametemplate(parts, size)
-          case size
-          when 1 then parts[0] + parts[3]
-          when 2 then parts[0] + parts[2] + parts[3]
-          else parts.join
-          end
-        end
-
-        def nametemplate_split(template)
-          curr = 0
-          prec = ""
-          t = template.split(/(\{[{%].+?[}%]\})/)
-            .each_with_object([""]) do |n, m|
-            m, curr, prec = nametemplate_split1(n, m, curr, prec)
-
-            m
-          end
-          [t[0], t[1], t[-1], prec]
-        end
-
-        def nametemplate_split1(elem, acc, curr, prec)
-          if match = /\{[{%].+?\[(\d)\]/.match(elem)
-            if match[1].to_i > curr
-              curr += 1
-              acc[curr] ||= ""
-            end
-            acc[curr] += prec
-            prec = ""
-            acc[curr] += elem
-          elsif /\{%\s*endif/.match?(elem)
-            acc[curr] += prec
-            prec = ""
-            acc[curr] += elem
-          else prec += elem
-          end
-          [acc, curr, prec]
-        end
-      end
-
-      class AuthorCite < Name
-      end
-
-      class Cite < General
-        def template_select(hash)
-          if hash[:citestyle].to_sym == :short
-            @template[hash[:type].to_sym]
-          else
-            @template[hash[:citestyle].to_sym]
-          end
-        end
-
-        def citation_styles
-          @template.keys
-        end
-      end
     end
   end
 end
+
+require_relative "subclasses"

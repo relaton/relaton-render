@@ -75,7 +75,7 @@ module Relaton
         @i18n = opt["i18n"] ||
           i18n_klass(language: @lang, script: @script, locale: @locale,
                      i18nhash: opt["i18nhash"])
-        @edition_ordinal = opt["edition_ordinal"] || @i18n.edition_ordinal
+        #@edition_ordinal = opt["edition_ordinal"] || @i18n.edition_ordinal
         @edition = opt["edition"] || @i18n.edition
         @date = opt["date"] || @i18n.get["date_formats"] ||
           { "month_year" => "yMMMM", "day_month_year" => "to_long_s",
@@ -130,18 +130,19 @@ module Relaton
                                                           i18nhash: i18nhash)
       end
 
-      def render(bib, embedded: false)
+      def render(bib, embedded: false, terminator: true)
         bib = xml2relaton(bib)
         f = bib.formattedref and
           return embedded ? f.content : fmtref(f.content)
-        ret = render1(bib) or return nil
+        ret = render1(bib, terminator) or return nil
         embedded and return ret
         fmtref(ret)
       end
 
       def xml2relaton(bib)
         bib.is_a?(Nokogiri::XML::Element) and
-          bib = bib.to_xml
+          bib = bib.to_xml(encoding: "UTF-8", indent: 0,
+                    save_with: Nokogiri::XML::Node::SaveOptions::AS_XML)
         bib.is_a?(String) && Nokogiri::XML(bib).errors.empty? and
           bib = RelatonBib::XMLParser.from_xml(bib) or bib
       end
@@ -163,12 +164,17 @@ module Relaton
         text.gsub(/<esc>/i, "<esc>").gsub(/<\/esc>/i, "</esc>")
       end
 
-      def render1(doc)
+      def render1(doc, terminator)
         r = doc.relation.select { |x| x.type == "hasRepresentation" }
           .map { |x| @i18n.also_pub_as + render_single_bibitem(x.bibitem) }
         out = [render_single_bibitem(doc)] + r
-        @i18n.l10n(esc_cleanup(out.join(". ")).gsub(".</esc>.", ".</esc>")
+        ret1 = out.join(@i18n.get["punct"]["biblio-field-delimiter"] || ". ")
+        ret = @i18n.l10n(esc_cleanup(ret1)
+          .gsub(".</esc>.", ".</esc>")
           .gsub(".. ", ". "))
+        final = @i18n.get["punct"]["biblio-terminator"] || "."
+        terminator && !ret.end_with?(final) && !ret.empty? and ret += final
+        ret
       end
 
       def render_single_bibitem(doc)
@@ -182,6 +188,7 @@ module Relaton
 
       def parse(doc)
         doc = xml2relaton(doc)
+        #require "debug"; binding.b
         r = renderer(doc.type || "misc")
         data = @parse.extract(doc)
         enhance_data(data, r.template_raw)
@@ -199,8 +206,13 @@ module Relaton
       # enhance_data is skipped here, and is done in batch inside Citations
       def render_all(bib, type: "author-date")
         bib = sanitise_citations_input(bib) or return
-        Citations.new(type: type, renderer: self, i18n: @i18n)
+        Citations.new(type: type, renderer: citation_renderers,
+                      i18n: @i18n, lang: @lang, script: @script)
           .render(citations1(bib))
+      end
+
+      def citation_renderers
+       { default: self }
       end
 
       def sanitise_citations_input(bib)

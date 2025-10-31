@@ -4,8 +4,10 @@ module Relaton
       def content(node)
         node.nil? and return node
         node.content.is_a?(Array) and return node.content.map { |x| content(x) }
-        node.content.strip
+        ret = node.content.strip
           .gsub("</title>", "").gsub("<title>", "")
+        # safeguard against indented XML
+        ret.gsub(/>\n\s*</, "><").gsub(/\n\s*/, " ")
         # node.children.map { |n| n.text? ? n.content : n.to_xml }.join
         # node.text? ? node.content.strip : node.to_xml.strip
       end
@@ -32,14 +34,6 @@ module Relaton
          wrap_in_esc(Array(initials))]
       end
 
-      def wrap_in_esc(obj)
-        case obj
-        when String then "<esc>#{obj}</esc>"
-        when Array then obj.map { |e| wrap_in_esc(e) }
-        else obj
-        end
-      end
-
       def extract_initials(person)
         initials = content(person.name.initials)&.sub(/(.)\.?$/, "\\1.")
           &.split /(?<=\.) /
@@ -50,7 +44,7 @@ module Relaton
 
       def forenames_parse(person)
         person.name.forename.map do |x|
-          x.content.empty? ? "<esc>#{x.initial}.</esc>" : content(x)
+          x.content.empty? ? esc("#{x.initial}.") : content(x)
         end
       end
 

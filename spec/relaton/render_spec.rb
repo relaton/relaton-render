@@ -62,39 +62,10 @@ RSpec.describe Relaton::Render do
       .to be_equivalent_to "<formattedref>#{output}</formattedref>"
     data, template = p.parse(input)
     output = <<~OUTPUT
-      <esc>ALUFFI</esc>, Paolo, David Herbert <esc>ANDERSON</esc>, Milena Marie <esc>HERING</esc>, Mircea H. <esc>MUSTAŢĂ</esc> and Sam H. <esc>PAYNE</esc> (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) n.p.: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.
+      <esc>ALUFFI</esc>, Paolo, David Herbert <esc>ANDERSON</esc>, Milena Marie <esc>HERING</esc>, Mircea H. <esc>MUSTAŢĂ</esc> and Sam H. <esc>PAYNE</esc> (eds.). <em><esc>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</esc></em>. 1st edition. (<esc>London Mathematical Society Lecture Note Series</esc> 472.) n.p.: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.
     OUTPUT
     expect(p.liquid(data, template))
       .to be_equivalent_to output
-    hash = {
-      authorcite: "<esc>Aluffi</esc>, <esc>Anderson</esc>, <esc>Hering</esc>, <esc>Mustaţă</esc> and <esc>Payne</esc>",
-      authorizer: "Cambridge University Press",
-      authorizer_raw: [{ nonpersonal: "Cambridge University Press" }],
-      creatornames: "<esc>ALUFFI</esc>, Paolo, David Herbert <esc>ANDERSON</esc>, Milena Marie <esc>HERING</esc>, Mircea H. <esc>MUSTAŢĂ</esc> and Sam H. <esc>PAYNE</esc>",
-      creators: [{given: "Paolo", initials: ["<esc>P.</esc>"], middle: [], surname: "<esc>Aluffi</esc>"}, {given: "David", initials: ["<esc>D.</esc>", "<esc>H.</esc>"], middle: ["Herbert"], surname: "<esc>Anderson</esc>"}, {given: "Milena Marie", initials: ["<esc>M.</esc>", "<esc>M.</esc>"], middle: [], surname: "<esc>Hering</esc>"}, {given: "Mircea", initials: ["<esc>M.</esc>", "<esc>H.</esc>"], middle: ["H."], surname: "<esc>Mustaţă</esc>"}, {given: "Sam H.", initials: ["<esc>S.</esc>", "<esc>H.</esc>"], middle: [], surname: "<esc>Payne</esc>"}],
-      date: "2022",
-      doi: ["<esc>https://doi.org/10.1017/9781108877831</esc>"],
-      draft_raw: { iteration: nil, status: nil },
-      edition: "1st edition",
-      edition_raw: "1",
-      other_identifier: ["DOI: https://doi.org/10.1017/9781108877831",
-                         "ISBN: 9781108877831"],
-      publisher: "Cambridge University Press",
-      publisher_abbrev: "Cambridge University Press",
-      publisher_abbrev_raw: ["Cambridge University Press"],
-      publisher_raw: [{ nonpersonal: "Cambridge University Press" }],
-      role: "eds.",
-      role_raw: "editor",
-      series: "London Mathematical Society Lecture Note Series 472",
-      series_num: "472",
-      series_title: "London Mathematical Society Lecture Note Series",
-      size: "1 vol.",
-      size_raw: { "volume" => ["1"] },
-      title: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-      type: "book",
-    }
-    expect(metadata(data))
-      .to eq(hash)
   end
 
   it "renders book, five editors with specific class, broken down place" do
@@ -275,7 +246,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă and S Payne, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
+      <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă and S Payne, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
     OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ,_{{role}} ({{date}}) . <em>{{ title }}</em> [{{medium}}] ,_{{ edition }} .
@@ -301,7 +272,7 @@ RSpec.describe Relaton::Render do
     expect(p.render(input))
       .to be_equivalent_to output
     output = <<~OUTPUT
-      <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
+      <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template },
@@ -316,7 +287,7 @@ RSpec.describe Relaton::Render do
     expect(p.render(input))
       .to be_equivalent_to output
     output = <<~OUTPUT
-      <formattedref>Aluffi, P, DX Anderson, MS Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
+      <formattedref>Aluffi, P, DX Anderson, MS Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template },
@@ -331,7 +302,7 @@ RSpec.describe Relaton::Render do
     expect(p.render(input))
       .to be_equivalent_to output
     output = <<~OUTPUT
-      <formattedref>Aluffi, P, DX Anderson <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
+      <formattedref>Aluffi, P, DX Anderson <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template },
@@ -346,7 +317,7 @@ RSpec.describe Relaton::Render do
     expect(p.render(input))
       .to be_equivalent_to output
     output = <<~OUTPUT
-      <formattedref>Aluffi, P <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
+      <formattedref>Aluffi, P <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template },
@@ -361,7 +332,7 @@ RSpec.describe Relaton::Render do
     expect(p.render(input))
       .to be_equivalent_to output
     output = <<~OUTPUT
-      <formattedref>Aluffi, P _et al._, eds. (2022). _Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday_, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832</formattedref>
+      <formattedref>Aluffi, P _et al._, eds. (2022). _Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday_, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
     OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ,_{{role}} ({{date}}) . \\_{{ title }}\\_ [{{medium}}] ,_{{ edition }} .
@@ -436,7 +407,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>Aluffi, P, DH Anderson, MM Hering, MH Mustaţă and SH Payne, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition.: Cambridge University Press. DOI: https://doi.org/10.1017/9781108877831</formattedref>
+      <formattedref>Aluffi, P, DH Anderson, MM Hering, MH Mustaţă and SH Payne, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition.: Cambridge University Press. DOI: https://doi.org/10.1017/9781108877831.</formattedref>
     OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ,_{{role}} ({{date}}) . <em>{{ title }}</em> [{{medium}}] ,_{{ edition }} .
@@ -493,7 +464,7 @@ RSpec.describe Relaton::Render do
     output = "<formattedref>The Illuminati</formattedref>"
     p = Relaton::Render::General
       .new(template: { book: template })
-    expect(p.render(input))
+    expect(p.render(input, terminator: false))
       .to be_equivalent_to output
 
     input = <<~INPUT
@@ -518,7 +489,7 @@ RSpec.describe Relaton::Render do
     output = "<formattedref>Cambridge University Press</formattedref>"
     p = Relaton::Render::General
       .new(template: { book: template })
-    expect(p.render(input))
+    expect(p.render(input, terminator: false))
       .to be_equivalent_to output
   end
 

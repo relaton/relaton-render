@@ -16,6 +16,7 @@ ordinal_keys: []
 OrdinalRules: digits-ordinal
 edition: 版
 edition_ordinal: "第{{ var1 }}版"
+edition_cardinal: "第{{ var1 }}版"
 draft: "下書き %"
 editor:
   sg: 編
@@ -25,6 +26,7 @@ punct:
   close-title:
   open-secondary-title:
   close-secondary-title:
+  biblio-terminator: "。"
 stage:
   valid: 有効です
   withdrawn: 取り消されました
