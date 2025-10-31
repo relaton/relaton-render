@@ -71,7 +71,7 @@ module Relaton
       end
 
       def use_terminator?(ref, final, _cit)
-        !ref || ref.empty and return false
+        !ref || ref.empty? and return false
         !ref.end_with?(final)
       end
 
