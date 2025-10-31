@@ -109,7 +109,7 @@ module Relaton
 
           ret = template_clean(t.render(liquid_hash(hash.merge("labels" => @i18n.get))))
           template_components(ret,
-                              @i18n.get["punct"]["biblio-field-delimiter"] || ". ")
+                              @i18n.get.dig(:punct, :"biblio-field-delimiter") || ". ")
         end
 
         def template_select(_hash)
