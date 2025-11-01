@@ -78,7 +78,7 @@ module Relaton
 
       def render1_prep(cit)
         r = renderer(cit)
-        ref = r.renderer(cit[:type] || "misc").render(cit[:data])
+        ref = r.renderer(cit[:type] || "misc").render(cit[:data], cit[:data])
         final = @i18n.select(cit[:data]).get.dig("punct", "biblio-terminator") || "."
         ref1 = ref
         use_terminator?(ref, final, cit) and ref1 += final
@@ -89,21 +89,23 @@ module Relaton
       def citations(ret)
         ret = disambig_author_date_citations(ret)
         ret.each_value do |b|
+          i = @i18n.select(b[:data])
           b[:citation][:default] =
-            @i18n.select(b[:data]).l10n(b[:data][:authoritative_identifier]&.first || "")
-          b[:citation][:short] = @i18n.select(b[:data]).l10n(renderer(b).citeshorttemplate
-            .render(b[:data].merge(citestyle: "short")))
-          citations_iterate_cite_styles(b)
+            i.l10n(b[:data][:authoritative_identifier]&.first || "")
+          b[:citation][:short] = i.l10n(renderer(b).citeshorttemplate
+            .render(b[:data].merge(citestyle: "short"), b[:data]))
+          citations_iterate_cite_styles(b, i)
         end
         ret
       end
 
-      def citations_iterate_cite_styles(bib)
+      def citations_iterate_cite_styles(bib, i18n)
         r = renderer(bib)
         r.citetemplate.citation_styles.each do |style|
           bib[:citation][style] =
-            @i18n.select(bib[:data]).l10n(r.citetemplate.render(bib.merge(citestyle: style)
-            .merge(bib[:data])))
+            i18n.l10n(r.citetemplate
+            .render(bib.merge(citestyle: style)
+            .merge(bib[:data]), bib[:data]))
         end
       end
 
@@ -152,8 +154,8 @@ module Relaton
         ret.each_with_object({}) do |(_k, v), m|
           v.each_value do |v1|
             v1.each do |b|
-              m[b[:id]] = { author: @i18n.select(b[:data]).l10n(b[:author]), date: b[:date],
-                            citation: {},
+              m[b[:id]] = { author: @i18n.select(b[:data]).l10n(b[:author]),
+                            date: b[:date], citation: {},
                             data: b[:data], type: b[:type] }
             end
           end

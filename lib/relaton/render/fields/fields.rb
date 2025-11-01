@@ -19,16 +19,20 @@ module Relaton
         misc_fields_format(hash)
       end
 
+      def comma(hash)
+        "#{@r.i18n.select(hash).get['punct']['comma'] || ','} "
+      end
+
       def place_fields_format(hash)
         hash[:place_raw]&.map! do |p|
           # TODO use enum-comma?
           if p.is_a?(Array)
-            p.join("#{@r.i18n.select(hash).get['punct']['comma'] || ','} ")
+            p.join(comma(hash))
           else p
           end
         end
         hash[:place] =
-          nameformat(hash[:place_raw].map { |x| { nonpersonal: x } })
+          nameformat(hash[:place_raw].map { |x| { nonpersonal: x } }, hash)
       end
 
       def name_fields_format(hash)
@@ -36,15 +40,10 @@ module Relaton
          %i(publisher publisher_raw), %i(distributor distributor_raw),
          %i(authorizer authorizer_raw)]
           .each do |k|
-          hash[k[0]] = nameformat(hash[k[1]])
+          hash[k[0]] = nameformat(hash[k[1]], hash)
         end
-        hash[:publisher_abbrev] = hash[:publisher_abbrev_raw]&.join(", ")
-        hash[:authorcite] = authorciteformat(hash[:creators])
-      end
-
-      def place_format(hash)
-        hash[:place] =
-          nameformat(hash[:place_raw].map { |x| { nonpersonal: x } })
+        hash[:publisher_abbrev] = hash[:publisher_abbrev_raw]&.join(comma(hash))
+        hash[:authorcite] = authorciteformat(hash[:creators], hash)
       end
 
       def role_fields_format(hash)
@@ -101,7 +100,7 @@ module Relaton
           m
         end.compact
         i = @r.i18n.select(hash)
-        i.l10n(ret.join("#{i.get['punct']['comma'] || ','} "))
+        i.l10n(ret.join(comma(hash)))
       end
 
       def series_fields_format(hash)
@@ -112,10 +111,10 @@ module Relaton
           m[i] = hash[i]
         end
         t = hash[:type] == "article" ? @r.journaltemplate : @r.seriestemplate
-        hash[:series] = t.render(series_out)
+        hash[:series] = t.render(series_out, hash)
       end
 
-      def nameformat(names)
+      def nameformat(names, hash)
         names.nil? and return names
         parts = %i(surname initials given middle nonpersonal)
         names_out = names.each_with_object({}) do |n, m|
@@ -124,10 +123,10 @@ module Relaton
             m[i] << n[i]
           end
         end
-        @r.nametemplate.render(names_out)
+        @r.nametemplate.render(names_out, hash)
       end
 
-      def authorciteformat(names)
+      def authorciteformat(names, hash)
         names.nil? || @r.authorcitetemplate.nil? and return names
         parts = %i(surname initials given middle nonpersonal)
         names_out = names.each_with_object({}) do |n, m|
@@ -136,7 +135,7 @@ module Relaton
             m[i] << n[i]
           end
         end
-        @r.authorcitetemplate.render(names_out)
+        @r.authorcitetemplate.render(names_out, hash)
       end
 
       def role_inflect(contribs, role, hash)
@@ -173,7 +172,7 @@ module Relaton
               extentformat1(k, v, m, e1)
               m
             end
-            @r.extenttemplate.render(hash.merge(ret))
+            @r.extenttemplate.render(hash.merge(ret), hash)
           end.join(" ")
         end.join("; ")
       end
@@ -204,7 +203,7 @@ module Relaton
             sizeformat1(k, v, m)
             m
           end
-        @r.sizetemplate.render(ret.merge(type: hash[:type]))
+        @r.sizetemplate.render(ret.merge(type: hash[:type]), hash)
       end
 
       def sizeformat1(key, val, hash)

@@ -104,9 +104,13 @@ module Relaton
             .gsub(/\|#{VARIABLE_DELIM}\{\{/o, "#{NON_SPACING_DELIM}#{VARIABLE_DELIM}{{")
         end
 
-        def render(hash)
-          t = template_select(hash) or return nil
-          i = @i18n.select(hash).get
+        # hash is what to render, which can be entire bib entry,
+        # or a subset of it like names
+        # context is information for selecting i18n, which is entire bib entry,
+        # potentially enhanced
+        def render(hash, context)
+          t = template_select(hash) or return nil # TODO select on context?
+          i = @i18n.select(context).get
           ret = template_clean(t.render(liquid_hash(hash.merge("labels" => i))))
           template_components(ret,
                               i.dig("punct", "biblio-field-delimiter") || ". ")
