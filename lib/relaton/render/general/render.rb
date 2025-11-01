@@ -37,7 +37,7 @@ module Relaton
         YAML.load_file(File.join(File.dirname(__FILE__), "config.yml"))
       end
 
-      def klass_initialize(_options)
+      def klass_initialize(options)
         @nametemplateklass = Relaton::Render::Template::Name
         @authorcitetemplateklass = Relaton::Render::Template::AuthorCite
         @citetemplateklass = Relaton::Render::Template::Cite
@@ -49,7 +49,7 @@ module Relaton
         @fieldsklass = Relaton::Render::Fields
         @dateklass = Relaton::Render::Date
         @parseklass = Relaton::Render::Parse
-        @i18nklass = Relaton::Render::I18n
+        @i18nklass = options["i18nklass"] || Relaton::Render::I18n
       end
 
       def root_initalize(opt)
@@ -102,7 +102,7 @@ module Relaton
           @type == "general" || @type == k or next
           m[k] = self.class.subclass(k)
             .new(template: v, parse: @parse, i18n_multi: @i18n.config,
-                 language: @lang, script: @script)
+                 language: @lang, script: @script, i18nklass: @i18nklass)
         end
       end
 
