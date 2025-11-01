@@ -100,7 +100,7 @@ module Relaton
       def renderers(opt)
         template_hash_fill(opt["template"]).each_with_object({}) do |(k, v), m|
           @type == "general" || @type == k or next
-          m[k] = General.subclass(k)
+          m[k] = self.class.subclass(k)
             .new(template: v, parse: @parse, i18n_multi: @i18n.config,
                  language: @lang, script: @script)
         end

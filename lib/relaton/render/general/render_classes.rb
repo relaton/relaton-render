@@ -17,7 +17,10 @@ module Relaton
       end
 
       def self.subclass(type)
-        @descendants[type]
+        # Always look up from the root General class, not from subclasses
+        base = self
+        base = base.superclass while base.superclass != Object && base.superclass.name =~ /Relaton::Render/
+        base.instance_variable_get(:@descendants)&.[](type)
       end
     end
 
