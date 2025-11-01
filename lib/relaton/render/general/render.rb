@@ -75,9 +75,7 @@ module Relaton
         default_i18n = opt["i18n"] ||
           i18n_klass(language: @lang, script: @script, locale: @locale,
                      i18nhash: opt["i18nhash"])
-        #require "debug"; binding.b
-        @i18n = @i18nklass.new({ i18n: default_i18n,
-                                 i18n_multi: opt["i18n_multi"] })
+        @i18n = @i18nklass.new(opt.merge({"i18n" => default_i18n}))
         i18n_default_strs(opt)
       end
 

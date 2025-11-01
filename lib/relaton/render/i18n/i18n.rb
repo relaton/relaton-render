@@ -4,7 +4,6 @@ module Relaton
       # @i18n is a hash of IsoDoc::I18n objects, selected from according to
       # attributes of the parsed Relaton object
       def initialize(opt)
-        opt = Utils::string_keys(opt)
         if opt["i18n_multi"]
           @i18n = opt["i18n_multi"]
         elsif opt["i18n"]
