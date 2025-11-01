@@ -16,9 +16,6 @@ module Relaton
       # takes array of { id, type, author, date, ord, data_liquid }
       def render(ret)
         cites = citations(ret)
-        #cites.each_value do |v|
-        #  v[:renderer] = renderer(v).renderer(v[:type] || "misc")
-        #end
         enhance_data(cites)
         cites.each_key do |k|
           cites[k] = render1(cites[k])
@@ -73,15 +70,17 @@ module Relaton
         cit
       end
 
+      def use_terminator?(ref, final, _cit)
+        !ref || ref.empty? and return false
+        !ref.end_with?(final)
+      end
+
       def render1_prep(cit)
-        #ref = cit[:renderer].render(cit[:data_liquid])
         r = renderer(cit)
         ref = r.renderer(cit[:type] || "misc").render(cit[:data_liquid])
-        final = @i18n.get["punct"]["biblio-terminator"] || "."
+        final = @i18n.get.dig("punct", "biblio-terminator") || "."
         ref1 = ref
-        unless !ref1 || ref1.empty?
-          ref1.end_with?(final) or ref1 += final
-        end
+        use_terminator?(ref, final, cit) and ref1 += final
         [ref, ref1, r]
       end
 

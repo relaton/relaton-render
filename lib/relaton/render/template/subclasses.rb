@@ -68,7 +68,7 @@ module Relaton
         def nametemplate_split(template)
           curr = 0
           prec = ""
-          t = template.split(/(\{[{%].+?[}%]\})/)
+          t = template.split(/(\{[{%][^{]+?[}%]\})/)
             .each_with_object([""]) do |n, m|
             m, curr, prec = nametemplate_split1(n, m, curr, prec)
 

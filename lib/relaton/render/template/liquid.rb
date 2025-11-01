@@ -25,7 +25,7 @@ module Relaton
           return nil if text.nil?
 
           # Split to extract both +++...+++ sections and XML tags
-          ret = text.split(/(\+\+\+[^+]+?\+\+\+|<[^>]+>)/)
+          ret = text.split(/(\+\+\+[^+]+?\+\+\+|<[^<>]+>)/)
           ret.map do |n|
             if m = /^\+\+\+(.+)\+\+\+$/.match(n)
               # Keep content inside +++ unchanged

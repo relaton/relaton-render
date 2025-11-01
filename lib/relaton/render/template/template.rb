@@ -62,7 +62,7 @@ module Relaton
         VARIABLE_DELIM = "%%".freeze
 
         # denote citation components which get delimited by period conventionally
-        COMPONENT_DELIM = "$$$".freeze
+        COMPONENT_DELIM = Regexp.quote("$$$").freeze
 
         # escape < >
         LT_DELIM = "\u0019".freeze
@@ -109,7 +109,7 @@ module Relaton
 
           ret = template_clean(t.render(liquid_hash(hash.merge("labels" => @i18n.get))))
           template_components(ret,
-                              @i18n.get["punct"]["biblio-field-delimiter"] || ". ")
+                              @i18n.get.dig("punct", "biblio-field-delimiter") || ". ")
         end
 
         def template_select(_hash)
@@ -139,8 +139,8 @@ module Relaton
             .sub(/[,:;]\s*$/, "")
             .gsub(/(?<!\\)_/, " ")
             .gsub("\\_", "_")
-            .gsub(/#{NON_SPACING_DELIM}/o, "")
-            .gsub(/\s+/, " ")
+            .gsub(/(?<!#{COMPONENT_DELIM})#{NON_SPACING_DELIM}(?!#{COMPONENT_DELIM})/o, "") # preserve NON_SPACING_DELIM near $$$
+            .gsub(/[\n\r ]+/, " ")
             .gsub(/<(\/)?esc>/i, "<\\1esc>")
         end
 
@@ -165,16 +165,21 @@ module Relaton
         def template_components(str, delim)
           str or return str
           delimrstrip, delimre, delimrstripre = template_components_prep(delim)
-          ret = str.split(COMPONENT_DELIM).map(&:strip).reject(&:empty?)
+          ret = str.gsub(NON_SPACING_DELIM, "|").split(/#{COMPONENT_DELIM}/o)
+            .map(&:strip).reject(&:empty?)
           ret = ret[0...-1].map do |s|
             s.sub(/#{delimre}$/, "").sub(%r[#{delimre}(</[^>]+>)$], "\\1")
           end + [ret.last]
           delim != delimrstrip and # "." in field followed by ". " in delim
-            ret = ret[0...-1].map do |s|
-              s.sub(/#{delimrstripre}$/, "")
-                .sub(%r[#{delimrstripre}(</[^>]+>)$], "\\1")
-            end + [ret.last]
+            ret = remove_double_period(ret, delimrstripre)
           ret.join(delim).gsub(/#{delim}\|/, delimrstrip)
+        end
+
+        def remove_double_period(ret, delimrstripre)
+          ret[0...-1].map do |s|
+            s.sub(/#{delimrstripre}$/, "")
+              .sub(%r[#{delimrstripre}(</[^>]+>)$], "\\1")
+          end + [ret.last]
         end
 
         def template_components_prep(delim)
