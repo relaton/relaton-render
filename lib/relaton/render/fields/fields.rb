@@ -20,7 +20,7 @@ module Relaton
       end
 
       def comma(hash)
-        "#{@r.i18n.select(hash).get['punct']['comma'] || ','} "
+        "#{@r.i18n.select(hash).dig('punct', 'comma') || ','} "
       end
 
       def place_fields_format(hash)
