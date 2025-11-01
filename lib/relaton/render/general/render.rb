@@ -197,7 +197,7 @@ module Relaton
       end
 
       def liquid(data_liquid, renderer)
-        valid_parse(renderer.render(data_liquid))
+        valid_parse(renderer.render(data_liquid, data_liquid))
       end
 
       def parse(doc)
