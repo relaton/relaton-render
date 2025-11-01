@@ -78,7 +78,7 @@ module Relaton
       def render1_prep(cit)
         r = renderer(cit)
         ref = r.renderer(cit[:type] || "misc").render(cit[:data_liquid])
-        final = @i18n.get.dig(:punct, :"biblio-terminator") || "."
+        final = @i18n.get.dig("punct", "biblio-terminator") || "."
         ref1 = ref
         use_terminator?(ref, final, cit) and ref1 += final
         [ref, ref1, r]
