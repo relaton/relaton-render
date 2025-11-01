@@ -152,8 +152,8 @@ module Relaton
         num || edn && !edn.empty? or return
         edn_num = edn&.gsub(/<\/?esc>/, "")
         num || /^\d+$/.match?(edn_num) and
-          return @r.i18n.select(hash).populate("edition_ordinal",
-                                               { "var1" => num || edn_num.to_i })
+          return @r.i18n.select(hash)
+              .populate("edition_ordinal", { "var1" => num || edn_num.to_i })
         @r.i18n.select(hash).populate("edition_cardinal", { "var1" => edn })
       end
 
@@ -169,7 +169,7 @@ module Relaton
           stack.map do |e|
             e1 = e.transform_values { |v| v.is_a?(Hash) ? range(v) : v }
             ret = e.each_with_object({}) do |(k, v), m|
-              extentformat1(k, v, m, e1)
+              extentformat1(k, v, m, e1, hash)
               m
             end
             @r.extenttemplate.render(hash.merge(ret), hash)
@@ -177,10 +177,11 @@ module Relaton
         end.join("; ")
       end
 
-      def extentformat1(key, val, hash, norm_hash)
+      def extentformat1(key, val, hash, norm_hash, context)
         if %i(volume issue page).include?(key)
           hash["#{key}_raw".to_sym] = norm_hash[key]
-          hash[key] = pagevolformat(norm_hash[key], val, key.to_s, false, hash)
+          hash[key] =
+            pagevolformat(norm_hash[key], val, key.to_s, false, context)
         end
       end
 
@@ -200,17 +201,17 @@ module Relaton
           @r.i18n.select(hash).l10n(v.join(" + "))
         end
           .each_with_object({}) do |(k, v), m|
-            sizeformat1(k, v, m)
+            sizeformat1(k, v, m, hash)
             m
           end
         @r.sizetemplate.render(ret.merge(type: hash[:type]), hash)
       end
 
-      def sizeformat1(key, val, hash)
+      def sizeformat1(key, val, hash, context)
         case key
         when "volume", "issue", "page"
           hash["#{key}_raw".to_sym] = val
-          hash[key.to_sym] = pagevolformat(val, nil, key, true, hash)
+          hash[key.to_sym] = pagevolformat(val, nil, key, true, context)
         when "data" then hash[:data] = val
         when "duration" then hash[:duration] = val
         end
