@@ -72,7 +72,7 @@ module Relaton
         doc.docidentifier.each_with_object([]) do |id, ret|
           type = id_type_norm(id)
           other_identifier_include.include? type or next
-          ret << @i18n.l10n("#{type}: #{esc id.id}")
+          ret << [type, id.id]
         end
       end
 
@@ -96,7 +96,6 @@ module Relaton
       end
 
       def biblio_tag(doc)
-        #require "debug"; binding.b
         ret = doc.docidentifier.detect do |id|
           id.scope&.downcase == "biblio-tag"
         end

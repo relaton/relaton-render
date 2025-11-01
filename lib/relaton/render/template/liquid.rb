@@ -3,39 +3,28 @@ module Relaton
     module Template
       module CustomFilters
         def capitalize_first(words)
-          return nil if words.nil?
-
+          words.nil? and return nil
           # Split while preserving delimiters (spaces/underscores) and extracting XML tags
           ret = words.split(/(<[^>]+>|[ _])/).reject(&:empty?)
-          
           # Find and capitalize the first element that is not a delimiter or XML tag
           ret.each do |element|
-            # Skip delimiters (space or underscore) and XML tags
-            next if element.match?(/^[ _]$/) || element.match?(/^<[^>]+>$/)
-            
-            # Capitalize the first actual word
+            element.match?(/^[ _]$/) || element.match?(/^<[^>]+>$/) and next
             element.capitalize!
             break
           end
           # Join with empty string since delimiters are preserved
-          ret.join("").sub(/^[ _]+/, "").sub(/[ _]+$/, "")
+          ret.join.sub(/^[ _]+/, "").sub(/[ _]+$/, "")
         end
 
         def selective_upcase(text)
-          return nil if text.nil?
-
+          text.nil? and return nil
           # Split to extract both +++...+++ sections and XML tags
-          ret = text.split(/(\+\+\+[^+]+?\+\+\+|<[^<>]+>)/)
-          ret.map do |n|
+          text.split(/(\+\+\+[^+]+?\+\+\+|<[^<>]+>)/).map do |n|
             if m = /^\+\+\+(.+)\+\+\+$/.match(n)
-              # Keep content inside +++ unchanged
-              m[1]
+              m[1] # Keep content inside +++ unchanged
             elsif n.match?(/^<[^>]+>$/)
-              # Keep XML tags unchanged
-              n
-            else
-              # Upcase everything else
-              n.upcase
+              n # Keep XML tags unchanged
+            else n.upcase # Upcase everything else
             end
           end.join
         end

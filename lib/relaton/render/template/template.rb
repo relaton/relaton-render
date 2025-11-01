@@ -106,10 +106,10 @@ module Relaton
 
         def render(hash)
           t = template_select(hash) or return nil
-
-          ret = template_clean(t.render(liquid_hash(hash.merge("labels" => @i18n.get))))
+          i = @i18n.select(hash).get
+          ret = template_clean(t.render(liquid_hash(hash.merge("labels" => i))))
           template_components(ret,
-                              @i18n.get.dig("punct", "biblio-field-delimiter") || ". ")
+                              i.dig("punct", "biblio-field-delimiter") || ". ")
         end
 
         def template_select(_hash)

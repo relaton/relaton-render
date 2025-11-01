@@ -124,9 +124,13 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, Cambridgeshire, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.</formattedref>
+      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. First edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, Cambridgeshire, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.</formattedref>
     OUTPUT
-    p = Relaton::Render::Book.new
+    i = IsoDoc::PresentationXMLConvert.new(language: "en", script: "Latn")
+    i.i18n_init("en", "Latn", nil) # initialise comma
+    i18nhash = i.i18n.get
+    #i18nhash["OrdinalRules"] = "digits-ordinal"
+    p = Relaton::Render::Book.new(language: "en", i18nhash: i18nhash)
     expect(p.render(input))
       .to be_equivalent_to output
   end

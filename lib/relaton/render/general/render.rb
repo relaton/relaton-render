@@ -14,8 +14,7 @@ module Relaton
       attr_reader :template, :journaltemplate, :seriestemplate, :nametemplate,
                   :authorcitetemplate, :extenttemplate, :sizetemplate,
                   :citetemplate, :citeshorttemplate, :lang, :script, :i18n,
-                  :edition, :edition_ordinal, :date, :fieldsklass, :dateklass,
-                  :config
+                  :edition, :date, :fieldsklass, :dateklass, :config
 
       def initialize(opt = {})
         @config = read_config
@@ -50,6 +49,7 @@ module Relaton
         @fieldsklass = Relaton::Render::Fields
         @dateklass = Relaton::Render::Date
         @parseklass = Relaton::Render::Parse
+        @i18nklass = Relaton::Render::I18n
       end
 
       def root_initalize(opt)
@@ -72,12 +72,19 @@ module Relaton
         @lang = opt["language"]
         @script = opt["script"]
         @locale = opt["locale"]
-        @i18n = opt["i18n"] ||
+        default_i18n = opt["i18n"] ||
           i18n_klass(language: @lang, script: @script, locale: @locale,
                      i18nhash: opt["i18nhash"])
-        #@edition_ordinal = opt["edition_ordinal"] || @i18n.edition_ordinal
-        @edition = opt["edition"] || @i18n.edition
-        @date = opt["date"] || @i18n.get["date_formats"] ||
+        #require "debug"; binding.b
+        @i18n = @i18nklass.new({ i18n: default_i18n,
+                                 i18n_multi: opt["i18n_multi"] })
+        i18n_default_strs(opt)
+      end
+
+      # avoid using these, they are document-set not citation-specific
+      def i18n_default_strs(opt)
+        @edition = opt["edition"] || @i18n.select(nil).edition
+        @date = opt["date"] || @i18n.select(nil).get["date_formats"] ||
           { "month_year" => "yMMMM", "day_month_year" => "to_long_s",
             "date_time" => "to_long_s" }
       end
@@ -96,7 +103,7 @@ module Relaton
         template_hash_fill(opt["template"]).each_with_object({}) do |(k, v), m|
           @type == "general" || @type == k or next
           m[k] = General.subclass(k)
-            .new(template: v, parse: @parse, i18n: @i18n,
+            .new(template: v, parse: @parse, i18n_multi: @i18n.config,
                  language: @lang, script: @script)
         end
       end
@@ -165,21 +172,28 @@ module Relaton
       end
 
       def render1(doc, terminator)
-        r = doc.relation.select { |x| x.type == "hasRepresentation" }
-          .map { |x| @i18n.also_pub_as + render_single_bibitem(x.bibitem) }
-        out = [render_single_bibitem(doc)] + r
-        ret1 = out.join(@i18n.get["punct"]["biblio-field-delimiter"] || ". ")
-        ret = @i18n.l10n(esc_cleanup(ret1)
-          .gsub(".</esc>.", ".</esc>")
-          .gsub(".. ", ". "))
-        final = @i18n.get["punct"]["biblio-terminator"] || "."
+        obj, str = render_single_bibitem(doc)
+        out = [str] + also_pub_as(doc)
+        ret1 = out.join(@i18n.select(obj).get["punct"]["biblio-field-delimiter"] || ". ")
+        ret = @i18n.select(obj).l10n(esc_cleanup(ret1)
+          .gsub(".</esc>.", ".</esc>").gsub(".. ", ". "))
+        final = @i18n.select(obj).get["punct"]["biblio-terminator"] || "."
         terminator && !ret.end_with?(final) && !ret.empty? and ret += final
         ret
       end
 
+      def also_pub_as(doc)
+        r = doc.relation.select { |x| x.type == "hasRepresentation" }
+        r.map do |x|
+          _, out = render_single_bibitem(x.bibitem)
+          @i18n.select(nil).also_pub_as + out
+        end
+      end
+
       def render_single_bibitem(doc)
         data_liquid, r = parse(doc)
-        liquid(data_liquid, r)
+        out = liquid(data_liquid, r)
+        [data_liquid, out]
       end
 
       def liquid(data_liquid, renderer)
@@ -188,7 +202,6 @@ module Relaton
 
       def parse(doc)
         doc = xml2relaton(doc)
-        #require "debug"; binding.b
         r = renderer(doc.type || "misc")
         data = @parse.extract(doc)
         enhance_data(data, r.template_raw)
@@ -198,7 +211,7 @@ module Relaton
       end
 
       def valid_parse(ret)
-        @i18n.get["no_date"] == ret and return nil
+        @i18n.select(nil).get["no_date"] == ret and return nil
         ret
       end
 
@@ -233,7 +246,7 @@ module Relaton
           data_liquid = @fieldsklass.new(renderer: self)
             .compound_fields_format(@parse.extract(b))
           m << { author: data_liquid[:authorcite], date: data_liquid[:date],
-                 ord: i, id: b.id, data_liquid: data_liquid, type: b.type }
+                 ord: i, id: b.id, data: data_liquid, type: b.type }
         end
       end
 

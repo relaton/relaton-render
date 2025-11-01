@@ -54,7 +54,8 @@ module Relaton
         n = place.country
         c.nil? && r.empty? && n.empty? and return place.name
         ret = [c] + r.map(&:name) + n.map(&:name)
-        @i18n.l10n(ret.compact.join(", "))
+        ret.compact
+        #@i18n.l10n(ret.compact.join(", "))
       end
 
       def series(doc)
@@ -184,7 +185,7 @@ module Relaton
 
       def status(doc)
         v = doc&.status&.stage&.value
-        @i18n.get.dig("stage", v) || v
+        #@i18n.get.dig("stage", v) || v
       end
     end
   end

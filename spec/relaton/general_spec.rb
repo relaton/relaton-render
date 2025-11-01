@@ -45,6 +45,7 @@ RSpec.describe Relaton::Render do
           </person>
         </contributor>
         <edition>1</edition>
+        <status>valid</status>
         <series>
         <title>London Mathematical Society Lecture Note Series</title>
         <number>472</number>
@@ -71,12 +72,13 @@ RSpec.describe Relaton::Render do
       ],
       date: "2022",
       doi: ["<esc>https://doi.org/10.1017/9781108877831</esc>"],
-      draft_raw: { iteration: nil, status: nil },
+      draft: "draft ",
+      draft_raw: { iteration: nil, status: "valid" },
       edition: "1st edition",
       edition_raw: "<esc>1</esc>",
       language: "en",
-      other_identifier: ["DOI: https://doi.org/10.1017/9781108877831",
-                         "ISBN: 9781108877831"],
+      other_identifier: ["DOI: https://doi.org/10.1017/9781108877831", "ISBN: 9781108877831"],
+      other_identifier_raw: [["DOI", "https://doi.org/10.1017/9781108877831"], ["ISBN", "9781108877831"]],
       publisher: "Cambridge University Press",
       publisher_abbrev: "Cambridge University Press",
       publisher_abbrev_raw: ["Cambridge University Press"],
@@ -89,6 +91,8 @@ RSpec.describe Relaton::Render do
       series_title: "<esc>London Mathematical Society Lecture Note Series</esc>",
       size: "1 vol.",
       size_raw: { "volume" => ["1"] },
+      status: "Valid",
+      status_raw: "valid",
       title: "<esc>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</esc>",
       type: "book",
     }
