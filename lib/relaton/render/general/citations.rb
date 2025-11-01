@@ -64,9 +64,10 @@ module Relaton
 
       def render1(cit)
         ref, ref1, r = render1_prep(cit)
+        i = @i18n.select(cit[:data])
         cit[:formattedref] =
-          r.valid_parse(@i18n.select(nil).l10n(ref1))
-        cit[:citation][:full] = r.valid_parse(@i18n.select(cit[:data]).l10n(ref))
+          r.valid_parse(i.l10n(ref1))
+        cit[:citation][:full] = r.valid_parse(i.l10n(ref))
         %i(type data renderer).each { |x| cit.delete(x) }
         cit
       end
@@ -79,7 +80,8 @@ module Relaton
       def render1_prep(cit)
         r = renderer(cit)
         ref = r.renderer(cit[:type] || "misc").render(cit[:data], cit[:data])
-        final = @i18n.select(cit[:data]).get.dig("punct", "biblio-terminator") || "."
+        final = @i18n.select(cit[:data]).get
+          .dig("punct", "biblio-terminator") || "."
         ref1 = ref
         use_terminator?(ref, final, cit) and ref1 += final
         [ref, ref1, r]
