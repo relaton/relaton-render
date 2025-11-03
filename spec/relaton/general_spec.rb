@@ -3,6 +3,7 @@
 require_relative "../spec_helper"
 
 RSpec.describe Relaton::Render do
+  # rubocop:disable Layout/LineLength
   it "has a version number" do
     expect(Relaton::Render::VERSION).not_to be nil
   end
@@ -223,9 +224,6 @@ RSpec.describe Relaton::Render do
           <size><value type="page">lxii</value><value type="page">500</value></size>
       </bibitem>
     INPUT
-    output = <<~OUTPUT
-      <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă <em>et al.</em>, eds. (2022). <em>Facets of algebraic geometry: a collection in honor of william fulton's 80th birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
-    OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ,_{{role}} ({{date}}) . <em>{{ title | capitalize_first }}</em> [{{medium}}] ,_{{ edition }} .
       {{ place }} : {{ publisher_abbrev }} . {{ uri }}. At:_{{ access_location }}. DOI:_{{ doi | join: ", " }}
@@ -233,6 +231,9 @@ RSpec.describe Relaton::Render do
     etal = <<~TEMPLATE
       {{surname[0] }}, {{initials[0] | join: "" | remove: "." | remove: "_" }}, {{initials[1]  | join: "" | remove: "." | remove: "_" }} {{surname[1] }}, {{initials[2]  | join: "" | remove: "." | remove: "_" }} {{surname[2] }},  {{initials[3]  | join: "" | remove: "." | remove: "_" }} {{surname[3] }} <em>et al.</em>
     TEMPLATE
+    output = <<~OUTPUT
+      <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă <em>et al.</em>, eds. (2022). <em>Facets of algebraic geometry: a collection in honor of william fulton's 80th birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
+    OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template },
            nametemplate: { one: "{{ nonpersonal[0] }}",
@@ -261,12 +262,12 @@ RSpec.describe Relaton::Render do
         </contributor>
       </bibitem>
     INPUT
-    output1 = <<~OUTPUT
-      <formattedref>TEST, Author. <em>Hello, dolly</em>. 2022.</formattedref>
-    OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }}. <em>{{ title | capitalize_first }}</em>. {{ place }}: {{ publisher }}. {{date}}.
     TEMPLATE
+    output1 = <<~OUTPUT
+      <formattedref>TEST, Author. <em>Hello, dolly</em>. 2022.</formattedref>
+    OUTPUT
     p = Relaton::Render::General.new(template: { book: template },
                                      language: "en")
     expect(p.render(input1)).to be_equivalent_to output1
@@ -506,27 +507,98 @@ RSpec.describe Relaton::Render do
           <size><value type="page">lxii</value><value type="page">500</value></size>
       </bibitem>
     INPUT
-    output = <<~OUTPUT
-      <formattedref>ALUFFI, Paolo, ed. (2022). “Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. ”.</formattedref>
-    OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ,_{{role}} ({{date}}) $$$ “{{ title }}$$$”
     TEMPLATE
+    output = <<~OUTPUT
+      <formattedref>ALUFFI, Paolo, ed. (2022). “Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. ”.</formattedref>
+    OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template }, language: "en")
     expect(p.render(input))
       .to be_equivalent_to output
 
-    output = <<~OUTPUT
-      <formattedref>ALUFFI, Paolo, ed. (2022). “Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday.”.</formattedref>
-    OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ,_{{role}} ({{date}}) $$$ “{{ title }}$$$|”
     TEMPLATE
+    output = <<~OUTPUT
+      <formattedref>ALUFFI, Paolo, ed. (2022). “Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday.”.</formattedref>
+    OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template }, language: "en")
     expect(p.render(input))
       .to be_equivalent_to output
+  end
+
+  it "processes linking punctuation to potentially empty fields" do
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>Facets of Algebraic Geometry</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <docidentifier type="ISBN">9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <date type="accessed"><on>2022-04-02</on></date>
+        <edition>1</edition>
+        <series>
+        <title>London Mathematical Society Lecture Note Series</title>
+        <number>472</number>
+        </series>
+            <contributor>
+              <role type="publisher"/>
+              <organization>
+                <name>Cambridge University Press</name>
+                <abbreviation>CUP</abbreviation>
+              </organization>
+            </contributor>
+            <place>Cambridge, UK</place>
+          <size><value type="page">lxii</value><value type="page">500</value></size>
+      </bibitem>
+    INPUT
+    template = <<~TEMPLATE
+      {{ title }} $$$ {{ place }} : {{ publisher_abbrev }} $$$ {{ date }}
+    TEMPLATE
+    input_no_place = input.sub(%r{<place>.+</place>}, "")
+    input_no_pub = input.sub(%r{<contributor>.+</contributor>}m, "")
+    input_no_pub_no_place = input.sub(%r{<contributor>.+</contributor>}m, "")
+      .sub(%r{<place>.+</place>}, "")
+    p = Relaton::Render::General
+      .new(template: { book: template }, language: "en")
+    expect(p.render(input))
+      .to be_equivalent_to "<formattedref>Facets of Algebraic Geometry. Cambridge, UK: CUP. 2022.</formattedref>"
+    expect(p.render(input_no_place))
+      .to be_equivalent_to "<formattedref>Facets of Algebraic Geometry. : CUP. 2022.</formattedref>"
+    expect(p.render(input_no_pub))
+      .to be_equivalent_to "<formattedref>Facets of Algebraic Geometry. Cambridge, UK. 2022.</formattedref>"
+    expect(p.render(input_no_pub_no_place))
+      .to be_equivalent_to "<formattedref>Facets of Algebraic Geometry. 2022.</formattedref>"
+
+    template = <<~TEMPLATE
+      {{ title }} $$$ {{ place }}: {{ publisher_abbrev }} $$$ {{ date }}
+    TEMPLATE
+    p = Relaton::Render::General
+      .new(template: { book: template }, language: "en")
+    expect(p.render(input))
+      .to be_equivalent_to "<formattedref>Facets of Algebraic Geometry. Cambridge, UK: CUP. 2022.</formattedref>"
+    expect(p.render(input_no_place))
+      .to be_equivalent_to "<formattedref>Facets of Algebraic Geometry. CUP. 2022.</formattedref>"
+    expect(p.render(input_no_pub))
+      .to be_equivalent_to "<formattedref>Facets of Algebraic Geometry. Cambridge, UK. 2022.</formattedref>"
+    expect(p.render(input_no_pub_no_place))
+      .to be_equivalent_to "<formattedref>Facets of Algebraic Geometry. 2022.</formattedref>"
+
+    template = <<~TEMPLATE
+      {{ title }} $$$ {{ place }} :_{{ publisher_abbrev }} $$$ {{ date }}
+    TEMPLATE
+    p = Relaton::Render::General
+      .new(template: { book: template }, language: "en")
+    expect(p.render(input))
+      .to be_equivalent_to "<formattedref>Facets of Algebraic Geometry. Cambridge, UK: CUP. 2022.</formattedref>"
+    expect(p.render(input_no_place))
+      .to be_equivalent_to "<formattedref>Facets of Algebraic Geometry. : CUP. 2022.</formattedref>"
+    expect(p.render(input_no_pub))
+      .to be_equivalent_to "<formattedref>Facets of Algebraic Geometry. Cambridge, UK. 2022.</formattedref>"
+    expect(p.render(input_no_pub_no_place))
+      .to be_equivalent_to "<formattedref>Facets of Algebraic Geometry. 2022.</formattedref>"
   end
 
   it "processes underscore" do
@@ -559,13 +631,13 @@ RSpec.describe Relaton::Render do
           <size><value type="page">lxii</value><value type="page">500</value></size>
       </bibitem>
     INPUT
-    output = <<~OUTPUT
-      <formattedref>ALUFFI, Paolo, ed. (2022). <em><span class="std_class">Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</span></em>, 1st edition. Cambridge, UK: CUP.</formattedref>
-    OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ,_{{role}} ({{date}}) . <em><span_class="std\\_class">{{ title }}</span></em> [{{medium}}] ,_{{ edition }} .
       {{ place }} : {{ publisher_abbrev }} . {{ uri }}. At:_{{ access_location }}.
     TEMPLATE
+    output = <<~OUTPUT
+      <formattedref>ALUFFI, Paolo, ed. (2022). <em><span class="std_class">Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</span></em>, 1st edition. Cambridge, UK: CUP.</formattedref>
+    OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template }, language: "en")
     expect(p.render(input))
@@ -819,9 +891,6 @@ RSpec.describe Relaton::Render do
           <size><value type="page">500</value></size>
       </bibitem>
     INPUT
-    output = <<~OUTPUT
-      <formattedref>Aluffi, P., D. Anderson, M. S. Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK.</formattedref>
-    OUTPUT
     template = <<~TEMPLATE
       {{ creatornames }} ,_{{role}} ({{date}}) . <em>{{ title }}</em> [{{medium}}] ,_{{ edition }} .
       {{ place }}. {{ uri }}. At:_{{ access_location }}.
@@ -829,6 +898,9 @@ RSpec.describe Relaton::Render do
     etal = <<~TEMPLATE
       {{surname[0] }}, {{initials[0] | join: " " }}, {{initials[1]  | join: " " }} {{surname[1] }}, {{initials[2]  | join: " " }} {{surname[2] }} <em>et al.</em>
     TEMPLATE
+    output = <<~OUTPUT
+      <formattedref>Aluffi, P., D. Anderson, M. S. Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK.</formattedref>
+    OUTPUT
     p = Relaton::Render::General
       .new(template: { booklet: template, book: "booklet" },
            nametemplate: { one: "{{ nonpersonal[0] }}",

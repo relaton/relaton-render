@@ -137,6 +137,7 @@ module Relaton
             .gsub(/([,.:;]\s*)+([.](\s|_|$))/, "\\2") # move outside
             .gsub(/([,:;]\s*)+<\/esc>(,)(\s|_|$)/, "\\2</esc>\\3")
             .gsub(/([,:;]\s*)+(,(\s|_|$))/, "\\2")
+            .gsub(/([,:;]\s*)+(#{COMPONENT_DELIM})/o, "\\2")
             .gsub(/(:\s+)(&\s)/, "\\2")
             .gsub(/\s+([,.:;)])/, "\\1") # trim around $$$
             .sub(/^\s*[,.:;]\s*/, "") # no init $$$
