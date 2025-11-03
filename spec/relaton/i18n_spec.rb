@@ -222,4 +222,157 @@ RSpec.describe Relaton::Render do
     expect(p.render(input, terminator: false))
       .to be_equivalent_to output
   end
+
+  it "selects between two different i18n" do
+    input = <<~INPUT
+      <references>
+        <bibitem type="book" id="A">
+          <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+          <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+          <docidentifier type="ISBN">9781108877831</docidentifier>
+          <date type="published"><on>2022</on></date>
+                    <contributor>
+            <role type="editor"/>
+            <person>
+              <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+            </person>
+          </contributor>
+                  <contributor>
+            <role type="editor"/>
+            <person>
+              <name><surname>Anderson</surname><forename>David</forename></name>
+            </person>
+          </contributor>
+          <contributor>
+            <role type="editor"/>
+            <person>
+              <name><surname>Hering</surname><forename>Milena</forename></name>
+            </person>
+          </contributor>
+          <contributor>
+            <role type="editor"/>
+            <person>
+              <name><surname>Mustaţă</surname><forename>Mircea</forename></name>
+            </person>
+          </contributor>
+          <contributor>
+            <role type="editor"/>
+            <person>
+              <name><surname>Payne</surname><forename>Sam</forename></name>
+            </person>
+          </contributor>
+          <language>en</language>
+          <script>Latn</script>
+          <edition>1</edition>
+          <series>
+          <title>London Mathematical Society Lecture Note Series</title>
+          <number>472</number>
+          </series>
+              <contributor>
+                <role type="publisher"/>
+                <organization>
+                  <name>Cambridge University Press</name>
+                </organization>
+              </contributor>
+              <place>Cambridge, UK</place>
+            <size><value type="volume">1</value></size>
+        </bibitem>
+        <bibitem type="book" id="B">
+          <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+          <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+          <docidentifier type="ISBN">9781108877831</docidentifier>
+          <date type="published"><on>2022</on></date>
+          <language>ja</language>
+          <script>Jpan</script>
+                    <contributor>
+            <role type="editor"/>
+            <person>
+              <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+            </person>
+          </contributor>
+                  <contributor>
+            <role type="editor"/>
+            <person>
+              <name><surname>Anderson</surname><forename>David</forename></name>
+            </person>
+          </contributor>
+          <contributor>
+            <role type="editor"/>
+            <person>
+              <name><surname>Hering</surname><forename>Milena</forename></name>
+            </person>
+          </contributor>
+          <contributor>
+            <role type="editor"/>
+            <person>
+              <name><surname>Mustaţă</surname><forename>Mircea</forename></name>
+            </person>
+          </contributor>
+          <contributor>
+            <role type="editor"/>
+            <person>
+              <name><surname>Payne</surname><forename>Sam</forename></name>
+            </person>
+          </contributor>
+          <edition>1</edition>
+          <series>
+          <title>London Mathematical Society Lecture Note Series</title>
+          <number>472</number>
+          </series>
+              <contributor>
+                <role type="publisher"/>
+                <organization>
+                  <name>Cambridge University Press</name>
+                </organization>
+              </contributor>
+              <place>Cambridge, UK</place>
+            <size><value type="volume">1</value></size>
+        </bibitem>
+        </references>
+    INPUT
+    output = {
+      "A" =>
+      "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
+      "B" =>
+        "ALUFFI、 Paolo、 David ANDERSON、 Milena HERING、 Mircea MUSTAŢĂ、 Sam PAYNE （編） ⸺ Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday ⸺ 第1版 ⸺ （London Mathematical Society Lecture Note Series 472 ⸺） Cambridge、 UK： Cambridge University Press ⸺ 2022 ⸺ DOI： https：//doi。org/10。1017/9781108877831 ⸺ ISBN： 9781108877831 ⸺ 巻1。",
+    }
+    en = IsoDoc::PresentationXMLConvert.new(language: "en", script: "Latn")
+    en.i18n_init("en", "Latn", nil)
+    ja = IsoDoc::PresentationXMLConvert.new(language: "ja", script: "Jpan")
+    ja.i18n_init("ja", "Jpan", nil)
+    orig_en = Relaton::Render::General.new(language: "en")
+    orig_en_i18n = orig_en.i18n.config[""].get
+    en.i18n.merge(orig_en_i18n)
+    orig_ja = Relaton::Render::General.new(language: "ja")
+    orig_ja_i18n = orig_ja.i18n.config[""].get
+    orig_ja_i18n["punct"]["biblio-field-delimiter"] = " — "
+    ja.i18n.merge(orig_ja_i18n)
+    mock_i18n_selector
+    p = Relaton::Render::General.new(language: "ja",
+                                     i18n_multi: {
+                                       en: en.i18n, ja: ja.i18n
+                                     })
+    expect(p.render_all(input, type: "author-date")
+      .transform_values { |v| v[:formattedref] })
+      .to match_hash_pp output
+  end
+
+  private
+
+  def mock_i18n_selector
+    allow_any_instance_of(Relaton::Render::I18n)
+      .to receive(:select_default) do |i18n_instance|
+      i18n_instance.instance_variable_get(:@i18n)["en"]
+    end
+
+    allow_any_instance_of(Relaton::Render::I18n)
+      .to receive(:select_obj) do |i18n_instance, obj|
+      i18n_hash = i18n_instance.instance_variable_get(:@i18n)
+      if obj[:language] == "ja"
+        i18n_hash["ja"]
+      else
+        i18n_hash["en"]
+      end
+    end
+  end
 end

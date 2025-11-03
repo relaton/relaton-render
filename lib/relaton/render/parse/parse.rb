@@ -15,9 +15,11 @@ module Relaton
 
       def extract(doc)
         host = host(doc)
-        simple_xml2hash(doc).merge(simple_or_host_xml2hash(doc, host))
+        ret = simple_xml2hash(doc).merge(simple_or_host_xml2hash(doc, host))
           .merge(host_xml2hash(host))
           .merge(series_xml2hash(doc, host))
+        ret
+        #i18n(ret)
       end
 
       def simple_xml2hash(doc)
@@ -25,8 +27,8 @@ module Relaton
         { type: type(doc), title: title(doc), extent_raw: extent(doc),
           size_raw: size(doc), uri_raw: uri(doc), doi: doi(doc),
           authoritative_identifier: authoritative_identifier(doc),
-          other_identifier: other_identifier(doc), biblio_tag: biblio_tag(doc),
-          status: status(doc), creators: creators, role_raw: role,
+          other_identifier_raw: other_identifier(doc), biblio_tag: biblio_tag(doc),
+          status_raw: status(doc), creators: creators, role_raw: role,
           language: language(doc), script: script(doc), locale: locale(doc) }
       end
 
@@ -65,12 +67,19 @@ module Relaton
                 series_place: series_place(series, doc),
                 series_org: series_org(series, doc),
                 series_dates: series_dates(series, doc) }
-        #require "debug"; binding.b
         ret.each do |k, v|
           %i(series_num series_dates).include?(k) and next
           ret[k] = esc(v)
         end
         ret
+      end
+
+      #KILL
+      def other_identifier_i18n(hash)
+           #ret << "#{type}: #{esc id.id}"
+        hash[:other_identifier]&.map! do |i|
+          i.include?("<esc>") ? @i18n.select(hash).l10n(i) : i
+        end
       end
 
       private

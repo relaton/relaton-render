@@ -14,6 +14,7 @@ module Relaton
         render1(granularity)
       end
 
+      # @r.date is using document language setting, not citation-specific
       def render1(format)
         datef = dateparse(format, @r.lang.to_sym)
         case @r.date[format]
