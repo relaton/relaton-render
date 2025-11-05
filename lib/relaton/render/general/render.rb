@@ -50,6 +50,7 @@ module Relaton
         @dateklass = Relaton::Render::Date
         @parseklass = Relaton::Render::Parse
         @i18nklass = options["i18nklass"] || Relaton::Render::I18n
+        @citeklass = Relaton::Render::Citations
       end
 
       def root_initalize(opt)
@@ -75,7 +76,7 @@ module Relaton
         default_i18n = opt["i18n"] ||
           i18n_klass(language: @lang, script: @script, locale: @locale,
                      i18nhash: opt["i18nhash"])
-        @i18n = @i18nklass.new(opt.merge({"i18n" => default_i18n}))
+        @i18n = @i18nklass.new(opt.merge({ "i18n" => default_i18n }))
         i18n_default_strs(opt)
       end
 
@@ -147,7 +148,7 @@ module Relaton
       def xml2relaton(bib)
         bib.is_a?(Nokogiri::XML::Element) and
           bib = bib.to_xml(encoding: "UTF-8", indent: 0,
-                    save_with: Nokogiri::XML::Node::SaveOptions::AS_XML)
+                           save_with: Nokogiri::XML::Node::SaveOptions::AS_XML)
         bib.is_a?(String) && Nokogiri::XML(bib).errors.empty? and
           bib = RelatonBib::XMLParser.from_xml(bib) or bib
       end
@@ -217,13 +218,13 @@ module Relaton
       # enhance_data is skipped here, and is done in batch inside Citations
       def render_all(bib, type: "author-date")
         bib = sanitise_citations_input(bib) or return
-        Citations.new(type: type, renderer: citation_renderers,
-                      i18n: @i18n, lang: @lang, script: @script)
+        @citeklass.new(type: type, renderer: citation_renderers,
+                       i18n: @i18n, lang: @lang, script: @script)
           .render(citations1(bib))
       end
 
       def citation_renderers
-       { default: self }
+        { default: self }
       end
 
       def sanitise_citations_input(bib)
