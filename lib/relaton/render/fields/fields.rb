@@ -248,7 +248,7 @@ module Relaton
       def uriformat(uri)
         uri.nil? || uri.empty? and return nil
         # do not process uri contents in l10n
-        "<link target='#{uri}'><esc>#{uri}</esc></link>"
+        "<fmt-link target='#{uri}'><esc>#{uri}</esc></fmt-link>"
       end
 
       private

@@ -944,7 +944,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <link target="https://github.com/metanorma/metanorma-standoc">https://github.com/metanorma/metanorma-standoc</link>. [viewed: August 31, 2023].</formattedref>
+      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <fmt-link target="https://github.com/metanorma/metanorma-standoc">https://github.com/metanorma/metanorma-standoc</fmt-link>. [viewed: August 31, 2023].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -982,7 +982,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <link target="https://www.ietf.org/rfc/rfc3979.txt">https://www.ietf.org/rfc/rfc3979.txt</link>. [viewed: June 18, 2012].</formattedref>
+      <formattedref>Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <fmt-link target="https://www.ietf.org/rfc/rfc3979.txt">https://www.ietf.org/rfc/rfc3979.txt</fmt-link>. [viewed: June 18, 2012].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -1027,7 +1027,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>BRADNER (ed.). RFC 3979|ISO 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. Internet Engineering Task Force and International Organization for Standardization. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <link target='https://www.ietf.org/rfc/rfc3979.txt'>https://www.ietf.org/rfc/rfc3979.txt</link>. [viewed: June 18, 2012].</formattedref>
+      <formattedref>BRADNER (ed.). RFC 3979|ISO 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. Internet Engineering Task Force and International Organization for Standardization. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <fmt-link target='https://www.ietf.org/rfc/rfc3979.txt'>https://www.ietf.org/rfc/rfc3979.txt</fmt-link>. [viewed: June 18, 2012].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -1081,7 +1081,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>BRADNER (ed.). RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. Internet Engineering Task Force. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <link target='https://www.ietf.org/rfc/rfc3979.txt'>https://www.ietf.org/rfc/rfc3979.txt</link>. [viewed: June 18, 2012]. Also published as: ISO 3979: <em>Intellectual Property Rights in IETF technology</em>. International Organization for Standardisation. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <link target='https://www.iso.org/rfc/rfc3979.txt'>https://www.iso.org/rfc/rfc3979.txt</link>. [viewed: June 18, 2012].</formattedref>
+      <formattedref>BRADNER (ed.). RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. Internet Engineering Task Force. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <fmt-link target='https://www.ietf.org/rfc/rfc3979.txt'>https://www.ietf.org/rfc/rfc3979.txt</fmt-link>. [viewed: June 18, 2012]. Also published as: ISO 3979: <em>Intellectual Property Rights in IETF technology</em>. International Organization for Standardisation. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <fmt-link target='https://www.iso.org/rfc/rfc3979.txt'>https://www.iso.org/rfc/rfc3979.txt</fmt-link>. [viewed: June 18, 2012].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -1123,7 +1123,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>PORTES, Alejandro and Rubén G. RUMBAUT. <em>Children of Immigrants. Longitudinal Sudy (CILS) 1991–2006 ICPSR20520</em>. Version 2. Dataset. 2012. <link target="https://doi.org/10.3886/ICPSR20520.v2">https://doi.org/10.3886/ICPSR20520.v2</link>. 501 GB. [viewed: May 6, 2018].</formattedref>
+      <formattedref>PORTES, Alejandro and Rubén G. RUMBAUT. <em>Children of Immigrants. Longitudinal Sudy (CILS) 1991–2006 ICPSR20520</em>. Version 2. Dataset. 2012. <fmt-link target="https://doi.org/10.3886/ICPSR20520.v2">https://doi.org/10.3886/ICPSR20520.v2</fmt-link>. 501 GB. [viewed: May 6, 2018].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -1158,7 +1158,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>LIBERMAN, Mark and Geoffrey PULLUM. <em>Language Log</em>. University of Pennsylvania. 2003&#x2013;. <link target="https://languagelog.ldc.upenn.edu/nll/">https://languagelog.ldc.upenn.edu/nll/</link>. [viewed: September 3, 2019].</formattedref>
+      <formattedref>LIBERMAN, Mark and Geoffrey PULLUM. <em>Language Log</em>. University of Pennsylvania. 2003&#x2013;. <fmt-link target="https://languagelog.ldc.upenn.edu/nll/">https://languagelog.ldc.upenn.edu/nll/</fmt-link>. [viewed: September 3, 2019].</formattedref>
 
     OUTPUT
     p = Relaton::Render::General.new
@@ -1191,7 +1191,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em>. Preprint. 2012. <link target="https://eprints.soton.ac.uk/338797/">https://eprints.soton.ac.uk/338797/</link>. [viewed: June 24, 2020].</formattedref>
+      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em>. Preprint. 2012. <fmt-link target="https://eprints.soton.ac.uk/338797/">https://eprints.soton.ac.uk/338797/</fmt-link>. [viewed: June 24, 2020].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -1223,7 +1223,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em>. 2012. <link target='https://eprints.soton.ac.uk/338797/'>https://eprints.soton.ac.uk/338797/</link>.</formattedref>
+      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em>. 2012. <fmt-link target='https://eprints.soton.ac.uk/338797/'>https://eprints.soton.ac.uk/338797/</fmt-link>.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))

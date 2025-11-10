@@ -29,7 +29,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>JENKINS und Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em> [preprint]. o.O.: o.J. <link target='https://eprints.soton.ac.uk/338797/'>https://eprints.soton.ac.uk/338797/</link>. [angesehen: 31. August 2023].</formattedref>
+      <formattedref>JENKINS und Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em> [preprint]. o.O.: o.J. <fmt-link target='https://eprints.soton.ac.uk/338797/'>https://eprints.soton.ac.uk/338797/</fmt-link>. [angesehen: 31. August 2023].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new(language: "de")
     expect(p.render(input))
@@ -65,7 +65,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>JENKINS und Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em> [preprint]. o.O.: o.J. <link target='https://eprints.soton.ac.uk/338795/'>https://eprints.soton.ac.uk/338795/</link>. [angesehen: 31. August 2023].</formattedref>
+      <formattedref>JENKINS und Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em> [preprint]. o.O.: o.J. <fmt-link target='https://eprints.soton.ac.uk/338795/'>https://eprints.soton.ac.uk/338795/</fmt-link>. [angesehen: 31. August 2023].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new(language: "de")
     expect(p.render(input))
@@ -99,7 +99,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>JENKINS und Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em> [preprint]. o.O.: o.J. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>. [angesehen: 31. August 2023].</formattedref>
+      <formattedref>JENKINS und Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em> [preprint]. o.O.: o.J. <fmt-link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</fmt-link>. [angesehen: 31. August 2023].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new(language: "de")
     expect(p.render(input))
@@ -129,7 +129,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <link target="https://github.com/metanorma/metanorma_standoc">https://github.com/metanorma/metanorma_standoc</link>. [viewed: September 4, 2019].</formattedref>
+      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <fmt-link target="https://github.com/metanorma/metanorma_standoc">https://github.com/metanorma/metanorma_standoc</fmt-link>. [viewed: September 4, 2019].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -157,9 +157,9 @@ RSpec.describe Relaton::Render do
         <edition>1.3.1</edition>
       </bibitem>
     INPUT
-      # <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <link target="https://github.com/metanorma/metanorma-standoc">https://github.com/metanorma/metanorma-standoc</link>. [viewed: #{Date.today.strftime('%B %-d, %Y')}].</formattedref>
+      # <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <fmt-link target="https://github.com/metanorma/metanorma-standoc">https://github.com/metanorma/metanorma-standoc</fmt-link>. [viewed: #{Date.today.strftime('%B %-d, %Y')}].</formattedref>
     output = <<~OUTPUT
-      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <link target="https://github.com/metanorma/metanorma-standoc">https://github.com/metanorma/metanorma-standoc</link>.</formattedref>
+      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <fmt-link target="https://github.com/metanorma/metanorma-standoc">https://github.com/metanorma/metanorma-standoc</fmt-link>.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
@@ -190,7 +190,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <link target="https://completely.broken.url.com">https://completely.broken.url.com</link>.</formattedref>
+      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <fmt-link target="https://completely.broken.url.com">https://completely.broken.url.com</fmt-link>.</formattedref>
     OUTPUT
 =begin
     p = Relaton::Render::General.new
@@ -222,9 +222,9 @@ RSpec.describe Relaton::Render do
         <edition>1.3.1</edition>
       </bibitem>
     INPUT
-      # <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <link target="file/file.xml">file/file.xml</link>. [viewed: #{Date.today.strftime('%B %-d, %Y')}].</formattedref>
+      # <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <fmt-link target="file/file.xml">file/file.xml</fmt-link>. [viewed: #{Date.today.strftime('%B %-d, %Y')}].</formattedref>
     output = <<~OUTPUT
-      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <link target="file/file.xml">file/file.xml</link>.</formattedref>
+      <formattedref>Ribose Inc. <em>metanorma-standoc</em>. Version 1.3.1. 2019. <fmt-link target="file/file.xml">file/file.xml</fmt-link>.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
