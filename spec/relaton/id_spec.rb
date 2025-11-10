@@ -165,7 +165,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output = <<~OUTPUT
-      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em> [preprint]. n.p.: 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. <link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</link>. [viewed: October 12, 2022].</formattedref>
+      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em> [preprint]. n.p.: 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. <fmt-link target='https://eprints.soton.ac.uk/338791/'>https://eprints.soton.ac.uk/338791/</fmt-link>. [viewed: October 12, 2022].</formattedref>
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))

@@ -870,9 +870,9 @@ RSpec.describe Relaton::Render::Citations do
           reference_tag: nil,
           title: "Book 1",
           title_reference_tag: "Book 1",
-          full: "ALUFFI, Paolo (2021). <em>Book 1</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>.",
+          full: "ALUFFI, Paolo (2021). <em>Book 1</em> <fmt-link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</fmt-link>.",
         },
-        formattedref: "ALUFFI, Paolo (2021). <em>Book 1</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>.",
+        formattedref: "ALUFFI, Paolo (2021). <em>Book 1</em> <fmt-link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</fmt-link>.",
       },
       "B" => {
         author: "Aluffi",
@@ -887,9 +887,9 @@ RSpec.describe Relaton::Render::Citations do
           reference_tag: nil,
           title: "Book 2",
           title_reference_tag: "Book 2",
-          full: "ALUFFI, Paolo (2022). <em>Book 2</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>.",
+          full: "ALUFFI, Paolo (2022). <em>Book 2</em> <fmt-link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</fmt-link>.",
         },
-        formattedref: "ALUFFI, Paolo (2022). <em>Book 2</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>.",
+        formattedref: "ALUFFI, Paolo (2022). <em>Book 2</em> <fmt-link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</fmt-link>.",
       },
       "C" => {
         author: "Aluffi",
@@ -904,9 +904,9 @@ RSpec.describe Relaton::Render::Citations do
           reference_tag: nil,
           title: "Standard 1",
           title_reference_tag: "Standard 1",
-          full: "ALUFFI, Paolo (2023). <em>Standard 1</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>.",
+          full: "ALUFFI, Paolo (2023). <em>Standard 1</em> <fmt-link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</fmt-link>.",
         },
-        formattedref: "ALUFFI, Paolo (2023). <em>Standard 1</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>.",
+        formattedref: "ALUFFI, Paolo (2023). <em>Standard 1</em> <fmt-link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</fmt-link>.",
       },
       "D" => {
         author: "Aluffi",
@@ -921,9 +921,9 @@ RSpec.describe Relaton::Render::Citations do
           reference_tag: nil,
           title: "Standard 2",
           title_reference_tag: "Standard 2",
-          full: "ALUFFI, Paolo (2024). <em>Standard 2</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>.",
+          full: "ALUFFI, Paolo (2024). <em>Standard 2</em> <fmt-link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</fmt-link>.",
         },
-        formattedref: "ALUFFI, Paolo (2024). <em>Standard 2</em> <link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</link>.",
+        formattedref: "ALUFFI, Paolo (2024). <em>Standard 2</em> <fmt-link target='https://github.com/metanorma/metanorma-standoc'>https://github.com/metanorma/metanorma-standoc</fmt-link>.",
       },
     }
     p = Relaton::Render::General
@@ -1063,9 +1063,9 @@ RSpec.describe Relaton::Render::Citations do
           reference_tag: "[33]",
           title: "Intellectual Property Rights in IETF technology",
           title_reference_tag: "Intellectual Property Rights in IETF technology [33]",
-          full: "Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <link target='https://www.ietf.org/rfc/rfc3979.txt'>https://www.ietf.org/rfc/rfc3979.txt</link>. [viewed: June 18, 2012]",
+          full: "Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <fmt-link target='https://www.ietf.org/rfc/rfc3979.txt'>https://www.ietf.org/rfc/rfc3979.txt</fmt-link>. [viewed: June 18, 2012]",
         },
-        formattedref: "Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <link target='https://www.ietf.org/rfc/rfc3979.txt'>https://www.ietf.org/rfc/rfc3979.txt</link>. [viewed: June 18, 2012].",
+        formattedref: "Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <fmt-link target='https://www.ietf.org/rfc/rfc3979.txt'>https://www.ietf.org/rfc/rfc3979.txt</fmt-link>. [viewed: June 18, 2012].",
       },
     }
     p = Relaton::Render::General.new
@@ -1201,9 +1201,9 @@ RSpec.describe Relaton::Render::Citations do
           reference_tag: nil,
           title: "Intellectual Property Rights in IETF technology",
           title_reference_tag: "Intellectual Property Rights in IETF technology",
-          full: "Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <link target='https://www.ietf.org/rfc/rfc3979.txt'>https://www.ietf.org/rfc/rfc3979.txt</link>. [viewed: June 18, 2012]",
+          full: "Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <fmt-link target='https://www.ietf.org/rfc/rfc3979.txt'>https://www.ietf.org/rfc/rfc3979.txt</fmt-link>. [viewed: June 18, 2012]",
         },
-        formattedref: "Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <link target='https://www.ietf.org/rfc/rfc3979.txt'>https://www.ietf.org/rfc/rfc3979.txt</link>. [viewed: June 18, 2012].",
+        formattedref: "Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2. <fmt-link target='https://www.ietf.org/rfc/rfc3979.txt'>https://www.ietf.org/rfc/rfc3979.txt</fmt-link>. [viewed: June 18, 2012].",
       },
     }
     p = Relaton::Render::General.new
