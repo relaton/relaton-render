@@ -25,18 +25,19 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "debug"
   spec.add_development_dependency "equivalent-xml", "~> 0.6"
   spec.add_development_dependency "isodoc"
+  spec.add_development_dependency "openssl"
   spec.add_development_dependency "rake", ">= 12.3.3"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "simplecov"
-  spec.add_development_dependency "openssl"
 
+  spec.add_dependency "base64" # Liquid
+  spec.add_dependency "bigdecimal" # Liquid
   spec.add_dependency "isodoc-i18n", "~> 1.4.0"
   spec.add_dependency "liquid", "~> 5"
+  spec.add_dependency "metanorma-utils", "~> 2"
   spec.add_dependency "nokogiri"
   spec.add_dependency "relaton-bib", ">= 1.20.0"
   spec.add_dependency "twitter_cldr"
   spec.add_dependency "tzinfo-data" # we need this for windows only
-  spec.add_dependency "base64" # Liquid
-  spec.add_dependency "bigdecimal" # Liquid
-  #spec.metadata["rubygems_mfa_required"] = "true"
+  # spec.metadata["rubygems_mfa_required"] = "true"
 end

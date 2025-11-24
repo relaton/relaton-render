@@ -5,26 +5,36 @@ require "yaml"
 require "liquid"
 require "date"
 require "relaton_bib"
+require "metanorma-utils"
 require_relative "../template/template"
 require_relative "../../../isodoc/i18n"
 
 module Relaton
   module Render
     class General
+      Hash.include ::Metanorma::Utils::Hash
+      Array.include ::Metanorma::Utils::Array
+
       attr_reader :template, :journaltemplate, :seriestemplate, :nametemplate,
                   :authorcitetemplate, :extenttemplate, :sizetemplate,
                   :citetemplate, :citeshorttemplate, :lang, :script, :i18n,
                   :edition, :date, :fieldsklass, :dateklass, :config
 
       def initialize(opt = {})
-        @config = read_config
-        options = @config.merge(Utils::string_keys(opt))
+        options = init_options(opt)
         @type = self.class.name.downcase.split("::").last
         klass_initialize(options)
         root_initalize(options)
         render_initialize(options)
         @parse ||= options["parse"]
         init_misc
+      end
+
+      def init_options(opt)
+        opt = opt.stringify_all_keys
+        @override_file ||= opt["config"]
+        @config = read_config
+        @config.merge(opt)
       end
 
       def init_misc
@@ -34,7 +44,10 @@ module Relaton
       end
 
       def read_config
-        YAML.load_file(File.join(File.dirname(__FILE__), "config.yml"))
+        ret = YAML.load_file(File.join(File.dirname(__FILE__), "config.yml"))
+        new = {}
+        @override_file and new = YAML.load_file(@override_file)
+        ret.deep_merge(new)
       end
 
       def klass_initialize(options)
