@@ -33,7 +33,7 @@ module Relaton
       def init_options(opt)
         opt = opt.stringify_all_keys
         @override_file ||= opt["config"]
-        @config = read_config
+        @config = config_override(read_config)
         @config.merge(opt)
       end
 
@@ -44,7 +44,10 @@ module Relaton
       end
 
       def read_config
-        ret = YAML.load_file(File.join(File.dirname(__FILE__), "config.yml"))
+        YAML.load_file(File.join(File.dirname(__FILE__), "config.yml"))
+      end
+
+      def config_override(ret)
         new = {}
         @override_file and new = YAML.load_file(@override_file)
         ret.deep_merge(new)
