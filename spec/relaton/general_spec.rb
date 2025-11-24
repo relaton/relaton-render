@@ -1096,4 +1096,102 @@ RSpec.describe Relaton::Render do
     expect(p.render(input))
       .to be_equivalent_to output
   end
+
+  it "read in external config and merge" do
+    input1 = <<~INPUT
+      <bibitem type="book">
+        <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <docidentifier type="ISBN">9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+          </person>
+        </contributor>
+                <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Anderson</surname><forename>David</forename><forename>Herbert</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Hering</surname><forename>Milena Marie</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Mustaţă</surname><forename>Mircea</forename><forename>H.</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Payne</surname><forename>Sam H.</forename></name>
+          </person>
+        </contributor>
+        <edition>1</edition>
+        <status>valid</status>
+        <series>
+        <title>London Mathematical Society Lecture Note Series</title>
+        <number>472</number>
+        </series>
+            <contributor>
+              <role type="publisher"/>
+              <organization>
+                <name>Cambridge University Press</name>
+              </organization>
+            </contributor>
+          <size><value type="volume">1</value></size>
+      </bibitem>
+    INPUT
+    input2 = <<~INPUT
+          <bibitem type="unpublished">
+        <title>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</title>
+        <uri>https://eprints.soton.ac.uk/338797/</uri>
+        <date type="published"><on>2020-06</on></date>
+        <date type="accessed"><on>2020-06</on></date>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Jenkins</surname><initials>S.</initials></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Ruostekoski</surname><forename>Janne</forename></name>
+          </person>
+        </contributor>
+        <medium>
+          <genre>preprint</genre>
+        </medium>
+      </bibitem>
+INPUT
+    output1 = <<~OUTPUT
+      <formattedref>ALUFFI, Paolo, David Herbert ANDERSON, Milena Marie HERING, Mircea H. MUSTAŢĂ and Sam H. PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) n.p.: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.</formattedref>
+    OUTPUT
+    output2 = <<~OUTPUT
+      <formattedref>JENKINS and Janne RUOSTEKOSKI. <em>Controlled manipulation of light by cooperativeresponse of atoms in an optical lattice</em>. Preprint. 2020. <fmt-link target='https://eprints.soton.ac.uk/338797/'>https://eprints.soton.ac.uk/338797/</fmt-link>. [viewed: June 2020].</formattedref>
+     OUTPUT
+
+    p = Relaton::Render::General.new
+    expect(p.render(input1))
+      .to be_equivalent_to output1
+    expect(p.render(input2))
+      .to be_equivalent_to output2
+
+      output1 = <<~OUTPUT
+        <formattedref>ALUFFI, Paolo, David Herbert ANDERSON, Milena Marie HERING, Mircea H. MUSTAŢĂ and Sam H. PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) n.p.: Cambridge University Press. 2022.</formattedref>
+      OUTPUT
+    p = Relaton::Render::General.new(config: "spec/fixtures/override.yml")  
+    expect(p.render(input1))
+      .to be_equivalent_to output1
+    expect(p.render(input2))
+      .to be_equivalent_to output2
+  end
 end

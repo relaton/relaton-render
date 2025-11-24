@@ -1,6 +1,7 @@
-require_relative "../utils/utils"
+# require_relative "../utils/utils"
 require_relative "liquid"
 require "singleton"
+require "metanorma-utils"
 
 module Relaton
   module Render
@@ -9,6 +10,9 @@ module Relaton
         include Singleton
 
         attr_accessor :mutex
+
+        Hash.include ::Metanorma::Utils::Hash
+        Array.include ::Metanorma::Utils::Array
 
         def initialize
           @cache = {}
@@ -39,7 +43,8 @@ module Relaton
         end
 
         def parse_options(opt)
-          opt = Utils::sym_keys(opt)
+          # opt = Utils::sym_keys(opt)
+          opt = opt.symbolize_all_keys
           @i18n = opt[:i18n]
           @template_raw = opt[:template].dup
           @template =
