@@ -115,10 +115,12 @@ module Relaton
         # potentially enhanced
         def render(hash, context)
           t = template_select(hash) or return nil # TODO select on context?
-          i = @i18n.select(context).get
-          ret = template_clean(t.render(liquid_hash(hash.merge("labels" => i))))
-          template_components(ret,
-                              i.dig("punct", "biblio-field-delimiter") || ". ")
+          i = @i18n.select(context)
+          i18nsettings = { "labels" => i.get, "lang" => i.lang,
+                           "script" => i.script, "locale" => i.locale }
+          ret = template_clean(t.render(liquid_hash(hash.merge(i18nsettings))))
+          bib_delim = i.get.dig("punct", "biblio-field-delimiter") || ". "
+          template_components(ret, bib_delim)
         end
 
         def template_select(_hash)

@@ -48,7 +48,6 @@ module Relaton
         # ...[0], ...[1], ...[2]
         def expand_nametemplate(template, size)
           t = nametemplate_split(template)
-
           mid = (1..size - 2).each_with_object([]) do |i, m|
             m << t[1].gsub("[1]", "[#{i}]")
           end
@@ -68,6 +67,7 @@ module Relaton
         def nametemplate_split(template)
           curr = 0
           prec = ""
+          @in_name = 0
           t = template.split(/(\{[{%][^{]+?[}%]\})/)
             .each_with_object([""]) do |n, m|
             m, curr, prec = nametemplate_split1(n, m, curr, prec)
@@ -79,6 +79,9 @@ module Relaton
 
         def nametemplate_split1(elem, acc, curr, prec)
           if match = /\{[{%].+?\[(\d)\]/.match(elem)
+            # we are in a name component
+            # if an if is started, track the if nesting...
+            @in_name += 1 if /\{%\s*if/.match?(elem)
             if match[1].to_i > curr
               curr += 1
               acc[curr] ||= ""
@@ -86,7 +89,10 @@ module Relaton
             acc[curr] += prec
             prec = ""
             acc[curr] += elem
-          elsif /\{%\s*endif/.match?(elem)
+          elsif /\{%\s*endif/.match?(elem) && @in_name.positive?
+            # stick the endif to the currently if-nested name component,
+            # if we are in one (@in_name.positive?)
+            @in_name -= 1
             acc[curr] += prec
             prec = ""
             acc[curr] += elem
