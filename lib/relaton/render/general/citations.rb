@@ -94,8 +94,8 @@ module Relaton
           i = @i18n.select(b[:data])
           b[:citation][:default] =
             i.l10n(b[:data][:authoritative_identifier]&.first || "")
-          b[:citation][:short] = i.l10n(renderer(b).citeshorttemplate
-            .render(b[:data].merge(citestyle: "short"), b[:data]))
+          d = b[:data].merge(citestyle: "short")
+          b[:citation][:short] = i.l10n(renderer(b).citeshorttemplate.render(d, d))
           citations_iterate_cite_styles(b, i)
         end
         ret

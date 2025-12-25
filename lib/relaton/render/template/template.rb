@@ -120,7 +120,7 @@ module Relaton
                            "script" => i.script, "locale" => i.locale }
           ret = template_clean(t.render(liquid_hash(hash.merge(i18nsettings))))
           bib_delim = i.get.dig("punct", "biblio-field-delimiter") || ". "
-          template_components(ret, bib_delim)
+          template_components(ret, bib_delim, context)
         end
 
         def template_select(_hash)
@@ -174,17 +174,23 @@ module Relaton
         # Do not strip any delimiters from final field in string
         #
         # if delim = ". " , then: ({{ series }}$$$|) => (series1.)
-        def template_components(str, delim)
+        def template_components(str, delim, context)
           str or return str
           delimrstrip, delimre, delimrstripre = template_components_prep(delim)
-          ret = str.gsub(NON_SPACING_DELIM, "|").split(/#{COMPONENT_DELIM}/o)
-            .map(&:strip).reject(&:empty?)
-          ret = ret[0...-1].map do |s|
-            s.sub(/#{delimre}$/, "").sub(%r[#{delimre}(</[^>]+>)$], "\\1")
-          end + [ret.last]
+          ret = template_components_split(str, delimre)
           delim != delimrstrip and # "." in field followed by ". " in delim
             ret = remove_double_period(ret, delimrstripre)
+          context[:citestyle] == "short" and
+            ret[0] += "<span class='fmt-first-biblio-delim'/>"
           ret.join(delim).gsub(/#{delim}\|/, delimrstrip)
+        end
+
+        def template_components_split(str, delimre)
+          ret = str.gsub(NON_SPACING_DELIM, "|").split(/#{COMPONENT_DELIM}/o)
+            .map(&:strip).reject(&:empty?)
+          ret[0...-1].map do |s|
+            s.sub(/#{delimre}$/, "").sub(%r[#{delimre}(</[^>]+>)$], "\\1")
+          end + [ret.last]
         end
 
         def remove_double_period(ret, delimrstripre)
