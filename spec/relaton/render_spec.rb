@@ -1255,4 +1255,45 @@ RSpec.describe Relaton::Render do
     expect(p.render(input))
       .to be_equivalent_to output
   end
+
+  it "disables no-date and no-place" do
+    input = <<~INPUT
+      <bibitem type="book">
+        <title format='text/plain'>Cereals and cereal products</title>
+        <medium>
+          <genre>preprint</genre>
+        </medium>
+      </bibitem>
+    INPUT
+    p = Relaton::Render::General.new
+    output = <<~OUTPUT
+      <formattedref><em>Cereals and cereal products</em> [preprint]. n.p.: n.d.</formattedref>
+    OUTPUT
+    expect(p.render(input))
+      .to be_equivalent_to output
+    p = Relaton::Render::General.new(i18nhash: { "no_date" => "" })
+    output = <<~OUTPUT
+      <formattedref><em>Cereals and cereal products</em> [preprint]. n.p.</formattedref>
+    OUTPUT
+    expect(p.render(input))
+      .to be_equivalent_to output
+    p = Relaton::Render::General.new(i18nhash: { "no_date" => nil })
+    expect(p.render(input))
+      .to be_equivalent_to output
+    p = Relaton::Render::General.new(i18nhash: { "no_place" => "" })
+    output = <<~OUTPUT
+      <formattedref><em>Cereals and cereal products</em> [preprint]. n.d.</formattedref>
+    OUTPUT
+    expect(p.render(input))
+      .to be_equivalent_to output
+    p = Relaton::Render::General.new(i18nhash: { "no_place" => nil })
+    expect(p.render(input))
+      .to be_equivalent_to output
+    p = Relaton::Render::General.new(i18nhash: { "no_place" => nil, "no_date" => nil })
+    output = <<~OUTPUT
+      <formattedref><em>Cereals and cereal products</em> [preprint].</formattedref>
+    OUTPUT
+    expect(p.render(input))
+      .to be_equivalent_to output
+  end
 end
