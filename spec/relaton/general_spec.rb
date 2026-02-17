@@ -113,7 +113,7 @@ RSpec.describe Relaton::Render do
       <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831. 1 vol.</formattedref>
       </bibitem>
     INPUT
-    output = <<~OUTPUT
+    output = <<~OUTPUT.strip
       <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTA&#x162;&#x102; and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831. 1 vol.</formattedref>
     OUTPUT
     p = Relaton::Render::General.new

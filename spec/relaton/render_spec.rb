@@ -54,14 +54,14 @@ RSpec.describe Relaton::Render do
           <size><value type="volume">1</value></size>
       </bibitem>
     INPUT
-    output = <<~OUTPUT
+    output = <<~OUTPUT.strip
       ALUFFI, Paolo, David Herbert ANDERSON, Milena Marie HERING, Mircea H. MUSTAŢĂ and Sam H. PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) n.p.: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
       .to be_equivalent_to "<formattedref>#{output}</formattedref>"
     data, template = p.parse(input)
-    output = <<~OUTPUT
+    output = <<~OUTPUT.strip
       <esc>ALUFFI</esc>, Paolo, David Herbert <esc>ANDERSON</esc>, Milena Marie <esc>HERING</esc>, Mircea H. <esc>MUSTAŢĂ</esc> and Sam H. <esc>PAYNE</esc> (eds.). <em><esc>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</esc></em>. 1st edition. (<esc>London Mathematical Society Lecture Note Series</esc> 472.) n.p.: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.
     OUTPUT
     expect(p.liquid(data, template))
