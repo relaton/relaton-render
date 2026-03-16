@@ -144,7 +144,7 @@ module Relaton
       end
 
       def default_template
-        "{{creatornames}}. {{title}}. {{date}}."
+        "{{creatornames}}. {{title}}. {{disambiguated_date}}."
       end
 
       def i18n_klass(language: "en", script: "Latn", locale: nil, i18nhash: nil)

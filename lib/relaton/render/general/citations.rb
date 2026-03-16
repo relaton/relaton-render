@@ -135,20 +135,29 @@ module Relaton
       def suffix_date(ret)
         ret.each do |k, v|
           v.each do |k1, v1|
-            next if v1.reject { |b| b[:date].nil? }.size < 2
-
-            suffix_date1(ret, k, k1)
+            s =  v1.reject { |b| b[:date].nil? }.size
+            s.zero? || k.nil? and next
+            suffix_date1(ret, k, k1, s)
+            copy_date_fields(ret, k, k1)
           end
         end
         ret
       end
 
-      def suffix_date1(ret, key1, key2)
-        key1.nil? and return
+      def suffix_date1(ret, key1, key2, size)
+        size > 1 or return
         ret[key1][key2].each_with_index do |b, i|
           b[:date].nil? and next
-          b[:date] += ("a".ord + i).chr.to_s
+          b[:disambiguated_date] = b[:date] + ("a".ord + i).chr.to_s
+        end
+      end
+
+      def copy_date_fields(ret, key1, key2)
+        ret[key1][key2].each do |b|
+          b[:date].nil? and next
           b[:data][:date] = b[:date]
+          b[:disambiguated_date] ||= b[:date]
+          b[:data][:disambiguated_date] = b[:disambiguated_date]
         end
       end
 
@@ -157,7 +166,8 @@ module Relaton
           v.each_value do |v1|
             v1.each do |b|
               m[b[:id]] = { author: @i18n.select(b[:data]).l10n(b[:author]),
-                            date: b[:date], citation: {},
+                            date: b[:disambiguated_date] || b[:date],
+                            citation: {},
                             data: b[:data], type: b[:type] }
             end
           end

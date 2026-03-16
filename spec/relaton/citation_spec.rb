@@ -1073,7 +1073,7 @@ RSpec.describe Relaton::Render::Citations do
       .to match_hash_pp output
   end
 
-  it "generates short citations" do
+  it "generates short citations, use default templates" do
     input = <<~INPUT
       <references>
         <bibitem type="book" id="A">
@@ -1247,12 +1247,111 @@ RSpec.describe Relaton::Render::Citations do
     }
     p = Relaton::Render::General
       .new(citetemplate: {
+             author_date: "{{ author }} {{ disambiguated_date}}",
+             short: {
+               book: "{{ creatornames }} ({{role}}) $$$ {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} [{{medium}}] $$$ {{ edition | capitalize_first }}. ({{ series }}.) {% if place %}{{place}}{%else%}{{ labels['no_place']}}{%endif%}: {{publisher}}. {{disambiguated_date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ authoritative_identifier | join: '. ' }}. {{ other_identifier | join: '. ' }}. {{size}}. {{extent}}.",
+             },
+           },
+           template: { standard: "{{ creatornames }} ({{ role}}) $$$ {{ authoritative_identifier | join: '|' }}: {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} . {{ medium | capitalize }}. {{ edition | capitalize_first }}. {{ place }}: {{ publisher }}. {{disambiguated_date}}. {{size}}. {{ extent }}. {{ other_identifier | join: '. ' }}" })
+    expect(p.render_all(input, type: "short"))
+      .to match_hash_pp output
+
+    output = { "A" =>
+             { author: "Aluffi",
+               date: "2022a",
+               citation:
+               { default: "ABC1",
+                 short:
+                 "ALUFFI, Paolo (ed.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC1. 1 vol.",
+                 author_date: "Aluffi 2022",
+                 full:
+                 "ALUFFI, Paolo. Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. 2022a." },
+               formattedref:
+               "ALUFFI, Paolo. Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. 2022a." },
+               "B" =>
+             { author: "Aluffi",
+               date: "2022b",
+               citation:
+               { default: "ABC2",
+                 short:
+                 "ALUFFI, Paolo (ed.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC2. 1 vol.",
+                 author_date: "Aluffi 2022",
+                 full:
+                 "ALUFFI, Paolo. Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. 2022b." },
+               formattedref:
+               "ALUFFI, Paolo. Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday. 2022b." },
+               "C" =>
+             { author: "Internet Engineering Task Force",
+               date: "2005",
+               citation:
+               { default: "RFC 3979",
+                 short:
+                 "Internet Engineering Task Force. Intellectual Property Rights in IETF technology. 2005.<span class='fmt-first-biblio-delim'/>",
+                 author_date: "Internet Engineering Task Force 2005",
+                 full:
+                 "Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2" },
+               formattedref:
+               "Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2." } }
+    p = Relaton::Render::General
+      .new(citetemplate: {
              author_date: "{{ author }} {{ date}}",
              short: {
                book: "{{ creatornames }} ({{role}}) $$$ {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} [{{medium}}] $$$ {{ edition | capitalize_first }}. ({{ series }}.) {% if place %}{{place}}{%else%}{{ labels['no_place']}}{%endif%}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ authoritative_identifier | join: '. ' }}. {{ other_identifier | join: '. ' }}. {{size}}. {{extent}}.",
              },
            },
            template: { standard: "{{ creatornames }} ({{ role}}) $$$ {{ authoritative_identifier | join: '|' }}: {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} . {{ medium | capitalize }}. {{ edition | capitalize_first }}. {{ place }}: {{ publisher }}. {{date}}. {{size}}. {{ extent }}. {{ other_identifier | join: '. ' }}" })
+    expect(p.render_all(input, type: "short"))
+      .to match_hash_pp output
+
+
+    output = 
+             {"A" =>
+         {author: "Aluffi",
+          date: "2022a",
+          citation:
+           {default: "ABC1",
+            short:
+             "ALUFFI, Paolo (ed.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC1. 1 vol.",
+            author_date: "Aluffi 2022",
+            full:
+             "ALUFFI, Paolo (ed.). ABC1: <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022. 1 vol."},
+          formattedref:
+           "ALUFFI, Paolo (ed.). ABC1: <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022. 1 vol."},
+        "B" =>
+         {author: "Aluffi",
+          date: "2022b",
+          citation:
+           {default: "ABC2",
+            short:
+             "ALUFFI, Paolo (ed.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC2. 1 vol.",
+            author_date: "Aluffi 2022",
+            full:
+             "ALUFFI, Paolo (ed.). ABC2: <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022. 1 vol."},
+          formattedref:
+           "ALUFFI, Paolo (ed.). ABC2: <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022. 1 vol."},
+        "C" =>
+         {author: "Internet Engineering Task Force",
+          date: "2005",
+          citation:
+           {default: "RFC 3979",
+            short:
+             "Internet Engineering Task Force. Intellectual Property Rights in IETF technology. 2005.<span class='fmt-first-biblio-delim'/>",
+            author_date: "Internet Engineering Task Force 2005",
+            full:
+             "Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2"},
+          formattedref:
+           "Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2."}}
+    p = Relaton::Render::General
+      .new(citetemplate: {
+             author_date: "{{ author }} {{ date}}",
+             short: {
+               book: "{{ creatornames }} ({{role}}) $$$ {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} [{{medium}}] $$$ {{ edition | capitalize_first }}. ({{ series }}.) {% if place %}{{place}}{%else%}{{ labels['no_place']}}{%endif%}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ authoritative_identifier | join: '. ' }}. {{ other_identifier | join: '. ' }}. {{size}}. {{extent}}.",
+             },
+           },
+           template: { 
+             standard: "{{ creatornames }} ({{ role}}) $$$ {{ authoritative_identifier | join: '|' }}: {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} . {{ medium | capitalize }}. {{ edition | capitalize_first }}. {{ place }}: {{ publisher }}. {{date}}. {{size}}. {{ extent }}. {{ other_identifier | join: '. ' }}",
+             book: "{{ creatornames }} ({{ role}}) $$$ {{ authoritative_identifier | join: '|' }}: {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} . {{ medium | capitalize }}. {{ edition | capitalize_first }}. {{ place }}: {{ publisher }}. {{date}}. {{size}}. {{ extent }}. {{ other_identifier | join: '. ' }}"
+           })
     expect(p.render_all(input, type: "short"))
       .to match_hash_pp output
   end
