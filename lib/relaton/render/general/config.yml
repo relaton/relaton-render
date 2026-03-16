@@ -37,10 +37,10 @@ language: en
 script: Latn
 
 citetemplate:
-  author_date: "{{ author }} {{ date}}"
-  author_date_br: "{{ author }} ({{ date}})"
+  author_date: "{{ author }} {{ disambiguated_date}}"
+  author_date_br: "{{ author }} ({{ disambiguated_date}})"
   author: "{{ author }}"
-  date: "{{ date }}"
+  date: "{{ disambiguated_date }}"
   reference_tag: "{{ biblio_tag }}"
   title: "{{ title }}"
   title_reference_tag: "{{ title }} {{ biblio_tag }}"
