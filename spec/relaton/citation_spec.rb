@@ -350,77 +350,68 @@ RSpec.describe Relaton::Render::Citations do
         </bibitem>
       </references>
     INPUT
-    output = {
-      "A" => {
-        author: "Aluffi, Anderson, Hering, Mustaţă and Payne",
-        date: "2022a",
-        citation: {
-          default: "",
-          short: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022a. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-          author_date: "Aluffi, Anderson, Hering, Mustaţă and Payne 2022a",
-          author_date_br: "Aluffi, Anderson, Hering, Mustaţă and Payne (2022a)",
-          author: "Aluffi, Anderson, Hering, Mustaţă and Payne",
+    output = 
+       {"A" =>
+         {author: "Aluffi, Anderson, Hering, Mustaţă and Payne",
           date: "2022a",
-          reference_tag: nil,
-          title: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-          title_reference_tag: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-          full: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022a. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-        },
-        formattedref: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022a. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-      },
-      "B" => {
-        author: "Aluffi, Anderson, Hering, Mustaţă and Payne",
-        date: "2022b",
-        citation: {
-          default: "",
-          short: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022b. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-          author_date: "Aluffi, Anderson, Hering, Mustaţă and Payne 2022b",
-          author_date_br: "Aluffi, Anderson, Hering, Mustaţă and Payne (2022b)",
-          author: "Aluffi, Anderson, Hering, Mustaţă and Payne",
+          citation:
+           {default: "",
+            short:
+             "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022a. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
+            author_date: "Aluffi, Anderson, Hering, Mustaţă and Payne 2022a",
+            full:
+             "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022a. 1 vol. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831"},
+          formattedref:
+           "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022a. 1 vol. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831."},
+        "B" =>
+         {author: "Aluffi, Anderson, Hering, Mustaţă and Payne",
           date: "2022b",
-          reference_tag: nil,
-          title: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-          title_reference_tag: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-          full: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022b. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-        },
-        formattedref: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022b. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-      },
-      "C" => {
-        author: "Aluffi, Anderson, Hering, Mustaţă and Payne",
-        date: "2021",
-        citation: {
-          default: "",
-          short: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2021. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-          author_date: "Aluffi, Anderson, Hering, Mustaţă and Payne 2021",
-          author_date_br: "Aluffi, Anderson, Hering, Mustaţă and Payne (2021)",
-          author: "Aluffi, Anderson, Hering, Mustaţă and Payne",
+          citation:
+           {default: "",
+            short:
+             "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022b. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
+            author_date: "Aluffi, Anderson, Hering, Mustaţă and Payne 2022b",
+            full:
+             "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022b. 1 vol. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831"},
+          formattedref:
+           "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022b. 1 vol. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831."},
+        "C" =>
+         {author: "Aluffi, Anderson, Hering, Mustaţă and Payne",
           date: "2021",
-          reference_tag: nil,
-          title: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-          title_reference_tag: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-          full: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2021. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-        },
-        formattedref: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2021. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-      },
-      "D" => {
-        author: "Aluffi and Anderson",
-        date: "2022",
-        citation: {
-          default: "",
-          short: "ALUFFI, Paolo and David ANDERSON (eds.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-          author_date: "Aluffi and Anderson 2022",
-          author_date_br: "Aluffi and Anderson (2022)",
-          author: "Aluffi and Anderson",
+          citation:
+           {default: "",
+            short:
+             "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2021. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
+            author_date: "Aluffi, Anderson, Hering, Mustaţă and Payne 2021",
+            full:
+             "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2021. 1 vol. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831"},
+          formattedref:
+           "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2021. 1 vol. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831."},
+        "D" =>
+         {author: "Aluffi and Anderson",
           date: "2022",
-          reference_tag: nil,
-          title: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-          title_reference_tag: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-          full: "ALUFFI, Paolo and David ANDERSON (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-        },
-        formattedref: "ALUFFI, Paolo and David ANDERSON (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-      },
-    }
-    p = Relaton::Render::General.new
+          citation:
+           {default: "",
+            short:
+             "ALUFFI, Paolo and David ANDERSON (eds.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
+            author_date: "Aluffi and Anderson 2022",
+            full:
+             "ALUFFI, Paolo and David ANDERSON (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022. 1 vol. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831"},
+          formattedref:
+           "ALUFFI, Paolo and David ANDERSON (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022. 1 vol. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831."}}
+
+    p = Relaton::Render::General
+      .new(citetemplate: {
+             author_date: "{{ author }} {{ disambiguated_date}}",
+             short: {
+               book: "{{ creatornames }} ({{role}}) $$$ {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} [{{medium}}] $$$ {{ edition | capitalize_first }}. ({{ series }}.) {% if place %}{{place}}{%else%}{{ labels['no_place']}}{%endif%}: {{publisher}}. {{disambiguated_date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ authoritative_identifier | join: '. ' }}. {{ other_identifier | join: '. ' }}. {{size}}. {{extent}}.",
+             },
+           },
+           template: {
+             standard: "{{ creatornames }} ({{ role}}) $$$ {{ authoritative_identifier | join: '|' }}: {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} . {{ medium | capitalize }}. {{ edition | capitalize_first }}. {{ place }}: {{ publisher }}. {{disambiguated_date}}. {{size}}. {{ extent }}. {{ other_identifier | join: '. ' }}",
+             book: "{{ creatornames }} ({{ role}}) $$$ {{ authoritative_identifier | join: '|' }}: {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} . {{ medium | capitalize }}. {{ edition | capitalize_first }}. {{ place }}: {{ publisher }}. {{disambiguated_date}}. {{size}}. {{ extent }}. {{ other_identifier | join: '. ' }}",
+           })
+
     expect(p.render_all(input, type: "author-date"))
       .to match_hash_pp output
   end
@@ -698,77 +689,67 @@ RSpec.describe Relaton::Render::Citations do
         </bibitem>
       </references>
     INPUT
-    output = {
-      "A" => {
-        author: "Aluffi, Anderson, Hering, Mustaţă and Payne",
-        date: "2022a",
-        citation: {
-          default: "",
-          short: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022a. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-          author_date: "Aluffi, Anderson, Hering, Mustaţă and Payne 2022a",
-          author_date_br: "Aluffi, Anderson, Hering, Mustaţă and Payne (2022a)",
-          author: "Aluffi, Anderson, Hering, Mustaţă and Payne",
-          date: "2022a",
-          reference_tag: nil,
-          title: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-          title_reference_tag: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-          full: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022a. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-        },
-        formattedref: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022a. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-      },
-      "B" => {
-        author: "Aluffi, Anderson, Hering, Mustaţă and Payne",
-        date: "2022b",
-        citation: {
-          default: "",
-          short: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022b. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-          author_date: "Aluffi, Anderson, Hering, Mustaţă and Payne 2022b",
-          author_date_br: "Aluffi, Anderson, Hering, Mustaţă and Payne (2022b)",
-          author: "Aluffi, Anderson, Hering, Mustaţă and Payne",
-          date: "2022b",
-          reference_tag: nil,
-          title: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-          title_reference_tag: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-          full: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022b. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-        },
-        formattedref: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022b. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-      },
-      "C" => {
-        author: "Aluffi, Anderson, Hering, Mustaţă and Payne",
-        date: "2021",
-        citation: {
-          default: "",
-          short: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2021. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-          author_date: "Aluffi, Anderson, Hering, Mustaţă and Payne 2021",
-          author_date_br: "Aluffi, Anderson, Hering, Mustaţă and Payne (2021)",
-          author: "Aluffi, Anderson, Hering, Mustaţă and Payne",
-          date: "2021",
-          reference_tag: nil,
-          title: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-          title_reference_tag: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-          full: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2021. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-        },
-        formattedref: "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2021. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-      },
-      "D" => {
-        author: "Aluffi and Anderson",
-        date: "2022",
-        citation: {
-          default: "",
-          short: "ALUFFI, Paolo and David ANDERSON (eds.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-          author_date: "Aluffi and Anderson 2022",
-          author_date_br: "Aluffi and Anderson (2022)",
-          author: "Aluffi and Anderson",
-          date: "2022",
-          reference_tag: nil,
-          title: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-          title_reference_tag: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-          full: "ALUFFI, Paolo and David ANDERSON (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-        },
-        formattedref: "ALUFFI, Paolo and David ANDERSON (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
-      },
-    }
-    p = Relaton::Render::General.new
+    output =
+      { "A" =>
+  { author: "Aluffi, Anderson, Hering, Mustaţă and Payne",
+    date: "2022a",
+    citation:
+    { default: "",
+      short:
+      "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022a. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
+      author_date: "Aluffi, Anderson, Hering, Mustaţă and Payne 2022a",
+      full:
+      "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022a. 1 vol. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831" },
+    formattedref:
+    "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022a. 1 vol. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831." },
+        "B" =>
+  { author: "Aluffi, Anderson, Hering, Mustaţă and Payne",
+    date: "2022b",
+    citation:
+    { default: "",
+      short:
+      "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022b. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
+      author_date: "Aluffi, Anderson, Hering, Mustaţă and Payne 2022b",
+      full:
+      "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022b. 1 vol. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831" },
+    formattedref:
+    "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022b. 1 vol. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831." },
+        "C" =>
+  { author: "Aluffi, Anderson, Hering, Mustaţă and Payne",
+    date: "2021",
+    citation:
+    { default: "",
+      short:
+      "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2021. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
+      author_date: "Aluffi, Anderson, Hering, Mustaţă and Payne 2021",
+      full:
+      "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2021. 1 vol. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831" },
+    formattedref:
+    "ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2021. 1 vol. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831." },
+        "D" =>
+  { author: "Aluffi and Anderson",
+    date: "2022",
+    citation:
+    { default: "",
+      short:
+      "ALUFFI, Paolo and David ANDERSON (eds.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.",
+      author_date: "Aluffi and Anderson 2022",
+      full:
+      "ALUFFI, Paolo and David ANDERSON (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022. 1 vol. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831" },
+    formattedref:
+    "ALUFFI, Paolo and David ANDERSON (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022. 1 vol. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831." } }
+    p = Relaton::Render::General
+      .new(citetemplate: {
+             author_date: "{{ author }} {{ disambiguated_date}}",
+             short: {
+               book: "{{ creatornames }} ({{role}}) $$$ {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} [{{medium}}] $$$ {{ edition | capitalize_first }}. ({{ series }}.) {% if place %}{{place}}{%else%}{{ labels['no_place']}}{%endif%}: {{publisher}}. {{disambiguated_date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ authoritative_identifier | join: '. ' }}. {{ other_identifier | join: '. ' }}. {{size}}. {{extent}}.",
+             },
+           },
+           template: {
+             standard: "{{ creatornames }} ({{ role}}) $$$ {{ authoritative_identifier | join: '|' }}: {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} . {{ medium | capitalize }}. {{ edition | capitalize_first }}. {{ place }}: {{ publisher }}. {{disambiguated_date}}. {{size}}. {{ extent }}. {{ other_identifier | join: '. ' }}",
+             book: "{{ creatornames }} ({{ role}}) $$$ {{ authoritative_identifier | join: '|' }}: {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} . {{ medium | capitalize }}. {{ edition | capitalize_first }}. {{ place }}: {{ publisher }}. {{disambiguated_date}}. {{size}}. {{ extent }}. {{ other_identifier | join: '. ' }}",
+           })
+
     expect(p.render_all(input, type: "author-date"))
       .to match_hash_pp output
   end
@@ -1021,7 +1002,7 @@ RSpec.describe Relaton::Render::Citations do
         date: "2022a",
         citation: {
           default: "ABC1",
-          short: "ALUFFI, Paolo (ed.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022a. ABC1. 1 vol.",
+          short: "ALUFFI, Paolo (ed.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC1. 1 vol.",
           author_date: "Aluffi 2022a",
           author_date_br: "Aluffi (2022a)",
           author: "Aluffi",
@@ -1029,16 +1010,16 @@ RSpec.describe Relaton::Render::Citations do
           reference_tag: "Fulton1",
           title: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
           title_reference_tag: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday Fulton1",
-          full: "ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022a. ABC1. 1 vol.",
+          full: "ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC1. 1 vol.",
         },
-        formattedref: "ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022a. ABC1. 1 vol.",
+        formattedref: "ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC1. 1 vol.",
       },
       "B" => {
         author: "Aluffi",
         date: "2022b",
         citation: {
           default: "ABC2",
-          short: "ALUFFI, Paolo (ed.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022b. ABC2. 1 vol.",
+          short: "ALUFFI, Paolo (ed.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC2. 1 vol.",
           author_date: "Aluffi 2022b",
           author_date_br: "Aluffi (2022b)",
           author: "Aluffi",
@@ -1046,9 +1027,9 @@ RSpec.describe Relaton::Render::Citations do
           reference_tag: "Fulton2",
           title: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
           title_reference_tag: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday Fulton2",
-          full: "ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022b. ABC2. 1 vol.",
+          full: "ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC2. 1 vol.",
         },
-        formattedref: "ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022b. ABC2. 1 vol.",
+        formattedref: "ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC2. 1 vol.",
       },
       "C" => {
         author: "Internet Engineering Task Force",
@@ -1153,13 +1134,15 @@ RSpec.describe Relaton::Render::Citations do
       </bibitem>
       </references>
     INPUT
+
+    # default: date not disambiguated_date in the templates
     output = {
       "A" => {
         author: "Aluffi",
         date: "2022a",
         citation: {
           default: "ABC1",
-          short: "ALUFFI, Paolo (ed.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022a. ABC1. 1 vol.",
+          short: "ALUFFI, Paolo (ed.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC1. 1 vol.",
           author_date: "Aluffi 2022a",
           author_date_br: "Aluffi (2022a)",
           author: "Aluffi",
@@ -1167,16 +1150,16 @@ RSpec.describe Relaton::Render::Citations do
           reference_tag: nil,
           title: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
           title_reference_tag: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-          full: "ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022a. ABC1. 1 vol.",
+          full: "ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC1. 1 vol.",
         },
-        formattedref: "ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022a. ABC1. 1 vol.",
+        formattedref: "ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC1. 1 vol.",
       },
       "B" => {
         author: "Aluffi",
         date: "2022b",
         citation: {
           default: "ABC2",
-          short: "ALUFFI, Paolo (ed.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022b. ABC2. 1 vol.",
+          short: "ALUFFI, Paolo (ed.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC2. 1 vol.",
           author_date: "Aluffi 2022b",
           author_date_br: "Aluffi (2022b)",
           author: "Aluffi",
@@ -1184,9 +1167,9 @@ RSpec.describe Relaton::Render::Citations do
           reference_tag: nil,
           title: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
           title_reference_tag: "Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday",
-          full: "ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022b. ABC2. 1 vol.",
+          full: "ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC2. 1 vol.",
         },
-        formattedref: "ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022b. ABC2. 1 vol.",
+        formattedref: "ALUFFI, Paolo (ed.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC2. 1 vol.",
       },
       "C" => {
         author: "Internet Engineering Task Force",
@@ -1303,44 +1286,43 @@ RSpec.describe Relaton::Render::Citations do
     expect(p.render_all(input, type: "short"))
       .to match_hash_pp output
 
-
-    output = 
-             {"A" =>
-         {author: "Aluffi",
-          date: "2022a",
-          citation:
-           {default: "ABC1",
-            short:
-             "ALUFFI, Paolo (ed.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC1. 1 vol.",
-            author_date: "Aluffi 2022",
-            full:
-             "ALUFFI, Paolo (ed.). ABC1: <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022. 1 vol."},
-          formattedref:
-           "ALUFFI, Paolo (ed.). ABC1: <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022. 1 vol."},
+    output =
+      { "A" =>
+  { author: "Aluffi",
+    date: "2022a",
+    citation:
+    { default: "ABC1",
+      short:
+      "ALUFFI, Paolo (ed.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC1. 1 vol.",
+      author_date: "Aluffi 2022",
+      full:
+      "ALUFFI, Paolo (ed.). ABC1: <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022. 1 vol." },
+    formattedref:
+    "ALUFFI, Paolo (ed.). ABC1: <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022. 1 vol." },
         "B" =>
-         {author: "Aluffi",
-          date: "2022b",
-          citation:
-           {default: "ABC2",
-            short:
-             "ALUFFI, Paolo (ed.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC2. 1 vol.",
-            author_date: "Aluffi 2022",
-            full:
-             "ALUFFI, Paolo (ed.). ABC2: <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022. 1 vol."},
-          formattedref:
-           "ALUFFI, Paolo (ed.). ABC2: <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022. 1 vol."},
+  { author: "Aluffi",
+    date: "2022b",
+    citation:
+    { default: "ABC2",
+      short:
+      "ALUFFI, Paolo (ed.)<span class='fmt-first-biblio-delim'/>. <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. ABC2. 1 vol.",
+      author_date: "Aluffi 2022",
+      full:
+      "ALUFFI, Paolo (ed.). ABC2: <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022. 1 vol." },
+    formattedref:
+    "ALUFFI, Paolo (ed.). ABC2: <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. Cambridge, UK: Cambridge University Press. 2022. 1 vol." },
         "C" =>
-         {author: "Internet Engineering Task Force",
-          date: "2005",
-          citation:
-           {default: "RFC 3979",
-            short:
-             "Internet Engineering Task Force. Intellectual Property Rights in IETF technology. 2005.<span class='fmt-first-biblio-delim'/>",
-            author_date: "Internet Engineering Task Force 2005",
-            full:
-             "Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2"},
-          formattedref:
-           "Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2."}}
+  { author: "Internet Engineering Task Force",
+    date: "2005",
+    citation:
+    { default: "RFC 3979",
+      short:
+      "Internet Engineering Task Force. Intellectual Property Rights in IETF technology. 2005.<span class='fmt-first-biblio-delim'/>",
+      author_date: "Internet Engineering Task Force 2005",
+      full:
+      "Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2" },
+    formattedref:
+    "Internet Engineering Task Force. RFC 3979: <em>Intellectual Property Rights in IETF technology</em>. Online. 2005. DOI: https://doi.org/10.3886/ICPSR20520.v2." } }
     p = Relaton::Render::General
       .new(citetemplate: {
              author_date: "{{ author }} {{ date}}",
@@ -1348,9 +1330,9 @@ RSpec.describe Relaton::Render::Citations do
                book: "{{ creatornames }} ({{role}}) $$$ {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} [{{medium}}] $$$ {{ edition | capitalize_first }}. ({{ series }}.) {% if place %}{{place}}{%else%}{{ labels['no_place']}}{%endif%}: {{publisher}}. {{date}}. {{ labels['updated'] | capitalize }}:_{{date_updated}}. {{ authoritative_identifier | join: '. ' }}. {{ other_identifier | join: '. ' }}. {{size}}. {{extent}}.",
              },
            },
-           template: { 
+           template: {
              standard: "{{ creatornames }} ({{ role}}) $$$ {{ authoritative_identifier | join: '|' }}: {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} . {{ medium | capitalize }}. {{ edition | capitalize_first }}. {{ place }}: {{ publisher }}. {{date}}. {{size}}. {{ extent }}. {{ other_identifier | join: '. ' }}",
-             book: "{{ creatornames }} ({{ role}}) $$$ {{ authoritative_identifier | join: '|' }}: {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} . {{ medium | capitalize }}. {{ edition | capitalize_first }}. {{ place }}: {{ publisher }}. {{date}}. {{size}}. {{ extent }}. {{ other_identifier | join: '. ' }}"
+             book: "{{ creatornames }} ({{ role}}) $$$ {{ authoritative_identifier | join: '|' }}: {{labels['punct']['open-title']}}{{ title }}{{labels['punct']['close-title']}} . {{ medium | capitalize }}. {{ edition | capitalize_first }}. {{ place }}: {{ publisher }}. {{date}}. {{size}}. {{ extent }}. {{ other_identifier | join: '. ' }}",
            })
     expect(p.render_all(input, type: "short"))
       .to match_hash_pp output
