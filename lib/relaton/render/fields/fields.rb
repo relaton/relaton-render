@@ -82,9 +82,10 @@ module Relaton
         @r.i18n.select(hash).get.dig("stage", status) || status
       end
 
-      # date => disambiguated_date, the disambiguation happens in citations/
+      # date => disambiguated_date, the disambiguation happens in citations
+      # need to process disambiguated_date before date
       def date_fields_format(hash)
-        [%i(date date), %i(disambiguated_date date),
+        [%i(disambiguated_date date), %i(date date),
          %i(date_updated date_updated),
          %i(date_accessed date_accessed)].each do |k|
           hash[k[0]] = dateformat(hash[k[1]], hash, k)
