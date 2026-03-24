@@ -2,18 +2,18 @@ module Relaton
   module Render
     class Parse
       def host(doc)
-        doc.relation.detect { |r| r.type == "includedIn" }&.bibitem
+        doc.relation&.detect { |r| r.type == "includedIn" }&.bibitem
       end
 
       # TODO : first is naive choice
       def title(doc)
-        doc.nil? || doc.title.empty? and return nil
-        t = doc.title.select { |x| x.title.language&.include? @lang }
-        t.empty? and t = doc.title
+        doc.nil? || doc.title.nil? || doc.title.empty? and return nil
+        t = Array(doc.title).select { |x| x.language == @lang }
+        t.empty? and t = Array(doc.title)
         t1 = t.select { |x| x.type == "main" }
         t1.empty? and t1 = t
         t1.first or return
-        esc(content(t1.first.title))
+        esc(content(t1.first))
       end
 
       def medium(doc, host)
@@ -25,9 +25,9 @@ module Relaton
 
       def size(doc)
         x = doc.size or return nil
-        x.size.each_with_object({}) do |v, m|
+        x.value.each_with_object({}) do |v, m|
           m[v.type] ||= []
-          m[v.type] << v.value
+          m[v.type] << v.content
         end
       end
 
@@ -42,8 +42,8 @@ module Relaton
       end
 
       def place(doc, host)
-        x = doc.place
-        x.empty? && host and x = host.place
+        x = Array(doc.place)
+        x.empty? && host and x = Array(host.place)
         x.empty? and return x
         x.map { |p| place1(p) }
       end
@@ -52,26 +52,24 @@ module Relaton
         c = place.city
         r = place.region
         n = place.country
-        c.nil? && r.empty? && n.empty? and return place.name
-        ret = [c] + r.map(&:name) + n.map(&:name)
-        ret.compact
-        #@i18n.l10n(ret.compact.join(", "))
+        c.nil? && r.empty? && n.empty? and return place.formatted_place
+        [c, *r.map(&:content), *n.map(&:content)].compact.join(", ")
       end
 
       def series(doc)
-        doc.series.detect { |s| s.type == "main" } ||
-          doc.series.detect { |s| s.type.nil? } ||
-          doc.series.first
+        doc.series&.detect { |s| s.type == "main" } ||
+          doc.series&.detect { |s| s.type.nil? } ||
+          doc.series&.first
       end
 
       def series_title(series, _doc)
         series.nil? and return nil
-        series.title.respond_to?(:titles) && !series.title.titles.empty? and
-          return content(series.title.titles.first.title)
-        series.title.respond_to?(:title) and
-          return content(series.title.title)
-        series.title.respond_to?(:formattedref) and
-          content(series.formattedref)
+        t = Array(series.title).select { |x| x.language == @lang }
+        t.empty? and t = Array(series.title)
+        t1 = t.select { |x| x.type == "main" }
+        t1.empty? and t1 = t
+        t1.first.nil? and return nil
+        esc(content(t1.first))
       end
 
       def series_formatted(series, _doc)
@@ -112,7 +110,7 @@ module Relaton
       def access_location(doc, host)
         x = doc.accesslocation || host&.accesslocation or
           return nil
-        x.first
+        Array(x).first
       end
 
       def included(type)
@@ -121,7 +119,7 @@ module Relaton
 
       def type(doc)
         type = doc.type and return type
-        doc.relation.any? { |r| r.type == "includedIn" } and return "inbook"
+        doc.relation&.any? { |r| r.type == "includedIn" } and return "inbook"
         "book"
       end
 
@@ -149,17 +147,17 @@ module Relaton
 
       def localized_string_or_text(str)
         case str
-        when RelatonBib::LocalizedString then content(str)
+        when Relaton::Bib::LocalizedString then content(str)
         when String then str
         end
       end
 
       def extent(doc)
-        doc.extent.each_with_object([]) do |e, acc|
+        Array(doc.extent).each_with_object([]) do |e, acc|
           case e
-          when RelatonBib::Extent, RelatonBib::LocalityStack
+          when Relaton::Bib::Extent, Relaton::Bib::LocalityStack
             a = e.locality.each_with_object([]) do |e1, m|
-              if e1.is_a?(RelatonBib::LocalityStack)
+              if e1.is_a?(Relaton::Bib::LocalityStack)
                 m << extent1(e1.locality)
               else
                 m.empty? and m << {}
@@ -167,7 +165,7 @@ module Relaton
               end
             end
             acc << a
-          when RelatonBib::Locality
+          when Relaton::Bib::Locality
             acc << extent1(Array(e))
           end
         end
@@ -184,7 +182,7 @@ module Relaton
       end
 
       def status(doc)
-        v = doc&.status&.stage&.value
+        v = doc&.status&.stage&.content
         #@i18n.get.dig("stage", v) || v
       end
     end

@@ -219,7 +219,7 @@ RSpec.describe Relaton::Render do
                 <abbreviation>CUP</abbreviation>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
           <size><value type="page">lxii</value><value type="page">500</value></size>
       </bibitem>
     INPUT
@@ -404,7 +404,7 @@ RSpec.describe Relaton::Render do
                 <abbreviation>CUP</abbreviation>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
           <size><value type="page">lxii</value><value type="page">500</value></size>
       </bibitem>
     INPUT
@@ -502,7 +502,7 @@ RSpec.describe Relaton::Render do
                 <abbreviation>CUP</abbreviation>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
           <size><value type="page">lxii</value><value type="page">500</value></size>
       </bibitem>
     INPUT
@@ -549,17 +549,17 @@ RSpec.describe Relaton::Render do
                 <abbreviation>CUP</abbreviation>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
           <size><value type="page">lxii</value><value type="page">500</value></size>
       </bibitem>
     INPUT
     template = <<~TEMPLATE
       {{ title }} $$$ {{ place }} : {{ publisher_abbrev }} $$$ {{ date }}
     TEMPLATE
-    input_no_place = input.sub(%r{<place>.+</place>}, "")
+    input_no_place = input.sub(%r{<place><formattedPlace>.+</formattedPlace></place>}, "")
     input_no_pub = input.sub(%r{<contributor>.+</contributor>}m, "")
     input_no_pub_no_place = input.sub(%r{<contributor>.+</contributor>}m, "")
-      .sub(%r{<place>.+</place>}, "")
+      .sub(%r{<place><formattedPlace>.+</formattedPlace></place>}, "")
     p = Relaton::Render::General
       .new(template: { book: template }, language: "en")
     expect(p.render(input))
@@ -626,7 +626,7 @@ RSpec.describe Relaton::Render do
                 <abbreviation>CUP</abbreviation>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
           <size><value type="page">lxii</value><value type="page">500</value></size>
       </bibitem>
     INPUT
@@ -675,7 +675,7 @@ RSpec.describe Relaton::Render do
                 <abbreviation>CUP</abbreviation>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
           <size><value type="page">lxii</value><value type="page">500</value></size>
       </bibitem>
     INPUT
@@ -821,7 +821,7 @@ RSpec.describe Relaton::Render do
                 <abbreviation>CUP</abbreviation>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
           <size><value type="page">lxii</value><value type="page">500</value></size>
       </bibitem>
     INPUT
@@ -886,7 +886,7 @@ RSpec.describe Relaton::Render do
                 <name>Cambridge University Press</name>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
           <size><value type="page">500</value></size>
       </bibitem>
     INPUT
