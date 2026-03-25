@@ -69,7 +69,7 @@ module Relaton
         t1 = t.select { |x| x.type == "main" }
         t1.empty? and t1 = t
         t1.first.nil? and return nil
-        esc(content(t1.first))
+        content(t1.first)
       end
 
       def series_formatted(series, _doc)
@@ -97,7 +97,8 @@ module Relaton
       end
 
       def series_place(series, _doc)
-        series.place
+        p = series.place or return nil
+        place1(p)
       end
 
       def series_dates(series, _doc)
@@ -156,15 +157,24 @@ module Relaton
         Array(doc.extent).each_with_object([]) do |e, acc|
           case e
           when Relaton::Bib::Extent, Relaton::Bib::LocalityStack
-            a = e.locality.each_with_object([]) do |e1, m|
-              if e1.is_a?(Relaton::Bib::LocalityStack)
-                m << extent1(e1.locality)
-              else
-                m.empty? and m << {}
-                m[-1].merge!(extent1(Array(e1)))
+            if e.locality.any?
+              a = e.locality.each_with_object([]) do |e1, m|
+                if e1.is_a?(Relaton::Bib::LocalityStack)
+                  m << extent1(e1.locality)
+                else
+                  m.empty? and m << {}
+                  m[-1].merge!(extent1(Array(e1)))
+                end
+              end
+              acc << a
+            else
+              Array(e.locality_stack).each do |stack|
+                a = stack.locality.each_with_object([{}]) do |e1, m|
+                  m[-1].merge!(extent1(Array(e1)))
+                end
+                acc << a
               end
             end
-            acc << a
           when Relaton::Bib::Locality
             acc << extent1(Array(e))
           end

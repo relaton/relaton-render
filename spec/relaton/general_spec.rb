@@ -46,7 +46,7 @@ RSpec.describe Relaton::Render do
           </person>
         </contributor>
         <edition>1</edition>
-        <status>valid</status>
+        <status><stage>valid</stage></status>
         <series>
         <title>London Mathematical Society Lecture Note Series</title>
         <number>472</number>

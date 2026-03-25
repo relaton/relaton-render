@@ -36,7 +36,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "liquid", "~> 5"
   spec.add_dependency "metanorma-utils", "~> 2"
   spec.add_dependency "nokogiri"
-  spec.add_dependency "relaton-bib", ">= 2.0.0.alpha.1", "< 3"
+  spec.add_dependency "relaton-bib", ">= 2.0.0.pre.alpha.6", "< 3"
   spec.add_dependency "twitter_cldr"
   spec.add_dependency "tzinfo-data" # we need this for windows only
   # spec.metadata["rubygems_mfa_required"] = "true"
