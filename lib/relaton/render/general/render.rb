@@ -164,9 +164,9 @@ module Relaton
       def xml2relaton(bib)
         bib.is_a?(Relaton::Bib::ItemData) and return bib
         xml = xml_string2noko(bib)
-        xml.delete("xmlns") # won't remove_namespace, in case of MathML
         bib = xml.to_xml(encoding: "UTF-8", indent: 0,
                          save_with: Nokogiri::XML::Node::SaveOptions::AS_XML)
+          .gsub(/ xmlns="[^"]*"/, "")
         Relaton::Bib::Bibitem.from_xml(bib)
       end
 
