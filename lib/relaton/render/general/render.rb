@@ -155,7 +155,7 @@ module Relaton
       def render(bib, embedded: false, terminator: true)
         bib = xml2relaton(bib)
         f = bib.formattedref and
-          return embedded ? f : fmtref(f)
+          return embedded ? f.content : fmtref(f.content)
         ret = render1(bib, terminator) or return nil
         embedded and return ret
         fmtref(ret)
