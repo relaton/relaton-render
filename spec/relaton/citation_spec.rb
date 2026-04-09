@@ -53,7 +53,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
       </references>
@@ -213,7 +213,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
         <bibitem type="book" id="B">
@@ -263,7 +263,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
         <bibitem type="book" id="C">
@@ -313,7 +313,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
         <bibitem type="book" id="D">
@@ -345,7 +345,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
       </references>
@@ -436,7 +436,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
         <bibitem type="book" id="B">
@@ -456,7 +456,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
         </references>
@@ -552,7 +552,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
         <bibitem type="book" id="B">
@@ -602,7 +602,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
         <bibitem type="book" id="C">
@@ -652,7 +652,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
         <bibitem type="book" id="D">
@@ -684,7 +684,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
       </references>
@@ -773,7 +773,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
         </bibitem>
         <bibitem type="book" id="B">
           <title>Book 2</title>
@@ -791,7 +791,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
         </bibitem>
         <bibitem type="standard" id="C">
           <title>Standard 1</title>
@@ -809,7 +809,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
         </bibitem>
         <bibitem type="standard" id="D">
           <title>Standard 2</title>
@@ -827,7 +827,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
         </bibitem>
       </references>
     INPUT
@@ -938,7 +938,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
         <bibitem type="book" id="B">
@@ -963,7 +963,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
                 <bibitem type="standard" id="C">
@@ -1078,7 +1078,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
         <bibitem type="book" id="B">
@@ -1102,7 +1102,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
                 <bibitem type="standard" id="C">
@@ -1358,7 +1358,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
         <bibitem type="book" id="B">
@@ -1378,7 +1378,7 @@ RSpec.describe Relaton::Render::Citations do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
         </references>
