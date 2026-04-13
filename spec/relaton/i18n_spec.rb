@@ -63,7 +63,7 @@ RSpec.describe Relaton::Render do
               <form>electronic resource</form>
               <size>8vo</size>
             </medium>
-            <place>New York, NY</place>
+            <place><formattedPlace>New York, NY</formattedPlace></place>
           </bibitem>
         </relation>
         <extent>
@@ -205,7 +205,7 @@ RSpec.describe Relaton::Render do
             <status>
             <stage>valid</stage>
             </status>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
       </bibitem>
     INPUT
     template = <<~TEMPLATE
@@ -274,7 +274,7 @@ RSpec.describe Relaton::Render do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
         <bibitem type="book" id="B">
@@ -325,7 +325,7 @@ RSpec.describe Relaton::Render do
                   <name>Cambridge University Press</name>
                 </organization>
               </contributor>
-              <place>Cambridge, UK</place>
+              <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <size><value type="volume">1</value></size>
         </bibitem>
         </references>
@@ -407,7 +407,7 @@ RSpec.describe Relaton::Render do
                 <name>Cambridge University Press</name>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
           <size><value type="volume">1</value></size>
       </bibitem>
     INPUT
