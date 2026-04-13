@@ -82,7 +82,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new(language: "ar")
     expect(HTMLEntities.new.decode(p.render(input)))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders incollection, two authors, with German i18n" do
@@ -91,7 +91,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new(language: "de")
     expect(HTMLEntities.new.decode(p.render(input)))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders incollection, two authors, with German internationalisation, with customisation of i18n" do
@@ -101,7 +101,7 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General.new(language: "de",
                                      i18nhash: { "author_and" => "and" })
     expect(HTMLEntities.new.decode(p.render(input)))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders incollection, two authors, with Spanish i18n" do
@@ -110,7 +110,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new(language: "es")
     expect(HTMLEntities.new.decode(p.render(input)))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders incollection, two authors, with French i18n" do
@@ -119,7 +119,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new(language: "fr")
     expect(HTMLEntities.new.decode(p.render(input)))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders incollection, two authors, with Russian i18n" do
@@ -128,7 +128,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new(language: "ru")
     expect(HTMLEntities.new.decode(p.render(input)))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders incollection, two authors, with Traditional Chinese i18n" do
@@ -140,7 +140,7 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General.new(language: "zh", script: "Hant",
                                      i18nhash: i.i18n.get)
     expect(HTMLEntities.new.decode(p.render(input)))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders incollection, two authors, with Simplified Chinese i18n" do
@@ -152,7 +152,7 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General.new(language: "zh", script: "Hans",
                                      i18nhash: i.i18n.get)
     expect(HTMLEntities.new.decode(p.render(input)))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders incollection, two authors, with Japanese i18n" do
@@ -163,7 +163,7 @@ RSpec.describe Relaton::Render do
     i.i18n_init("ja", "Jpan", nil)
     p = Relaton::Render::General.new(language: "ja", i18nhash: i.i18n.get)
     expect(HTMLEntities.new.decode(p.render(input)))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders cardinal editions" do
@@ -176,7 +176,7 @@ RSpec.describe Relaton::Render do
     i.i18n_init("en", "Latn", nil)
     p = Relaton::Render::General.new(language: "en", i18nhash: i.i18n.get)
     expect(HTMLEntities.new.decode(p.render(input1)))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
 
     output = <<~OUTPUT
       <formattedref>RAMSEY、 J. K.、 W. C. MCGREW。 Object play in great apes: Studies in nature and captivity。 PELLEGRINI、 Anthony D.、 Peter Kenneth SMITH （編）： The nature of play: Great apes and humans ［electronic resource、 8vo］。第3.0版。 New York、 NY： Guilford Press。 2005。 89〜112頁。 <fmt-link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</fmt-link>。［参照： 2019年9月3日］。</formattedref>
@@ -185,7 +185,7 @@ RSpec.describe Relaton::Render do
     i.i18n_init("ja", "Jpan", nil)
     p = Relaton::Render::General.new(language: "ja", i18nhash: i.i18n.get)
     expect(HTMLEntities.new.decode(p.render(input1)))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "processes status" do
@@ -215,12 +215,12 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General
       .new(template: { book: template })
     expect(p.render(input, terminator: false))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
     output = "<formattedref>有効です</formattedref>"
     p = Relaton::Render::General
       .new(language: "ja", template: { book: template })
     expect(p.render(input, terminator: false))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "selects between two different i18n" do
@@ -433,7 +433,7 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General
       .new(config)
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
 
     config[:language] = "ja"
     output = <<~OUTPUT
@@ -442,7 +442,7 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General
       .new(config)
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   private
