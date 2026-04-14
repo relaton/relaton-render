@@ -170,6 +170,6 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 end
