@@ -66,8 +66,8 @@ module Relaton
         ref, ref1, r = render1_prep(cit)
         i = @i18n.select(cit[:data])
         cit[:formattedref] =
-          r.valid_parse(i.l10n(ref1))
-        cit[:citation][:full] = r.valid_parse(i.l10n(ref))
+          r.valid_parse(i.l10n(ref1)&.gsub(/\+\+\+(.+?)\+\+\+/, '\1'))
+        cit[:citation][:full] = r.valid_parse(i.l10n(ref)&.gsub(/\+\+\+(.+?)\+\+\+/, '\1'))
         %i(type data renderer).each { |x| cit.delete(x) }
         cit
       end
