@@ -4,7 +4,7 @@ require_relative "uri"
 require "yaml"
 require "liquid"
 require "date"
-require "relaton_bib"
+require "relaton/bib"
 require "metanorma-utils"
 require_relative "../template/template"
 require_relative "../../../isodoc/i18n"
@@ -162,11 +162,25 @@ module Relaton
       end
 
       def xml2relaton(bib)
-        bib.is_a?(Nokogiri::XML::Element) and
-          bib = bib.to_xml(encoding: "UTF-8", indent: 0,
-                           save_with: Nokogiri::XML::Node::SaveOptions::AS_XML)
-        bib.is_a?(String) && Nokogiri::XML(bib).errors.empty? and
-          bib = RelatonBib::XMLParser.from_xml(bib) or bib
+        bib.is_a?(Relaton::Bib::ItemData) and return bib
+        xml = xml_string2noko(bib)
+        bib = xml.to_xml(encoding: "UTF-8", indent: 0,
+                         save_with: Nokogiri::XML::Node::SaveOptions::AS_XML)
+          .gsub(/ xmlns="[^"]*"/, "")
+        Relaton::Bib::Bibitem.from_xml(bib)
+      end
+
+      def xml_string2noko(bib)
+        case bib
+        when String
+          xml = Nokogiri::XML(bib)
+          xml.errors.empty? or return bib
+          xml.root
+        when Nokogiri::XML::Element
+          bib
+        when Nokogiri::XML::Document
+          bib.root
+        end
       end
 
       def fmtref(doc)
@@ -199,7 +213,7 @@ module Relaton
       end
 
       def also_pub_as(doc)
-        r = doc.relation.select { |x| x.type == "hasRepresentation" }
+        r = Array(doc.relation).select { |x| x.type == "hasRepresentation" }
         r.map do |x|
           _, out = render_single_bibitem(x.bibitem)
           @i18n.select(nil).also_pub_as + out
@@ -253,7 +267,7 @@ module Relaton
         p = Nokogiri::XML(bib) or return
         (p.errors.empty? && p.root.at("./bibitem")) or return nil
         p.root.xpath("./bibitem").each_with_object([]) do |b, m|
-          m << RelatonBib::XMLParser.from_xml(b.to_xml)
+          m << Relaton::Bib::Bibitem.from_xml(b.to_xml)
         end
       end
 

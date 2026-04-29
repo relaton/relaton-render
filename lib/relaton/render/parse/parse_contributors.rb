@@ -3,6 +3,9 @@ module Relaton
     class Parse
       def content(node)
         node.nil? and return node
+        node.is_a?(String) and
+          return node.strip.gsub("</title>", "").gsub("<title>", "")
+            .gsub(/>\n\s*</, "><").gsub(/\n\s*/, " ")
         node.content.is_a?(Array) and return node.content.map { |x| content(x) }
         ret = node.content.strip
           .gsub("</title>", "").gsub("<title>", "")
@@ -35,7 +38,7 @@ module Relaton
       end
 
       def extract_initials(person)
-        initials = content(person.name.initials)&.sub(/(.)\.?$/, "\\1.")
+        initials = content(person.name.formatted_initials)&.sub(/(.)\.?$/, "\\1.")
           &.split /(?<=\.) /
         initials ||= person.name.forename.map(&:initial)
           .compact.map { |x| x.sub(/(.)\.?$/, "\\1.") }
@@ -44,13 +47,13 @@ module Relaton
 
       def forenames_parse(person)
         person.name.forename.map do |x|
-          x.content.empty? ? esc("#{x.initial}.") : content(x)
+          x.content.nil? || x.content.empty? ? esc("#{x.initial}.") : content(x)
         end
       end
 
       # de S. => one initial, M.-J. => one initial
       def initials_parse(person)
-        i = content(person.name.initials) or
+        i = content(person.name.formatted_initials) or
           return person.name.forename.map(&:initial)
               .compact.map { |x| x.sub(/(.)\.?$/, "\\1.") }
 
@@ -63,10 +66,8 @@ module Relaton
       end
 
       def extractname(contributor)
-        org = contributor.entity if contributor.entity
-          .is_a?(RelatonBib::Organization)
-        person = contributor.entity if contributor.entity
-          .is_a?(RelatonBib::Person)
+        org = contributor.organization
+        person = contributor.person
         return { nonpersonal: extract_orgname(org) } if org
         return extract_personname(person) if person
 
@@ -75,8 +76,9 @@ module Relaton
 
       def contributor_role(contributors)
         contributors.length.positive? or return nil
-        desc = contributors[0].role.first.description.join("\n")
-        type = contributors[0].role.first.type
+        role = contributors[0].role.first
+        desc = Array(role&.description).map(&:content).join("\n")
+        type = role&.type
         desc.empty? ? type : desc
       end
 
@@ -98,17 +100,17 @@ module Relaton
           add.nil? and next
           cr = add and break
         end
-        cr.nil? and cr = doc.contributor
+        cr.nil? and cr = Array(doc.contributor)
         cr
       end
 
       def datepick(date)
         date.nil? and return nil
-        on = date.on
+        at = date.at
         from = date.from
         to = date.to
-        on and return { on: on }
-        from and return { from: from, to: to }
+        at and return { on: at.to_s }
+        from and return { from: from.to_s, to: to&.to_s }
         nil
       end
 
@@ -122,22 +124,22 @@ module Relaton
 
       # year-only
       def date(doc, host)
-        ret = date1(doc.date)
-        host and ret ||= date1(host.date)
+        ret = date1(Array(doc.date))
+        host and ret ||= date1(Array(host.date))
         datepick(ret)&.transform_values do |v|
           v&.sub(/-.*$/, "")
         end
       end
 
       def date_updated(doc, host)
-        ret = doc.date.detect { |x| x.type == "updated" }
-        host and ret ||= host.date.detect { |x| x.type == "updated" }
+        ret = Array(doc.date).detect { |x| x.type == "updated" }
+        host and ret ||= Array(host.date).detect { |x| x.type == "updated" }
         datepick(ret)
       end
 
       def date_accessed(doc, host)
-        ret = doc.date.detect { |x| x.type == "accessed" }
-        host and ret ||= host.date.detect { |x| x.type == "accessed" }
+        ret = Array(doc.date).detect { |x| x.type == "accessed" }
+        host and ret ||= Array(host.date).detect { |x| x.type == "accessed" }
         datepick(ret)
       end
 
@@ -153,8 +155,8 @@ module Relaton
         host and x ||= pick_contributor(host, "publisher")
         x.nil? and return nil
         x.map do |c|
-          content(c.entity.abbreviation) ||
-            content(c.entity.name.first)
+          content(c.organization.abbreviation) ||
+            content(c.organization.name.first)
         end
       end
 
@@ -175,8 +177,8 @@ module Relaton
       end
 
       def pick_contributor(doc, role)
-        ret = doc.contributor.select do |c|
-          c.role.any? { |r| r.type == role }
+        ret = Array(doc.contributor).select do |c|
+          Array(c.role).any? { |r| r.type == role }
         end
         ret.empty? ? nil : ret
       end

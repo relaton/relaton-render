@@ -33,7 +33,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new(language: "de")
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "picks right uri by type and language: citation is prioritised" do
@@ -69,7 +69,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new(language: "de")
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "picks right uri by type and language: DOI is ignored" do
@@ -103,7 +103,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new(language: "de")
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "deals with URIs containing underscore" do
@@ -133,7 +133,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "do not supply missing accessed date" do
@@ -163,7 +163,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
     p = Relaton::Render::General.new
     expect { p.render(input) }
       .not_to output(/BIBLIOGRAPHY WARNING: cannot access/)
@@ -195,7 +195,7 @@ RSpec.describe Relaton::Render do
 =begin
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
     p = Relaton::Render::General.new
     expect { p.render(input) }
       .to output(%r{BIBLIOGRAPHY WARNING: cannot access https://completely.broken.url.com})
@@ -228,7 +228,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
     p = Relaton::Render::General.new
     expect { p.render(input) }
       .not_to output(%r{BIBLIOGRAPHY WARNING: cannot access file/file.xml})

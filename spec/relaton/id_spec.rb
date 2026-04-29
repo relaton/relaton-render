@@ -8,6 +8,7 @@ RSpec.describe Relaton::Render do
       <bibitem id="ref_pddl" type="book" schema-version="v1.2.4">
       <fetched>2023-09-29</fetched>
       <title type="main" format="text/plain" script="Latn">An Introduction to the Planning Domain Definition Language</title>
+      <docidentifier type="IEC" primary="false">IEC 123</docidentifier>
       <docidentifier type="DOI" primary="true">10.1007/978-3-031-01584-7</docidentifier>
       <docidentifier type="ISO" primary="true">ISO 123</docidentifier>
       <docidentifier type="metanorma-ordinal">[B1]</docidentifier>
@@ -169,6 +170,6 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 end

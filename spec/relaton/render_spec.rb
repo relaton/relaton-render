@@ -59,13 +59,13 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to "<formattedref>#{output}</formattedref>"
+      .to be_xml_equivalent_to "<formattedref>#{output}</formattedref>"
     data, template = p.parse(input)
     output = <<~OUTPUT
       <esc>ALUFFI</esc>, Paolo, David Herbert <esc>ANDERSON</esc>, Milena Marie <esc>HERING</esc>, Mircea H. <esc>MUSTAŢĂ</esc> and Sam H. <esc>PAYNE</esc> (eds.). <em><esc>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</esc></em>. 1st edition. (<esc>London Mathematical Society Lecture Note Series</esc> 472.) n.p.: Cambridge University Press. 2022. DOI: https://doi.org/10.1017/9781108877831. ISBN: 9781108877831. 1 vol.
     OUTPUT
     expect(p.liquid(data, template))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders book, five editors with specific class, broken down place" do
@@ -132,7 +132,7 @@ RSpec.describe Relaton::Render do
     #i18nhash["OrdinalRules"] = "digits-ordinal"
     p = Relaton::Render::Book.new(language: "en", i18nhash: i18nhash)
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders book, five editors with mismatched specific class" do
@@ -183,7 +183,7 @@ RSpec.describe Relaton::Render do
                 <name>Cambridge University Press</name>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
           <size><value type="volume">1</value></size>
       </bibitem>
     INPUT
@@ -245,7 +245,7 @@ RSpec.describe Relaton::Render do
                 <abbreviation>CUP</abbreviation>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
           <size><value type="page">lxii</value><value type="page">500</value></size>
       </bibitem>
     INPUT
@@ -274,7 +274,7 @@ RSpec.describe Relaton::Render do
            date: { month_year: "MMMd", day_month_year: "yMMMd",
                    date_time: "to_long_s" })
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
     output = <<~OUTPUT
       <formattedref>Aluffi, P, DX Anderson, MS Hering, MM Mustaţă <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
     OUTPUT
@@ -289,7 +289,7 @@ RSpec.describe Relaton::Render do
            date: { month_year: "MMMd", day_month_year: "yMMMd",
                    date_time: "to_long_s" })
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
     output = <<~OUTPUT
       <formattedref>Aluffi, P, DX Anderson, MS Hering <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
     OUTPUT
@@ -304,7 +304,7 @@ RSpec.describe Relaton::Render do
            date: { month_year: "MMMd", day_month_year: "yMMMd",
                    date_time: "to_long_s" })
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
     output = <<~OUTPUT
       <formattedref>Aluffi, P, DX Anderson <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
     OUTPUT
@@ -319,7 +319,7 @@ RSpec.describe Relaton::Render do
            date: { month_year: "MMMd", day_month_year: "yMMMd",
                    date_time: "to_long_s" })
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
     output = <<~OUTPUT
       <formattedref>Aluffi, P <em>et al.</em>, eds. (2022). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
     OUTPUT
@@ -334,7 +334,7 @@ RSpec.describe Relaton::Render do
            date: { month_year: "MMMd", day_month_year: "yMMMd",
                    date_time: "to_long_s" })
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
     output = <<~OUTPUT
       <formattedref>Aluffi, P _et al._, eds. (2022). _Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday_, 1st edition. Cambridge, UK: CUP. DOI: 10.1017/9781108877831, 10.1017/9781108877832.</formattedref>
     OUTPUT
@@ -356,7 +356,7 @@ RSpec.describe Relaton::Render do
            date: { month_year: "MMMd", day_month_year: "yMMMd",
                    date_time: "to_long_s" })
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders book, convert forenames to initials #2" do
@@ -435,7 +435,7 @@ RSpec.describe Relaton::Render do
            date: { month_year: "MMMd", day_month_year: "yMMMd",
                    date_time: "to_long_s" })
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "processes authorizer" do
@@ -459,7 +459,7 @@ RSpec.describe Relaton::Render do
                 <abbreviation>CUP</abbreviation>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
       </bibitem>
     INPUT
     template = <<~TEMPLATE
@@ -469,7 +469,7 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General
       .new(template: { book: template })
     expect(p.render(input, terminator: false))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
 
     input = <<~INPUT
       <bibitem type="book">
@@ -484,7 +484,7 @@ RSpec.describe Relaton::Render do
                 <abbreviation>CUP</abbreviation>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
       </bibitem>
     INPUT
     template = <<~TEMPLATE
@@ -494,7 +494,7 @@ RSpec.describe Relaton::Render do
     p = Relaton::Render::General
       .new(template: { book: template })
     expect(p.render(input, terminator: false))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders incollection, two authors" do
@@ -555,7 +555,7 @@ RSpec.describe Relaton::Render do
               <form>electronic resource</form>
               <size>8vo</size>
             </medium>
-            <place>New York, NY</place>
+            <place><formattedPlace>New York, NY</formattedPlace></place>
           </bibitem>
         </relation>
         <extent>
@@ -571,7 +571,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders journal" do
@@ -586,7 +586,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders article" do
@@ -639,7 +639,7 @@ RSpec.describe Relaton::Render do
                 <name>Cambridge University Press</name>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <extent>
                 <localityStack>
                   <locality type="volume"><referenceFrom>1</referenceFrom></locality>
@@ -657,9 +657,9 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
     expect(p.render(input.gsub(%r{</?localityStack>}m, "")))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders article with multiple extents" do
@@ -712,7 +712,7 @@ RSpec.describe Relaton::Render do
                 <name>Cambridge University Press</name>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <extent>
                   <locality type="volume"><referenceFrom>1</referenceFrom></locality>
                   <locality type="issue"><referenceFrom>7</referenceFrom></locality>
@@ -734,7 +734,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders article, with extended extent template incorporating year" do
@@ -787,7 +787,7 @@ RSpec.describe Relaton::Render do
                 <name>Cambridge University Press</name>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <extent>
                 <localityStack>
                   <locality type="volume"><referenceFrom>1</referenceFrom></locality>
@@ -810,7 +810,7 @@ RSpec.describe Relaton::Render do
       },
     )
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders article, with journaltemplate" do
@@ -829,7 +829,7 @@ RSpec.describe Relaton::Render do
         <edition>1</edition>
         <series>
         <title>London Mathematical Society Lecture Note Series</title>
-        <place>Paris</place>
+        <place><formattedPlace>Paris</formattedPlace></place>
         <organization>UCL</organization>
         <abbreviation>LMS</abbreviation>
         <from>1999</from>
@@ -844,7 +844,7 @@ RSpec.describe Relaton::Render do
                 <name>Cambridge University Press</name>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <extent>
                 <localityStack>
                   <locality type="volume"><referenceFrom>1</referenceFrom></locality>
@@ -866,7 +866,7 @@ RSpec.describe Relaton::Render do
       TEMPLATE
     )
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
 
     input = <<~INPUT
       <bibitem type="article">
@@ -883,7 +883,7 @@ RSpec.describe Relaton::Render do
         <edition>1</edition>
         <series>
         <title>London Mathematical Society Lecture Note Series</title>
-        <place>Paris</place>
+        <place><formattedPlace>Paris</formattedPlace></place>
         <organization>UCL</organization>
         <abbreviation>LMS</abbreviation>
         <number>472</number>
@@ -896,7 +896,7 @@ RSpec.describe Relaton::Render do
                 <name>Cambridge University Press</name>
               </organization>
             </contributor>
-            <place>Cambridge, UK</place>
+            <place><formattedPlace>Cambridge, UK</formattedPlace></place>
             <extent>
                 <localityStack>
                   <locality type="volume"><referenceFrom>1</referenceFrom></locality>
@@ -918,7 +918,7 @@ RSpec.describe Relaton::Render do
       TEMPLATE
     )
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders software" do
@@ -948,7 +948,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders standard" do
@@ -986,7 +986,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders merged joint published standard" do
@@ -1031,7 +1031,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders dual joint published standard" do
@@ -1085,7 +1085,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders dataset" do
@@ -1127,7 +1127,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders website" do
@@ -1163,7 +1163,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders unpublished" do
@@ -1195,7 +1195,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "renders untyped" do
@@ -1227,7 +1227,7 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "does not insert no date for standards or websites" do
@@ -1244,16 +1244,16 @@ RSpec.describe Relaton::Render do
     OUTPUT
     p = Relaton::Render::General.new
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
     input.sub!('type="standard"', 'type="website"')
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
     input.sub!('type="website"', 'type="book"')
     output = <<~OUTPUT
       <formattedref><em>Cereals and cereal products</em> [preprint]. n.p.: n.d.</formattedref>
     OUTPUT
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
   end
 
   it "disables no-date and no-place" do
@@ -1270,30 +1270,96 @@ RSpec.describe Relaton::Render do
       <formattedref><em>Cereals and cereal products</em> [preprint]. n.p.: n.d.</formattedref>
     OUTPUT
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
     p = Relaton::Render::General.new(i18nhash: { "no_date" => "" })
     output = <<~OUTPUT
       <formattedref><em>Cereals and cereal products</em> [preprint]. n.p.</formattedref>
     OUTPUT
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
     p = Relaton::Render::General.new(i18nhash: { "no_date" => nil })
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
     p = Relaton::Render::General.new(i18nhash: { "no_place" => "" })
     output = <<~OUTPUT
       <formattedref><em>Cereals and cereal products</em> [preprint]. n.d.</formattedref>
     OUTPUT
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
     p = Relaton::Render::General.new(i18nhash: { "no_place" => nil })
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
     p = Relaton::Render::General.new(i18nhash: { "no_place" => nil, "no_date" => nil })
     output = <<~OUTPUT
       <formattedref><em>Cereals and cereal products</em> [preprint].</formattedref>
     OUTPUT
     expect(p.render(input))
-      .to be_equivalent_to output
+      .to be_xml_equivalent_to output
+  end
+
+    it "returns formattedref if supplied" do
+    input = <<~INPUT
+      <bibitem type="book">
+      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831. 1 vol.</formattedref>
+        <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <docidentifier type="ISBN">9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Aluffi</surname><forename>Paolo</forename></name>
+          </person>
+        </contributor>
+                <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Anderson</surname><forename>David</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Hering</surname><forename>Milena</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Mustaţă</surname><forename>Mircea</forename></name>
+          </person>
+        </contributor>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>Payne</surname><forename>Sam</forename></name>
+          </person>
+        </contributor>
+        <edition>1</edition>
+        <series>
+        <title>London Mathematical Society Lecture Note Series</title>
+        <number>472</number>
+        </series>
+            <contributor>
+              <role type="publisher"/>
+              <organization>
+                <name>Cambridge University Press</name>
+              </organization>
+            </contributor>
+            <place>Cambridge, UK</place>
+          <size><value type="volume">1</value></size>
+      </bibitem>
+    INPUT
+    output = <<~OUTPUT
+      <formattedref>ALUFFI, Paolo, David ANDERSON, Milena HERING, Mircea MUSTAŢĂ and Sam PAYNE (eds.). <em>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</em>. 1st edition. (London Mathematical Society Lecture Note Series 472.) Cambridge, UK: Cambridge University Press. 2022. https://doi.org/10.1017/9781108877831. 1 vol.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General.new
+    expect(p.render(input))
+      .to be_xml_equivalent_to output
+    expect(p.render(input, embedded: false))
+      .to be_xml_equivalent_to output
+    expect(p.render(input, embedded: true))
+      .to be_xml_equivalent_to output.gsub("<formattedref>", "")
+        .gsub("</formattedref>", "")
   end
 end

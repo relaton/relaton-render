@@ -2,7 +2,7 @@ module Relaton
   module Render
     class Parse
       # filter applied across full list of auth_id
-      def auth_id_filter(ids)
+      def auth_id_filter(ids = [])
         id_scope_filter(ids)
       end
 
@@ -44,12 +44,12 @@ module Relaton
 
       def authoritative_identifier(doc)
         out = []
-        [auth_id_filter(doc.docidentifier), doc.docidentifier].each do |a|
+        [auth_id_filter(Array(doc.docidentifier)), Array(doc.docidentifier)].each do |a|
           out = authoritative_identifier_select(a)
           out.empty? or break
         end
         # prevent l10n of identifier contents
-        out.map(&:id).map { |i| esc(i.strip) }
+        out.map(&:content).map { |i| esc(i.strip) }
       end
 
       def authoritative_identifier_select(idents)
@@ -70,10 +70,10 @@ module Relaton
       end
 
       def other_identifier(doc)
-        doc.docidentifier.each_with_object([]) do |id, ret|
+        Array(doc.docidentifier).each_with_object([]) do |id, ret|
           type = id_type_norm(id)
           other_identifier_include.include? type or next
-          ret << [type, id.id]
+          ret << [type, id.content]
         end
       end
 
@@ -82,10 +82,10 @@ module Relaton
       end
 
       def doi(doc)
-        out = doc.docidentifier.each_with_object([]) do |id, ret|
+        out = Array(doc.docidentifier).each_with_object([]) do |id, ret|
           type = id.type&.sub(/^(DOI)\..*$/i, "\\1") or next
           type.casecmp("doi").zero? or next
-          ret << id.id
+          ret << id.content
         end
         out.empty? ? nil : out.map { |i| esc(i.strip) }
       end
@@ -97,10 +97,10 @@ module Relaton
       end
 
       def biblio_tag(doc)
-        ret = doc.docidentifier.detect do |id|
+        ret = Array(doc.docidentifier).detect do |id|
           id.scope&.downcase == "biblio-tag"
         end
-        ret&.id
+        ret&.content
       end
 
       def uri(doc)
@@ -108,19 +108,19 @@ module Relaton
         %w(citation uri src).each do |t|
           uri = uri_type_select(doc, t) and break
         end
-        uri ||= doc.link.detect do |u|
+        uri ||= Array(doc.source).detect do |u|
           u.language == @lang && !u.type&.casecmp("doi")&.zero?
         end
-        uri ||= doc.link.detect { |u| !u.type&.casecmp("doi")&.zero? }
+        uri ||= Array(doc.source).detect { |u| !u.type&.casecmp("doi")&.zero? }
         uri or return nil
         uri.content.to_s.strip
       end
 
       def uri_type_select(doc, type)
-        uri = doc.link.detect do |u|
+        uri = Array(doc.source).detect do |u|
           u.type&.downcase == type && u.language == @lang
         end and return uri
-        uri = doc.link.detect { |u| u.type&.downcase == type } and return uri
+        uri = Array(doc.source).detect { |u| u.type&.downcase == type } and return uri
         nil
       end
     end

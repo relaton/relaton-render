@@ -22,8 +22,8 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = Gem::Requirement.new(">= 2.7.0")
 
   spec.add_development_dependency "bundler"
+  spec.add_development_dependency "canon"
   spec.add_development_dependency "debug"
-  spec.add_development_dependency "equivalent-xml", "~> 0.6"
   spec.add_development_dependency "isodoc"
   spec.add_development_dependency "openssl"
   spec.add_development_dependency "rake", ">= 12.3.3"
@@ -36,7 +36,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "liquid", "~> 5"
   spec.add_dependency "metanorma-utils", "~> 2"
   spec.add_dependency "nokogiri"
-  spec.add_dependency "relaton-bib", "~> 1.20.0"
+  spec.add_dependency "relaton-bib", ">= 2.0.0.pre.alpha.6", "< 3"
   spec.add_dependency "twitter_cldr"
   spec.add_dependency "tzinfo-data" # we need this for windows only
   # spec.metadata["rubygems_mfa_required"] = "true"
