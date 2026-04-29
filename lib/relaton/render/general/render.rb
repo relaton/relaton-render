@@ -241,7 +241,7 @@ module Relaton
 
       def valid_parse(ret)
         @i18n.select(nil).get["no_date"] == ret and return nil
-        ret
+        ret&.gsub(/\+\+\+(.+?)\+\+\+/, '\1')
       end
 
       # expect array of Relaton objects, in sorted order
