@@ -206,7 +206,6 @@ module Relaton
         ret1 = out.join(@i18n.select(obj).get["punct"]["biblio-field-delimiter"] || ". ")
         ret = @i18n.select(obj).l10n(esc_cleanup(ret1)
           .gsub(".</esc>.", ".</esc>").gsub(".. ", ". "))
-        ret = ret.gsub(/\+\+\+(.+?)\+\+\+/, '\1')
         final = @i18n.select(obj).get["punct"]["biblio-terminator"] || "."
         terminator && !ret.end_with?(final) && !ret.empty? and ret += final
         ret
@@ -242,7 +241,7 @@ module Relaton
 
       def valid_parse(ret)
         @i18n.select(nil).get["no_date"] == ret and return nil
-        ret
+        ret&.gsub(/\+\+\+(.+?)\+\+\+/, '\1')
       end
 
       # expect array of Relaton objects, in sorted order
