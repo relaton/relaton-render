@@ -240,7 +240,6 @@ module Relaton
       end
 
       def valid_parse(ret)
-        warn ret
         @i18n.select(nil).get["no_date"] == ret and return nil
         ret&.gsub(/\+\+\+(.+?)\+\+\+/, '\1')
       end
