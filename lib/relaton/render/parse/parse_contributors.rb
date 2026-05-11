@@ -4,15 +4,12 @@ module Relaton
       def content(node)
         node.nil? and return node
         node.is_a?(String) and
-          return node.strip.gsub("</title>", "").gsub("<title>", "")
+          return sanitise_inline_markup(node.strip)
             .gsub(/>\n\s*</, "><").gsub(/\n\s*/, " ")
         node.content.is_a?(Array) and return node.content.map { |x| content(x) }
-        ret = node.content.strip
-          .gsub("</title>", "").gsub("<title>", "")
+        ret = sanitise_inline_markup(node.content.strip)
         # safeguard against indented XML
         ret.gsub(/>\n\s*</, "><").gsub(/\n\s*/, " ")
-        # node.children.map { |n| n.text? ? n.content : n.to_xml }.join
-        # node.text? ? node.content.strip : node.to_xml.strip
       end
 
       def extract_orgname(org)

@@ -302,7 +302,7 @@ RSpec.describe Relaton::Render do
     # Test with leading spaces before tag
     input3 = <<~INPUT
       <bibitem type="book">
-        <title>  <tag>hello world</tag></title>
+        <title>  <smallcap>hello world</smallcap></title>
         <date type="published"><on>2022</on></date>
         <contributor>
           <role type="author"/>
@@ -313,14 +313,14 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output3 = <<~OUTPUT
-      <formattedref>TEST, Author. <em><tag>Hello world</tag></em>. 2022.</formattedref>
+      <formattedref>TEST, Author. <em><smallcap>Hello world</smallcap></em>. 2022.</formattedref>
     OUTPUT
     expect(p.render(input3)).to be_xml_equivalent_to output3
 
     # Test with underscores before tag
     input4 = <<~INPUT
       <bibitem type="book">
-        <title>_<tag>hello world</tag></title>
+        <title>_<smallcap>hello world</smallcap></title>
         <date type="published"><on>2022</on></date>
         <contributor>
           <role type="author"/>
@@ -331,7 +331,7 @@ RSpec.describe Relaton::Render do
       </bibitem>
     INPUT
     output4 = <<~OUTPUT
-      <formattedref>TEST, Author. <em>_<tag>hello world</tag></em>. 2022.</formattedref>
+      <formattedref>TEST, Author. <em>_<smallcap>hello world</smallcap></em>. 2022.</formattedref>
     OUTPUT
     expect(p.render(input4)).to be_xml_equivalent_to output4
 
@@ -830,7 +830,7 @@ RSpec.describe Relaton::Render do
       {{ place }} : {{ publisher_abbrev }} . {{ uri }}. At:_{{ access_location }}.
     TEMPLATE
     output = <<~OUTPUT
-      <formattedref>ALUFFI, Paolo, ed. (2022). <em><title><title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title></title></em>, 1st edition. Cambridge, UK: CUP.</formattedref>
+      <formattedref>ALUFFI, Paolo, ed. (2022). <em><title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title></em>, 1st edition. Cambridge, UK: CUP.</formattedref>
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template }, language: "en")
@@ -841,7 +841,7 @@ RSpec.describe Relaton::Render do
   it "strips +++ outside of selective filters" do
     input = <<~INPUT
       <bibitem type="book">
-        <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
+        <title>&lt;title&gt;Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday&lt;/title&gt;</title>
         <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
         <docidentifier type="ISBN">9781108877831</docidentifier>
         <date type="published"><on>2022</on></date>
@@ -854,7 +854,7 @@ RSpec.describe Relaton::Render do
         </contributor>
         <edition>1</edition>
         <series>
-        <title>London Mathematical Society Lecture Note Series</title>
+        <title>&lt;title&gt;London Mathematical Society Lecture Note Series&lt;/title&gt;</title>
         <number>472</number>
         </series>
             <contributor>
@@ -890,6 +890,38 @@ RSpec.describe Relaton::Render do
            })
     expect(p.render(input))
       .to be_xml_equivalent_to output
+  end
+
+  it "preserves allow-listed inline markup while stripping other tags" do
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>Facets of &lt;em&gt;Algebraic&lt;/em&gt; &lt;script&gt;alert(1)&lt;/script&gt; Geometry</title>
+        <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <contributor>
+          <role type="editor"/>
+          <person>
+            <name><surname>&lt;b&gt;Aluffi&lt;/b&gt;</surname><forename>Paolo</forename></name>
+          </person>
+        </contributor>
+        <edition>1</edition>
+        <contributor>
+          <role type="publisher"/>
+          <organization>
+            <name>&lt;span class="x"&gt;Cambridge&lt;/span&gt; University &lt;sub&gt;Press&lt;/sub&gt;</name>
+          </organization>
+        </contributor>
+      </bibitem>
+    INPUT
+    template = <<~TEMPLATE
+      {{ creatornames }} ,_{{role}} ({{date}}) . <em><title>{{ title }}</title></em> ,_{{ edition }} . {{ publisher }} .
+    TEMPLATE
+    output = <<~OUTPUT
+      <formattedref>ALUFFI, Paolo, ed. (2022). <em><title>Facets of <em>Algebraic</em> alert(1) Geometry</title></em>, 1st edition. Cambridge University <sub>Press</sub>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General
+      .new(template: { book: template }, language: "en")
+    expect(p.render(input)).to be_xml_equivalent_to output
   end
 
   it "reuses templates from one type to another" do
