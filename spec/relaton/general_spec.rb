@@ -830,7 +830,7 @@ RSpec.describe Relaton::Render do
       {{ place }} : {{ publisher_abbrev }} . {{ uri }}. At:_{{ access_location }}.
     TEMPLATE
     output = <<~OUTPUT
-      <formattedref>ALUFFI, Paolo, ed. (2022). <em><title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title></em>, 1st edition. Cambridge, UK: CUP.</formattedref>
+      <formattedref>ALUFFI, Paolo, ed. (2022). <em><title><title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title></title></em>, 1st edition. Cambridge, UK: CUP.</formattedref>
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template }, language: "en")
@@ -841,7 +841,7 @@ RSpec.describe Relaton::Render do
   it "strips +++ outside of selective filters" do
     input = <<~INPUT
       <bibitem type="book">
-        <title>&lt;title&gt;Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday&lt;/title&gt;</title>
+        <title>Facets of Algebraic Geometry: A Collection in Honor of William Fulton's 80th Birthday</title>
         <docidentifier type="DOI">https://doi.org/10.1017/9781108877831</docidentifier>
         <docidentifier type="ISBN">9781108877831</docidentifier>
         <date type="published"><on>2022</on></date>
@@ -854,7 +854,7 @@ RSpec.describe Relaton::Render do
         </contributor>
         <edition>1</edition>
         <series>
-        <title>&lt;title&gt;London Mathematical Society Lecture Note Series&lt;/title&gt;</title>
+        <title>London Mathematical Society Lecture Note Series</title>
         <number>472</number>
         </series>
             <contributor>
