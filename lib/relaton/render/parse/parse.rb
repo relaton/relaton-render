@@ -82,6 +82,8 @@ module Relaton
         end
       end
 
+      ALLOWED_INLINE_TAGS = %w[em strong sub sup a smallcap].freeze
+
       private
 
       def blank?(text)
@@ -91,6 +93,19 @@ module Relaton
       def esc(text)
         blank?(text) and return text
         "<esc>#{text}</esc>"
+      end
+
+      # Strip any tag not in ALLOWED_INLINE_TAGS, in both literal (<tag>) and
+      # entity-encoded (&lt;tag&gt;) forms. Used to defend Liquid template
+      # output against embedded structural markup (most commonly <title>) in
+      # bibliographic text fields, where relaton-bib may surface either form
+      # depending on lutaml-model serialisation behaviour.
+      def sanitise_inline_markup(str)
+        blank?(str) and return str
+        allowed = ALLOWED_INLINE_TAGS.join("|")
+        literal = %r{</?(?!(?:#{allowed})\b)[A-Za-z][\w:-]*(?:\s[^>]*)?/?>}
+        encoded = %r{&lt;/?(?!(?:#{allowed})\b)[A-Za-z][\w:-]*(?:\s[^&]*?)?/?&gt;}
+        str.gsub(literal, "").gsub(encoded, "")
       end
 
       def wrap_in_esc(obj)
