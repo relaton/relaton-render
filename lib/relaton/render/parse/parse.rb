@@ -82,7 +82,12 @@ module Relaton
         end
       end
 
-      ALLOWED_INLINE_TAGS = %w[em strong sub sup a smallcap].freeze
+      ALLOWED_INLINE_TAGS = %w[
+        em eref strong stem sub sup tt underline keyword ruby
+        strike smallcap xref br link hr pagebreak bookmark
+        image index index-xref concept add del span erefstack
+        date fn
+      ].freeze
 
       private
 
@@ -100,12 +105,39 @@ module Relaton
       # output against embedded structural markup (most commonly <title>) in
       # bibliographic text fields, where relaton-bib may surface either form
       # depending on lutaml-model serialisation behaviour.
+      #
+      # Authors embed inline markup either literally (<em>foo</em>) or
+      # entity-encoded (&lt;em&gt;foo&lt;/em&gt;); both are intended as
+      # markup, and downstream template rendering decodes entities anyway
+      # (see HTMLEntities.decode in template.rb), so we normalise the
+      # encoded form to literal up front and let a single Nokogiri-fragment
+      # walk handle both. Elements whose name is in the allow-list are
+      # preserved verbatim with their entire subtree, so wrappers that
+      # legitimately carry block content (notably <fn><p>…</p></fn>)
+      # round-trip intact rather than being shredded one tag at a time.
+      # Disallowed elements are unwrapped (tag dropped, children kept),
+      # recursing first so allowed wrappers nested inside disallowed
+      # wrappers still survive. Nokogiri re-escapes any genuine `<` left in
+      # text positions on serialisation, so plain prose like "5 < 10" is
+      # preserved correctly.
       def sanitise_inline_markup(str)
         blank?(str) and return str
-        allowed = ALLOWED_INLINE_TAGS.join("|")
-        literal = %r{</?(?!(?:#{allowed})\b)[A-Za-z][\w:-]*(?:\s[^>]*)?/?>}
-        encoded = %r{&lt;/?(?!(?:#{allowed})\b)[A-Za-z][\w:-]*(?:\s[^&]*?)?/?&gt;}
-        str.gsub(literal, "").gsub(encoded, "")
+        normalised = str.gsub("&lt;", "<").gsub("&gt;", ">")
+        frag = Nokogiri::XML.fragment(normalised)
+        unwrap_disallowed(frag)
+        save_opts = Nokogiri::XML::Node::SaveOptions::AS_XML |
+                    Nokogiri::XML::Node::SaveOptions::NO_DECLARATION
+        frag.to_xml(encoding: "UTF-8", save_with: save_opts)
+      end
+
+      def unwrap_disallowed(node)
+        node.children.to_a.each do |child|
+          next unless child.element?
+          next if ALLOWED_INLINE_TAGS.include?(child.name)
+
+          unwrap_disallowed(child)
+          child.replace(child.children)
+        end
       end
 
       def wrap_in_esc(obj)
