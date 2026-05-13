@@ -917,7 +917,31 @@ RSpec.describe Relaton::Render do
       {{ creatornames }} ,_{{role}} ({{date}}) . <em><title>{{ title }}</title></em> ,_{{ edition }} . {{ publisher }} .
     TEMPLATE
     output = <<~OUTPUT
-      <formattedref>ALUFFI, Paolo, ed. (2022). <em><title>Facets of <em>Algebraic</em> alert(1) Geometry</title></em>, 1st edition. Cambridge University <sub>Press</sub>.</formattedref>
+      <formattedref>ALUFFI, Paolo, ed. (2022). <em><title>Facets of <em>Algebraic</em> alert(1) Geometry</title></em>, 1st edition. <span class="x">Cambridge</span> University <sub>Press</sub>.</formattedref>
+    OUTPUT
+    p = Relaton::Render::General
+      .new(template: { book: template }, language: "en")
+    expect(p.render(input)).to be_xml_equivalent_to output
+  end
+
+  it "preserves nested markup inside an allow-listed wrapper such as <fn>" do
+    input = <<~INPUT
+      <bibitem type="book">
+        <title>Facets &lt;fn id="f1"&gt;&lt;p&gt;See &lt;em&gt;note&lt;/em&gt; 1&lt;/p&gt;&lt;/fn&gt; of Algebra</title>
+        <date type="published"><on>2022</on></date>
+        <contributor>
+          <role type="author"/>
+          <person>
+            <name><surname>Test</surname><forename>Author</forename></name>
+          </person>
+        </contributor>
+      </bibitem>
+    INPUT
+    template = <<~TEMPLATE
+      {{ creatornames }}. <em>{{ title }}</em>. {{date}}.
+    TEMPLATE
+    output = <<~OUTPUT
+      <formattedref>TEST, Author. <em>Facets <fn id="f1"><p>See <em>note</em> 1</p></fn> of Algebra</em>. 2022.</formattedref>
     OUTPUT
     p = Relaton::Render::General
       .new(template: { book: template }, language: "en")
