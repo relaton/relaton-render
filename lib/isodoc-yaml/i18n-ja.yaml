@@ -1,5 +1,5 @@
-in: 
-at: 
+in: 所載
+at:
 and: と
 author_and: ","
 updated: 更新しました
@@ -7,7 +7,7 @@ viewed: 参照
 version: 
 also_pub_as: 次のようにも出版されています
 no_date: 日付なし。
-no_place: 都市はありません。
+no_place: 出版地不明
 date_formats:
   month_year: yMMMM
   day_month_year: to_long_s
@@ -38,8 +38,8 @@ extent:
     sg: "巻%"
     pl: "巻%"
   issue:
-    sg: "いいえ%"
-    pl: "いいえ%"
+    sg: "%号"
+    pl: "%号"
 size:
   page:
     sg: "%頁"
@@ -48,5 +48,5 @@ size:
     sg: "巻%"
     pl: "巻%"
   issue:
-    sg: "いいえ%"
-    pl: "いいえ%"
+    sg: "%号"
+    pl: "%号"
