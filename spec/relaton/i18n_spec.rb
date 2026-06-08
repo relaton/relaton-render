@@ -157,7 +157,10 @@ RSpec.describe Relaton::Render do
 
   it "renders incollection, two authors, with Japanese i18n" do
     output = <<~OUTPUT
-      <formattedref>RAMSEY、 J. K.、 W. C. MCGREW。 Object play in great apes: Studies in nature and captivity。 PELLEGRINI、 Anthony D.、 Peter Kenneth SMITH （編）： The nature of play: Great apes and humans ［electronic resource、 8vo］。第3版。 New York、 NY： Guilford Press。 2005。 89〜112頁。 <fmt-link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</fmt-link>。［参照： 2019年9月3日］。</formattedref>
+      <formattedref>RAMSEY、 J. K.、 W. C. MCGREW。 Object play in great apes: Studies in nature and captivity。所載： PELLEGRINI、 Anthony D.、 Peter Kenneth SMITH （編）： The nature of play: Great apes and humans ［electronic resource、 8vo］。第3版。 New York、 NY： Guilford Press。 2005。 89〜112頁。#{' '}
+      <fmt-link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</fmt-link>
+      。［参照： 2019年9月3日］。
+      </formattedref>
     OUTPUT
     i = IsoDoc::PresentationXMLConvert.new(language: "ja", script: "Jpan")
     i.i18n_init("ja", "Jpan", nil)
@@ -179,7 +182,11 @@ RSpec.describe Relaton::Render do
       .to be_xml_equivalent_to output
 
     output = <<~OUTPUT
-      <formattedref>RAMSEY、 J. K.、 W. C. MCGREW。 Object play in great apes: Studies in nature and captivity。 PELLEGRINI、 Anthony D.、 Peter Kenneth SMITH （編）： The nature of play: Great apes and humans ［electronic resource、 8vo］。第3.0版。 New York、 NY： Guilford Press。 2005。 89〜112頁。 <fmt-link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</fmt-link>。［参照： 2019年9月3日］。</formattedref>
+      <formattedref>
+       RAMSEY、 J. K.、 W. C. MCGREW。 Object play in great apes: Studies in nature and captivity。所載： PELLEGRINI、 Anthony D.、 Peter Kenneth SMITH （編）： The nature of play: Great apes and humans ［electronic resource、 8vo］。第3.0版。 New York、 NY： Guilford Press。 2005。 89〜112頁。#{' '}
+       <fmt-link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</fmt-link>
+       。［参照： 2019年9月3日］。
+       </formattedref>
     OUTPUT
     i = IsoDoc::PresentationXMLConvert.new(language: "ja", script: "Jpan")
     i.i18n_init("ja", "Jpan", nil)
