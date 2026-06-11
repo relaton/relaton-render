@@ -1,5 +1,11 @@
-in: dans
-at: à
+at_url: à
+at_venue: lors de
+at_institution: à
+at_time: à
+at_location: à
+in_document: dans
+in_series: dans
+in_archive: dans
 and: et
 author_and: et
 updated: mise à jour

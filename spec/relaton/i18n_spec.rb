@@ -133,7 +133,7 @@ RSpec.describe Relaton::Render do
 
   it "renders incollection, two authors, with Traditional Chinese i18n" do
     output = <<~OUTPUT
-      <formattedref>RAMSEY， J. K. 與 W. C. MCGREW。〈Object play in great apes: Studies in nature and captivity〉。在： PELLEGRINI， Anthony D. 與 Peter Kenneth SMITH （編輯）： <underline style="wavy">The nature of play: Great apes and humans</underline> ［electronic resource，8vo］。第第3版。 New York， NY： Guilford Press。2005。第89〜112頁。 <fmt-link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</fmt-link>。［閱：2019年9月3日］。</formattedref>
+      <formattedref>RAMSEY， J. K. 與 W. C. MCGREW。〈Object play in great apes: Studies in nature and captivity〉。載於： PELLEGRINI， Anthony D. 與 Peter Kenneth SMITH （編輯）： <underline style="wavy">The nature of play: Great apes and humans</underline> ［electronic resource，8vo］。第第3版。 New York， NY： Guilford Press。2005。第89〜112頁。 <fmt-link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</fmt-link>。［閱：2019年9月3日］。</formattedref>
     OUTPUT
     i = IsoDoc::PresentationXMLConvert.new(language: "zh", script: "Hant")
     i.i18n_init("zh", "Hant", nil)
@@ -145,7 +145,7 @@ RSpec.describe Relaton::Render do
 
   it "renders incollection, two authors, with Simplified Chinese i18n" do
     output = <<~OUTPUT
-      <formattedref>RAMSEY，J. K.和W. C. MCGREW。〈Object play in great apes: Studies in nature and captivity〉。在：PELLEGRINI，Anthony D.和Peter Kenneth SMITH （编）：《The nature of play: Great apes and humans》［electronic resource，8vo］。第第三版。New York，NY：Guilford Press。2005。第89〜112页。<fmt-link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</fmt-link>。［阅：2019年9月3日］。</formattedref>
+      <formattedref>RAMSEY，J. K.和W. C. MCGREW。〈Object play in great apes: Studies in nature and captivity〉。载于：PELLEGRINI，Anthony D.和Peter Kenneth SMITH （编）：《The nature of play: Great apes and humans》［electronic resource，8vo］。第第三版。New York，NY：Guilford Press。2005。第89〜112页。<fmt-link target="https://eprints.soton.ac.uk/338791/">https://eprints.soton.ac.uk/338791/</fmt-link>。［阅：2019年9月3日］。</formattedref>
     OUTPUT
     i = IsoDoc::PresentationXMLConvert.new(language: "zh", script: "Hans")
     i.i18n_init("zh", "Hans", nil)

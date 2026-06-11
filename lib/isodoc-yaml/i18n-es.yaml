@@ -1,5 +1,11 @@
-in: en
-at: en
+at_url: en
+at_venue: en
+at_institution: en
+at_time: a las
+at_location: en
+in_document: en
+in_series: en
+in_archive: en
 and: y
 author_and: y
 updated: actualizado
