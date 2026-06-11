@@ -1,5 +1,11 @@
-in: 所載
-at:
+at_url: より入手可能
+at_venue: にて
+at_institution: 所蔵
+at_time: 時点で
+at_location: 所在
+in_document: 所載
+in_series: 所収
+in_archive: 所蔵
 and: と
 author_and: ","
 updated: 更新しました

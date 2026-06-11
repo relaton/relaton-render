@@ -1,5 +1,11 @@
-in: 在
-at: 在
+at_url: 可訪問
+at_venue: 於
+at_institution: 收藏於
+at_time: 於
+at_location: 位於
+in_document: 載於
+in_series: 收錄於
+in_archive: 藏於
 and: 和
 author_and: 與
 updated: 更新
