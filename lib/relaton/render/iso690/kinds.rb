@@ -18,7 +18,7 @@ module Relaton
           [%w(patent), Patent],
           [%w(report techreport), Report],
           [%w(webpage website online), Online],
-          [%w(article-journal article-magazine), Continuing],
+          [%w(article-journal article-magazine serial), Continuing],
         ].freeze
 
         FALLBACK = Report

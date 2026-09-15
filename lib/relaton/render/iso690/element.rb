@@ -29,10 +29,12 @@ module Relaton
         end
 
         def contributors(role)
-          Array(@model.contributor).select do |c|
-            Array(c.role).any? do |r|
-              r.is_a?(String) ? r == role : r.type == role
-            end
+          Array(@model.contributor).select { |c| has_role?(c, role) }
+        end
+
+        def has_role?(contributor, role)
+          Array(contributor.role).any? do |r|
+            r.is_a?(String) ? r == role : r.type == role
           end
         end
       end
