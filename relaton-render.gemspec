@@ -24,20 +24,11 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "canon"
   spec.add_development_dependency "debug"
-  spec.add_development_dependency "isodoc"
-  spec.add_development_dependency "openssl"
   spec.add_development_dependency "rake", ">= 12.3.3"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "simplecov"
 
-  spec.add_dependency "base64" # Liquid
-  spec.add_dependency "bigdecimal" # Liquid
-  spec.add_dependency "isodoc-i18n", "~> 1.5.0"
-  spec.add_dependency "liquid", "~> 5"
-  spec.add_dependency "metanorma-utils", "~> 2"
-  spec.add_dependency "nokogiri"
-  spec.add_dependency "relaton-bib", ">= 2.0.0.pre.alpha.6", "< 3"
-  spec.add_dependency "twitter_cldr"
-  spec.add_dependency "tzinfo-data" # we need this for windows only
+  spec.add_dependency "lutaml-model"
+  spec.add_dependency "relaton", ">= 2.0.0"
   # spec.metadata["rubygems_mfa_required"] = "true"
 end
