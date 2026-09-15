@@ -40,6 +40,13 @@ module Relaton
           punct_config[key] || DEFAULT_PUNCT[key] || " "
         end
 
+        # Language-varying punctuation declared in i18n/<lang>.yml wins
+        # over the style's own declarations.
+        def overlay_language(i18n)
+          punct_config.merge!(i18n.punct)
+          self
+        end
+
         class << self
           def load(name_or_path)
             path = style_path(name_or_path) or

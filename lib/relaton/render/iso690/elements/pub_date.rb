@@ -5,15 +5,16 @@ module Relaton
     module Iso690
       module Elements
         # Date of publication (ISO 690 clause 7.7). The relaton model
-        # provides typed date values (StringDate::Value#to_date); the year
-        # comes from the model, never from string manipulation.
+        # provides typed date values (StringDate::Value#to_date); years
+        # come from the model, never from string manipulation. A from/to
+        # pair renders as a range (closed or open).
         class PubDate < Element
           def present?
-            !year.nil?
+            !render.nil?
           end
 
           def render
-            year.to_s
+            range || year&.to_s
           end
 
           private
@@ -26,6 +27,16 @@ module Relaton
           def publication_date_value
             d = publication_date or return nil
             d.from || d.at || d.to
+          end
+
+          def range
+            d = publication_date or return nil
+            dash = @i18n.label("date_range")
+            if d.from && d.to
+              "#{d.from.to_date.year}#{dash}#{d.to.to_date.year}"
+            elsif d.from
+              "#{d.from.to_date.year}#{dash}"
+            end
           end
 
           def year

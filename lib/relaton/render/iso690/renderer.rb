@@ -19,8 +19,9 @@ module Relaton
         end
 
         def initialize(style: "author-date", lang: "en", script: "Latn")
-          @style = Style.load(style)
-          @i18n = I18n.new(lang, script)
+          @i18n = I18n.load(lang)
+          @style = Style.load(style).overlay_language(@i18n)
+          @script = script
         end
 
         def render(model)

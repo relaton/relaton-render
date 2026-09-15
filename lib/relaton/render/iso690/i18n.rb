@@ -1,24 +1,40 @@
 # frozen_string_literal: true
 
+require "lutaml/model"
+
 module Relaton
   module Render
     module Iso690
-      # relaton-local labels and punctuation (no isodoc-i18n dependency)
-      class I18n
-        EN = {
-          "edition" => "ed",
-          "series_no" => "no.",
-          "report_no" => "Report no.",
-          "available_from" => "Available from:",
-          "in" => "In:",
-        }.freeze
+      # Language-specific labels and typographic punctuation, declared per
+      # language in i18n/<lang>.yml. Adding a language adds a YAML
+      # declaration — no code. Language-varying element punctuation
+      # (e.g. French " : " production separator) is declared under
+      # `punct:` and overlaid onto the style by the renderer.
+      class I18n < Lutaml::Model::Serializable
+        attribute :lang, :string, default: "en"
+        attribute :labels, :hash, default: {}
+        attribute :punct, :hash, default: {}
 
-        def initialize(lang = "en", _script = "Latn")
-          @lang = lang
+        key_value do
+          map "lang", to: :lang
+          map "labels", to: :labels
+          map "punct", to: :punct
         end
 
         def label(key)
-          EN.fetch(key, key)
+          labels.fetch(key.to_s, key.to_s)
+        end
+
+        class << self
+          def load(lang = "en")
+            code = lang.to_s.empty? ? "en" : lang
+            path = File.join(__dir__, "i18n", "#{code}.yml")
+            unless File.file?(path)
+              raise ArgumentError, "no i18n declarations for language #{code}"
+            end
+
+            from_yaml(File.read(path))
+          end
         end
       end
     end

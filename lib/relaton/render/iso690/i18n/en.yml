@@ -1,0 +1,13 @@
+lang: en
+labels:
+  edition: "ed"
+  series_no: "no."
+  report_no: "Report no."
+  available_from: "Available from:"
+  in: "In:"
+  and: "and"
+  oxford_comma: ","
+  ed: "ed."
+  eds: "eds."
+  date_range: "–"
+punct: {}
