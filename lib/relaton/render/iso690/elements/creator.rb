@@ -5,9 +5,10 @@ module Relaton
     module Iso690
       module Elements
         # Name(s) of creator(s) (ISO 690 clause 7.2). The first creator is
-        # given inverted (SURNAME, forenames), subsequent creators in
-        # direct order (forenames SURNAME); name parts come from the typed
-        # model, never decomposed from a rendered string.
+        # given inverted per the style's name form (SURNAME, forenames),
+        # subsequent creators in direct order (forenames SURNAME); name
+        # parts come from the typed model, never decomposed from a
+        # rendered string.
         class Creator < Element
           def present?
             !creators.empty?
@@ -17,11 +18,21 @@ module Relaton
             "#{join(names)}#{role_suffix}"
           end
 
-          # In-text (author–date) form: the principal creator only
+          # In-text (name-and-date) form: the principal creator only
           def in_text
             principal = creators.first or return ""
             person = principal.person or return org_name(principal)
             completename(person) || surname(person)&.upcase || ""
+          end
+
+          # The principal creator's given names, as the name form declares
+          def principal_given
+            principal = creators.first or return ""
+            person = principal.person or return ""
+            complete = completename(person)
+            return "" if complete
+
+            given_names(person)
           end
 
           private
@@ -45,18 +56,22 @@ module Relaton
           def format(contributor, first:)
             person = contributor.person or return org_name(contributor)
             name = completename(person) ||
-              (first ? inverted(person) : direct(person))
+              personal_name(person, first: first)
             name.empty? ? org_name(contributor) : name
           end
 
-          def inverted(person)
-            [surname(person)&.upcase, forenames(person)]
-              .reject(&:empty?).join(", ")
+          def personal_name(person, first:)
+            surname = surname(person).to_s
+            given = given_names(person)
+            if first && !name_form.given_name_first
+              @style.render_name(surname: surname, given: given)
+            else
+              [given, surname.upcase].reject(&:empty?).join(" ")
+            end
           end
 
-          def direct(person)
-            [forenames(person), surname(person)&.upcase]
-              .reject(&:empty?).join(" ")
+          def name_form
+            @style.scheme.name_form
           end
 
           def join(names)
@@ -91,9 +106,12 @@ module Relaton
             value.empty? ? nil : value
           end
 
-          def forenames(person)
-            Array(person.name&.forename).map { |f| localized(f) }
-              .reject(&:empty?).join(" ")
+          def given_names(person)
+            names = Array(person.name&.forename).map { |f| localized(f) }
+              .reject(&:empty?)
+            return names.map { |n| "#{n[0]}." }.join(" ") if name_form.initials
+
+            names.join(" ")
           end
 
           def org_name(contributor)

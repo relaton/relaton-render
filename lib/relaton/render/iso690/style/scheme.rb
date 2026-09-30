@@ -1,0 +1,23 @@
+# frozen_string_literal: true
+
+module Relaton
+  module Render
+    module Iso690
+      class Style
+        # CitationScheme: the citation system, its name form and its
+        # localized strings (relaton-models CitationScheme).
+        class Scheme < Lutaml::Model::Serializable
+          attribute :system, :string, default: "name-date"
+          attribute :name_form, NameForm, default: -> { NameForm.new }
+          attribute :locale, Locale, default: -> { Locale.new }
+
+          key_value do
+            map "system", to: :system
+            map "nameForm", to: :name_form
+            map "locale", to: :locale
+          end
+        end
+      end
+    end
+  end
+end

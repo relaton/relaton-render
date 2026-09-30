@@ -14,7 +14,8 @@ module Relaton
 
           def render
             "#{@i18n.label('in')} " \
-              "#{@style.title_open}#{host_title}#{@style.title_close}" \
+              "#{@style.templates.title_open}#{host_title}" \
+              "#{@style.templates.title_close}" \
               "#{host_edition}"
           end
 

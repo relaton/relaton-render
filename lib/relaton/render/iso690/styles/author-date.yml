@@ -1,14 +1,38 @@
-punct:
-  creator: ". "
-  title: ". "
-  edition: ". "
-  medium: ". "
-  series: ". "
-  production: ", "
-  date: ". "
-  numeration: ". "
-  component_part: ". "
-  identifier: ". "
-  location: ". "
-title_open: "_"
-title_close: "_"
+# ISO 690 name-and-date citation style, an instance of the relaton-models
+# CitationStyle model. Templates place the ISO 690 clause 7 data elements
+# ({{creator}}, {{title}}, ...) in each resource kind's clause 8 order; an
+# absent element takes its trailing punctuation with it. A new style is a
+# YAML instance — the engine holds no styles.
+name: "ISO 690 (name and date)"
+scheme:
+  system: name-date
+  nameForm:
+    initials: false
+    givenNameFirst: false
+templates:
+  titleOpen: "_"
+  titleClose: "_"
+  citation: "{{surname}}, {{date}}{{disambiguator}}"
+  reference: "{{creator}}. {{title}}. {{medium}}. {{edition}}. {{series}}. {{production}}, {{date}}. {{identifier}}. {{location}}."
+  name: "{{surname}}, {{givenNames}}"
+perType:
+  - type: book
+    template: "{{creator}}. {{title}}. {{edition}}. {{series}}. {{production}}, {{date}}. {{identifier}}. {{location}}."
+  - type: report
+    template: "{{creator}}. {{title}}. {{numeration}}. {{edition}}. {{series}}. {{production}}, {{date}}. {{identifier}}. {{location}}."
+  - type: techreport
+    template: "{{creator}}. {{title}}. {{numeration}}. {{edition}}. {{series}}. {{production}}, {{date}}. {{identifier}}. {{location}}."
+  - type: patent
+    template: "{{creator}}. {{title}}. {{identifier}}. {{date}}."
+  - type: serial
+    template: "{{creator}}. {{title}}. {{componentPart}}. {{medium}}. {{edition}}. {{production}}, {{date}}. {{numeration}}. {{identifier}}. {{location}}."
+  - type: article-journal
+    template: "{{creator}}. {{title}}. {{componentPart}}. {{medium}}. {{edition}}. {{production}}, {{date}}. {{numeration}}. {{identifier}}. {{location}}."
+  - type: article-magazine
+    template: "{{creator}}. {{title}}. {{componentPart}}. {{medium}}. {{edition}}. {{production}}, {{date}}. {{numeration}}. {{identifier}}. {{location}}."
+  - type: webpage
+    template: "{{creator}}. {{title}}. {{date}}. {{identifier}}. {{location}}."
+  - type: website
+    template: "{{creator}}. {{title}}. {{date}}. {{identifier}}. {{location}}."
+  - type: online
+    template: "{{creator}}. {{title}}. {{date}}. {{identifier}}. {{location}}."

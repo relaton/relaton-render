@@ -14,7 +14,7 @@ module Relaton
 
           def render
             [places.join("; "), publishers.join("; ")]
-              .reject(&:empty?).join(@style.punct("production_sep"))
+              .reject(&:empty?).join(@i18n.punct_fetch("production_sep", ": "))
           end
 
           private

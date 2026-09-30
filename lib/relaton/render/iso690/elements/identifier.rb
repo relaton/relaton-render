@@ -15,7 +15,7 @@ module Relaton
 
           def render
             identifiers.map { |d| IdentifierKinds.render(d) }
-              .join(@style.punct("identifier_join"))
+              .join(@i18n.punct_fetch("identifier_join", ". "))
           end
 
           private
