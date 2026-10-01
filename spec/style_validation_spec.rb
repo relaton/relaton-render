@@ -26,7 +26,9 @@ RSpec.describe "CitationStyle instance" do
     expect(scheme["system"]).not_to be_empty
     expect(scheme["nameForm"]).to include("initials" => false) # the conformance corpus renders full given names
     expect(scheme["nameForm"]["givenNameFirst"]).to be(false)
-    expect(scheme["locale"]).to include("and" => a_string_matching(/\S/))
+    # locale is a per-style OVERRIDE of the language packs, deliberately
+    # absent here: re-declaring pack strings would override every language
+    expect(scheme).not_to have_key("locale")
     expect(scheme["disambiguation"]).to include("yearSuffix" => a_string_matching(/\S/))
   end
 

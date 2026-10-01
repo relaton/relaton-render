@@ -13,18 +13,29 @@ module Relaton
         autoload :Locale, "relaton/render/iso690/style/locale"
         autoload :Scheme, "relaton/render/iso690/style/scheme"
         autoload :TemplateMap, "relaton/render/iso690/style/template_map"
+        autoload :SortRule, "relaton/render/iso690/style/sort_rule"
         autoload :TypeTemplate, "relaton/render/iso690/style/type_template"
 
         attribute :name, :string
         attribute :scheme, Scheme, default: -> { Scheme.new }
         attribute :templates, TemplateMap, default: -> { TemplateMap.new }
         attribute :per_type, TypeTemplate, collection: true, default: []
+        attribute :sort_key, SortRule, collection: true, default: []
 
         key_value do
           map "name", to: :name
           map "scheme", to: :scheme
           map "templates", to: :templates
           map "perType", to: :per_type
+          map "sortKey", to: :sort_key
+        end
+
+        # The index sort rules; creator then date when the style declares
+        # none (the name-and-date default).
+        def sort_keys
+          return sort_key unless sort_key.empty?
+
+          [SortRule.new(attribute: "creator"), SortRule.new(attribute: "date")]
         end
 
         # Per-type template selection is a data lookup; unmatched types
