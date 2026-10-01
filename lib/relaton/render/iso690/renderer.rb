@@ -24,9 +24,11 @@ module Relaton
           end
         end
 
-        def initialize(style: DEFAULT_STYLE, lang: "en", script: "Latn")
+        def initialize(style: DEFAULT_STYLE, lang: "en", script: "Latn",
+                       labels: {})
           @style = Style.load(style)
           @i18n = I18n.load(lang).overlay!(@style.scheme.locale)
+          @i18n.overlay_hash!(labels) unless labels.empty?
           @script = script
         end
 
