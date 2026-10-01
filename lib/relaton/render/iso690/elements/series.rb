@@ -11,7 +11,8 @@ module Relaton
           end
 
           def render
-            base = "#{@style.title_open}#{series_title}#{@style.title_close}"
+            base = "#{@style.templates.title_open}#{series_title}" \
+                   "#{@style.templates.title_close}"
             if number.empty?
               base
             else

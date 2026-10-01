@@ -15,13 +15,15 @@ RSpec.describe "CitationStyle instance" do
   end
 
   it "carries a name" do
-    expect(instance["name"]).to be_a(String) && !instance["name"].empty?
+    expect(instance["name"]).to be_a(String)
+    expect(instance["name"]).not_to be_empty
   end
 
   it "has a citation scheme with system, name form, locale, and disambiguation" do
     scheme = instance["scheme"]
     expect(scheme).to include("class" => "CitationScheme")
-    expect(scheme["system"]).to be_a(String) && !scheme["system"].empty?
+    expect(scheme["system"]).to be_a(String)
+    expect(scheme["system"]).not_to be_empty
     expect(scheme["nameForm"]).to include("initials" => true)
     expect(scheme["nameForm"]["givenNameFirst"]).to be(false)
     expect(scheme["locale"]).to include("and" => a_string_matching(/\S/))

@@ -2,18 +2,19 @@
 
 module Relaton
   module Render
-    # Citation rendering per the ISO 690 architecture: a kind (resource
-    # type, clause 8) walks an ordered stack of elements (data elements,
-    # clause 7), omitting those that are not present.
+    # Citation rendering per the ISO 690 architecture: a style instance
+    # places the inventory's data elements (clause 7) in each resource
+    # kind's order (clause 8); the engine is a template evaluator over a
+    # field resolver and holds no styles, no vocabularies, no i18n.
     module Iso690
       autoload :Element, "relaton/render/iso690/element"
       autoload :Elements, "relaton/render/iso690/elements"
+      autoload :Fields, "relaton/render/iso690/fields"
       autoload :I18n, "relaton/render/iso690/i18n"
       autoload :IdentifierKinds, "relaton/render/iso690/identifier_kinds"
-      autoload :Kind, "relaton/render/iso690/kind"
-      autoload :Kinds, "relaton/render/iso690/kinds"
       autoload :Renderer, "relaton/render/iso690/renderer"
       autoload :Style, "relaton/render/iso690/style"
+      autoload :Template, "relaton/render/iso690/template"
     end
   end
 end

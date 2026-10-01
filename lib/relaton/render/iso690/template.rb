@@ -1,0 +1,72 @@
+# frozen_string_literal: true
+
+module Relaton
+  module Render
+    module Iso690
+      # A citation template as declared in a style instance: literal text
+      # interleaved with {{slot}} placeholders resolved against the ISO 690
+      # data element inventory. A leading literal attaches to the first
+      # slot, and a literal between two slots to the preceding one, so an
+      # absent field never orphans punctuation around it. The last rendered
+      # slot gives up its trailing literal in favour of the template
+      # terminator, appended once when any field rendered and the output
+      # does not already end with it.
+      class Template
+        SLOT = /\{\{\s*([\w-]+)\s*\}\}/.freeze
+
+        Field = Struct.new(:present?, :text)
+
+        def initialize(source)
+          @slots = []
+          @terminator = ""
+          scan(source.to_s)
+        end
+
+        def evaluate(fields)
+          rendered = @slots.filter_map do |(name, head, tail)|
+            field = fields[normalise(name)] or next
+            next unless field.present?
+
+            [head, field.text, tail]
+          end
+          return "" if rendered.empty?
+
+          terminate(rendered.each_with_index.map do |(head, text, tail), i|
+            i == rendered.size - 1 ? "#{head}#{text}" : "#{head}#{text}#{tail}"
+          end.join).rstrip
+        end
+
+        private
+
+        def scan(source)
+          rest = source
+          while (slot = SLOT.match(rest))
+            head = @slots.empty? ? rest[0...slot.begin(0)] : ""
+            @slots << [slot[1], head, ""]
+            rest = rest[slot.end(0)..]
+            following = SLOT.match(rest)
+            boundary = following ? following.begin(0) : rest.length
+            literal = rest[0...boundary]
+            if following
+              @slots.last[2] = literal
+            else
+              @terminator = literal
+            end
+            rest = rest[boundary..]
+          end
+        end
+
+        def terminate(body)
+          return body if @terminator.strip.empty?
+          return body if body.rstrip.end_with?(@terminator.strip)
+
+          "#{body}#{@terminator}"
+        end
+
+        def normalise(slot)
+          slot.to_s.delete("_").downcase
+        end
+      end
+    end
+  end
+end

@@ -1,50 +1,46 @@
 # frozen_string_literal: true
 
-require "lutaml/model"
-
 module Relaton
   module Render
     module Iso690
-      # A citation style as typed configuration: element punctuation,
-      # title emphasis markers, joins. No Liquid documents.
+      # A citation style as an instance of the relaton-models CitationStyle
+      # model: the citation scheme (name form, localized strings), the
+      # citation and reference templates, and per-type template variants.
+      # All rendering knowledge is data; the engine holds no styles, no
+      # vocabularies, no localized strings.
       class Style < Lutaml::Model::Serializable
-        attribute :punct_config, :hash, default: {}
-        attribute :title_open, :string, default: "_"
-        attribute :title_close, :string, default: "_"
+        autoload :NameForm, "relaton/render/iso690/style/name_form"
+        autoload :Locale, "relaton/render/iso690/style/locale"
+        autoload :Scheme, "relaton/render/iso690/style/scheme"
+        autoload :TemplateMap, "relaton/render/iso690/style/template_map"
+        autoload :TypeTemplate, "relaton/render/iso690/style/type_template"
 
-        DEFAULT_PUNCT = {
-          "creator_join" => ", ",
-          "production_sep" => ": ",
-          "identifier_join" => ". ",
-          # element name => punctuation appended after a present element
-          "creator" => ". ",
-          "title" => ". ",
-          "edition" => ". ",
-          "medium" => ". ",
-          "series" => ". ",
-          "production" => ", ",
-          "date" => ". ",
-          "numeration" => ". ",
-          "component_part" => ". ",
-          "identifier" => ". ",
-          "location" => ". ",
-        }.freeze
+        attribute :name, :string
+        attribute :scheme, Scheme, default: -> { Scheme.new }
+        attribute :templates, TemplateMap, default: -> { TemplateMap.new }
+        attribute :per_type, TypeTemplate, collection: true, default: []
 
         key_value do
-          map "punct", to: :punct_config
-          map "title_open", to: :title_open
-          map "title_close", to: :title_close
+          map "name", to: :name
+          map "scheme", to: :scheme
+          map "templates", to: :templates
+          map "perType", to: :per_type
         end
 
-        def punct(key)
-          punct_config[key] || DEFAULT_PUNCT[key] || " "
+        # Per-type template selection is a data lookup; unmatched types
+        # fall back to the general reference template.
+        def template_for(type)
+          per_type.find { |t| t.type == type.to_s }&.template ||
+            templates.reference
         end
 
-        # Language-varying punctuation declared in i18n/<lang>.yml wins
-        # over the style's own declarations.
-        def overlay_language(i18n)
-          punct_config.merge!(i18n.punct)
-          self
+        # First-creator name form: the style's declared name template with
+        # the surname upcased, per the name-and-date convention.
+        def render_name(surname:, given:)
+          Template.new(templates.name).evaluate(
+            "surname" => Template::Field[!surname.empty?, surname.upcase],
+            "givennames" => Template::Field[!given.empty?, given],
+          )
         end
 
         class << self
