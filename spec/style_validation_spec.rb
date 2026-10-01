@@ -24,15 +24,16 @@ RSpec.describe "CitationStyle instance" do
     expect(scheme).to include("class" => "CitationScheme")
     expect(scheme["system"]).to be_a(String)
     expect(scheme["system"]).not_to be_empty
-    expect(scheme["nameForm"]).to include("initials" => true)
+    expect(scheme["nameForm"]).to include("initials" => false) # the conformance corpus renders full given names
     expect(scheme["nameForm"]["givenNameFirst"]).to be(false)
     expect(scheme["locale"]).to include("and" => a_string_matching(/\S/))
     expect(scheme["disambiguation"]).to include("yearSuffix" => a_string_matching(/\S/))
   end
 
   it "has templates for citation and reference forms" do
-    templates = instance.dig("templates", "citation")
-    expect(templates).to include("{{creator}}")
+    # the citation form is in-text: the principal creator's surname, not
+    # the full creator element
+    expect(instance.dig("templates", "citation")).to include("{{surname}}")
     expect(instance.dig("templates", "reference")).to include("{{title}}")
   end
 

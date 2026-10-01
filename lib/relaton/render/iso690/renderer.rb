@@ -31,7 +31,7 @@ module Relaton
         end
 
         def render(model)
-          out = Template.new(@style.template_for(model.type)).evaluate(
+          out = Template.new(@style.template_for(Kinds.kind_for(model.type))).evaluate(
             Fields.new(model, style: @style, i18n: @i18n).to_h,
           )
           raise Unrenderable, "no renderable elements" if out.strip.empty?

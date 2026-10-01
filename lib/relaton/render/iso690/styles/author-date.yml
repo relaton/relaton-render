@@ -16,23 +16,13 @@ templates:
   reference: "{{creator}}. {{title}}. {{medium}}. {{edition}}. {{series}}. {{production}}, {{date}}. {{identifier}}. {{location}}."
   name: "{{surname}}, {{givenNames}}"
 perType:
-  - type: book
+  - type: monograph
     template: "{{creator}}. {{title}}. {{edition}}. {{series}}. {{production}}, {{date}}. {{identifier}}. {{location}}."
   - type: report
     template: "{{creator}}. {{title}}. {{numeration}}. {{edition}}. {{series}}. {{production}}, {{date}}. {{identifier}}. {{location}}."
-  - type: techreport
-    template: "{{creator}}. {{title}}. {{numeration}}. {{edition}}. {{series}}. {{production}}, {{date}}. {{identifier}}. {{location}}."
   - type: patent
     template: "{{creator}}. {{title}}. {{identifier}}. {{date}}."
-  - type: serial
+  - type: continuing
     template: "{{creator}}. {{title}}. {{componentPart}}. {{medium}}. {{edition}}. {{production}}, {{date}}. {{numeration}}. {{identifier}}. {{location}}."
-  - type: article-journal
-    template: "{{creator}}. {{title}}. {{componentPart}}. {{medium}}. {{edition}}. {{production}}, {{date}}. {{numeration}}. {{identifier}}. {{location}}."
-  - type: article-magazine
-    template: "{{creator}}. {{title}}. {{componentPart}}. {{medium}}. {{edition}}. {{production}}, {{date}}. {{numeration}}. {{identifier}}. {{location}}."
-  - type: webpage
-    template: "{{creator}}. {{title}}. {{date}}. {{identifier}}. {{location}}."
-  - type: website
-    template: "{{creator}}. {{title}}. {{date}}. {{identifier}}. {{location}}."
   - type: online
     template: "{{creator}}. {{title}}. {{date}}. {{identifier}}. {{location}}."

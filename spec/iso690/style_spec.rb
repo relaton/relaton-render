@@ -23,8 +23,8 @@ RSpec.describe Relaton::Render::Iso690::Style do
   describe "#template_for" do
     subject(:style) { described_class.load("author-date") }
 
-    it "selects the per-type template by data lookup" do
-      expect(style.template_for("serial")).to include "{{componentPart}}"
+    it "selects the per-type template by clause 8 kind lookup" do
+      expect(style.template_for("continuing")).to include "{{componentPart}}"
     end
 
     it "falls back to the general reference template" do
