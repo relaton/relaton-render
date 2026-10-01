@@ -6,6 +6,10 @@ module Relaton
     # places the inventory's data elements (clause 7) in each resource
     # kind's order (clause 8); the engine is a template evaluator over a
     # field resolver and holds no styles, no vocabularies, no i18n.
+    # The v1 compatibility facade (relaton-render#90): isodoc's
+    # render-isodoc subclasses Relaton::Render::General.
+    autoload :General, "relaton/render/general"
+
     module Iso690
       autoload :Element, "relaton/render/iso690/element"
       autoload :Elements, "relaton/render/iso690/elements"

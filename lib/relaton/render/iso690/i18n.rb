@@ -36,6 +36,19 @@ module Relaton
           self
         end
 
+        # Runtime label overrides (a caller's i18n hash): the pack's label
+        # names win as the key mapping; unknown keys are ignored.
+        def overlay_hash!(hash)
+          known = %w[
+            edition series_no report_no available_from in and oxford_comma
+            ed eds date_range others no_date no_author at
+          ]
+          hash.each do |key, value|
+            labels[key.to_s] = value if known.include?(key.to_s) && !value.nil?
+          end
+          self
+        end
+
         class << self
           def load(lang = "en")
             code = lang.to_s.empty? ? "en" : lang
