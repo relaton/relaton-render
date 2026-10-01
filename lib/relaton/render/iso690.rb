@@ -11,6 +11,7 @@ module Relaton
       autoload :Elements, "relaton/render/iso690/elements"
       autoload :Fields, "relaton/render/iso690/fields"
       autoload :I18n, "relaton/render/iso690/i18n"
+      autoload :IndexRenderer, "relaton/render/iso690/index_renderer"
       autoload :IdentifierKinds, "relaton/render/iso690/identifier_kinds"
       autoload :Kinds, "relaton/render/iso690/kinds"
       autoload :Renderer, "relaton/render/iso690/renderer"
