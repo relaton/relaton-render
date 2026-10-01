@@ -9,6 +9,7 @@ gemspec
 
 group :development, :test do
   gem "canon"
+  gem "relaton", ">= 3.0.0.pre.alpha", "< 4" # the model fixtures; the engine itself is model-agnostic
   gem "debug"
   gem "iso-690-test-suite", github: "relaton/iso-690-test-suite"
   gem "rake", ">= 12.3.3"
