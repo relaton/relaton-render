@@ -54,10 +54,22 @@ module Relaton
             code = lang.to_s.empty? ? "en" : lang
             path = File.join(__dir__, "i18n", "#{code}.yml")
             unless File.file?(path)
-              raise ArgumentError, "no i18n declarations for language #{code}"
+              # 1.x carried declarations for every locale isodoc uses; the
+              # v2 packs are per-style data. Unknown languages fall back to
+              # the English pack rather than killing the whole conversion.
+              fallback_warn(code)
+              path = File.join(__dir__, "i18n", "en.yml")
+              raise ArgumentError, "no i18n declarations for language #{code}" unless File.file?(path)
             end
 
             from_yaml(File.read(path))
+          end
+
+          def fallback_warn(code)
+            (@fallback_warned ||= {})[code] and return
+            @fallback_warned[code] = true
+            warn "relaton-render: no i18n declarations for language " \
+                 "#{code}; falling back to en"
           end
         end
       end
