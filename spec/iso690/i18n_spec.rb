@@ -17,8 +17,10 @@ RSpec.describe Relaton::Render::Iso690::I18n do
     expect(described_class.load(nil).lang).to eq "en"
   end
 
-  it "raises for an undeclared language" do
-    expect { described_class.load("zz") }
-      .to raise_error ArgumentError, /no i18n declarations for language zz/
+  it "falls back to English for an undeclared language" do
+    i18n = nil
+    expect { i18n = described_class.load("zz") }
+      .to output(/falling back to en/).to_stderr
+    expect(i18n.lang).to eq "en"
   end
 end
