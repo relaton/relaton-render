@@ -84,7 +84,7 @@ RSpec.describe Relaton::Render::General do
   describe "#parse — isodoc's pref_ref_code entry" do
     it "extracts the authoritative identifiers from a bibitem node" do
       renderer = described_class.new(language: "en")
-      doc = Nokogiri::XML(<<~X).root
+      doc = Moxml.parse(<<~X).root
         <bibitem id="x" type="standard">
           <docidentifier type="ISO" primary="true">ISO 19115-1:2014</docidentifier>
           <docidentifier type="urn">urn:iso:std:iso:19115:-1:ed-1:en</docidentifier>
