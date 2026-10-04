@@ -95,6 +95,15 @@ module Relaton
         Relaton::Bib::Item
       end
 
+      # 1.x Parse#authoritative_identifier semantics: the
+      # primary/language cascade, the excluded types (URN, DOI, ISBN...)
+      # dropped, and scoped ids (biblio-tag duplicates, IEEE trademark)
+      # demoted within their type group. isodoc hands the live bibitem
+      # node with the document's default namespace still attached, so the
+      # element queries must be namespace-agnostic.
+      EXCLUDED_ID_TYPES = %w(METANORMA METANORMA-ORDINAL AUTHOR-DATE TITLE
+                             URN ISO-REFERENCE ISSN ISBN DOI).freeze
+
       def facade_docids(doc)
         node = doc
         unless node.respond_to?(:xpath)
@@ -103,7 +112,37 @@ module Relaton
         end
         return [] unless node
 
-        node.xpath("./docidentifier").map(&:text)
+        ids = node.xpath("./*[local-name() = 'docidentifier']")
+        ids = facade_scope_filter(ids)
+        out = nil
+        [
+          ->(x) { x["language"] == @lang && x["primary"] },
+          ->(x) { x["primary"] },
+          ->(x) { x["language"] == @lang },
+          ->(_x) { true },
+        ].each do |p|
+          out = ids.select do |x|
+            p.call(x) && !EXCLUDED_ID_TYPES.include?(facade_id_type(x))
+          end
+          out.empty? or break
+        end
+        out.map { |x| x.text.strip }
+      end
+
+      def facade_id_type(id)
+        t = id["type"] or return nil
+        m = /\A(ISBN|ISSN)\..*/i.match(t) or return t.upcase
+        m[1].upcase
+      end
+
+      def facade_scope_filter(ids)
+        ids.detect { |i| i["scope"] } or return ids
+        ids.group_by { |i| i["type"] }.flat_map do |type, group|
+          grouped = group.group_by { |i| i["scope"] }
+          if type == "IEEE" then grouped["trademark"] || grouped[nil] || []
+          else grouped[nil] || []
+          end
+        end
       end
 
       def warn_general_config
