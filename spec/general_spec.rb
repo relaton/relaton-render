@@ -91,8 +91,46 @@ RSpec.describe Relaton::Render::General do
         </bibitem>
       X
       data, = renderer.parse(doc)
-      expect(data[:authoritative_identifier])
-        .to eq ["ISO 19115-1:2014", "urn:iso:std:iso:19115:-1:ed-1:en"]
+      expect(data[:authoritative_identifier]).to eq ["ISO 19115-1:2014"]
+    end
+
+    it "finds docidentifiers on a node that still carries the document " \
+       "namespace (isodoc passes the live bibitem element)" do
+      renderer = described_class.new(language: "en")
+      doc = Moxml.parse(<<~X).root
+        <bibitem id="ISO712" type="standard" xmlns="http://riboseinc.com/isoxml">
+          <docidentifier type="ISO">ISO 712</docidentifier>
+        </bibitem>
+      X
+      data, = renderer.parse(doc)
+      expect(data[:authoritative_identifier]).to eq ["ISO 712"]
+    end
+
+    it "keeps only the primary identifiers when a cascade tier matches, " \
+       "excludes DOI/ISBN/ISSN types, and drops scoped duplicates" do
+      renderer = described_class.new(language: "en")
+      doc = Moxml.parse(<<~X).root
+        <bibitem id="x" type="standard">
+          <docidentifier type="IETF">RFC 2119</docidentifier>
+          <docidentifier type="DOI">10.17487/RFC2119</docidentifier>
+          <docidentifier type="ISSN">1234-5678</docidentifier>
+          <docidentifier scope="biblio-tag">RFC 2119</docidentifier>
+        </bibitem>
+      X
+      data, = renderer.parse(doc)
+      expect(data[:authoritative_identifier]).to eq ["RFC 2119"]
+    end
+
+    it "falls through the cascade to all identifiers when none is primary" do
+      renderer = described_class.new(language: "en")
+      doc = Moxml.parse(<<~X).root
+        <bibitem id="x" type="standard">
+          <docidentifier type="ISO">ISO 712</docidentifier>
+          <docidentifier type="IEC">IEC 61082</docidentifier>
+        </bibitem>
+      X
+      data, = renderer.parse(doc)
+      expect(data[:authoritative_identifier]).to eq ["ISO 712", "IEC 61082"]
     end
   end
 
