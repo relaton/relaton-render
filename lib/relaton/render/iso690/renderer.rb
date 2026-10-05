@@ -43,9 +43,10 @@ module Relaton
         end
 
         def home_docid?(model)
-          type = @style.scheme.home_docid_type
-          !type.nil? && !type.empty? &&
-            Array(model.docidentifier).any? { |d| d.type == type }
+          types = Array(@style.scheme.home_docid_type)
+          return false if types.empty?
+
+          Array(model.docidentifier).any? { |d| types.include?(d.type) }
         end
 
         # In-text form: SURNAME, year + disambiguator (name-and-date)

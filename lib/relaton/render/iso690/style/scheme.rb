@@ -10,7 +10,7 @@ module Relaton
           attribute :system, :string, default: "name-date"
           attribute :name_form, NameForm, default: -> { NameForm.new }
           attribute :locale, Locale, default: -> { Locale.new }
-          attribute :home_docid_type, :string
+          attribute :home_docid_type, :string, collection: true
 
           key_value do
             map "system", to: :system

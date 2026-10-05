@@ -15,19 +15,26 @@ module Relaton
           end
 
           def render
+            joined = if (form = @style.templates.creators) && !form.empty?
+                       ::Relaton::Render::Iso690::Template.new(form).evaluate(
+                         "names" => Template::Field[true, join(names)],
+                       )
+                     else
+                       join(names)
+                     end
             case role_placement
             when "afterPeriod"
               # the in-slot trailing space separates the (eds.) marker
               # from the next element, which follows directly in the
               # template; a lone editor is unmarked
               if editors? && creators.size > 1
-                "#{period(join(names))} (#{role_word}) "
+                "#{period(joined)} (#{role_word}) "
               else
-                "#{period(join(names))} "
+                "#{period(joined)} "
               end
             else
               marker = editors? && creators.size > 1 ? " (#{role_word})" : ''
-              "#{join(names)}#{marker}"
+              "#{joined}#{marker}"
             end
           end
 
@@ -96,7 +103,7 @@ module Relaton
           def personal_name(person, first:)
             surname = surname(person).to_s
             given = given_names(person)
-            if first && !name_form.given_name_first
+            if (first || name_form.inverted_all) && !name_form.given_name_first
               @style.render_name(surname: surname, given: given)
             else
               [given, surname.upcase].reject(&:empty?).join(" ")
@@ -108,7 +115,19 @@ module Relaton
           end
 
           def join(names)
+            oxford = @i18n.label("oxford_comma")
+            if serial_list? && names.size > 1 && !oxford.empty?
+              return "#{names[0..-2].join(', ')}#{oxford} " \
+                "#{@i18n.label('and')} #{names.last}"
+            end
+
             join_names(names)
+          end
+
+          # Serial list style: every gap takes the serial form, even
+          # between two names
+          def serial_list?
+            @style.scheme.name_form.list_style == "serial"
           end
 
           def editors?

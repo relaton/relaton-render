@@ -76,10 +76,18 @@ module Relaton
 
             ""
           end.reject(&:empty?)
-          return localized(person.name&.formatted_initials) if parts.empty?
-          return parts.map { |p| "#{p[0]}." }.join(" ") if initials?
+          sep = @style.scheme.name_form.initials_separator.to_s
+          return reinitials(localized(person.name&.formatted_initials),
+                            sep) if parts.empty?
+          return parts.map { |p| "#{p[0]}." }.join(sep) if initials?
 
           parts.join(" ")
+        end
+
+        # Declared initials are a list in string form; rejoin them with
+        # the style's separator
+        def reinitials(raw, sep)
+          raw.split(/\s+/).reject(&:empty?).join(sep)
         end
 
         def initials?

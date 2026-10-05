@@ -69,8 +69,9 @@ module Relaton
         # First-creator name form: the style's declared name template with
         # the surname upcased, per the name-and-date convention.
         def render_name(surname:, given:)
+          shown = scheme.name_form.surname_upcase ? surname.upcase : surname
           Template.new(templates.name).evaluate(
-            "surname" => Template::Field[!surname.empty?, surname.upcase],
+            "surname" => Template::Field[!shown.empty?, shown],
             "givennames" => Template::Field[!given.empty?, given],
           )
         end

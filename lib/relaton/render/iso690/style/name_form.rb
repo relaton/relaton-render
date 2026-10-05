@@ -17,12 +17,27 @@ module Relaton
           # A completename is rendered, not decomposed; styles that
           # upcase inverted names may declare the completename treatment
           attribute :completename_upcase, :boolean, default: -> { false }
+          # Every personal name takes the inverted form (surname first),
+          # not just the principal creator
+          attribute :inverted_all, :boolean, default: -> { false }
+          # "serial": the oxford comma appears at every gap of the
+          # creator list, including between two names
+          attribute :list_style, :string, default: ""
+          # The inverted form's surname casing: the name-date convention
+          # upcases; small-cap styles keep the declared case
+          attribute :surname_upcase, :boolean, default: -> { true }
+          # Initials are a list; this separates them ("J. K." vs "J.K.")
+          attribute :initials_separator, :string, default: " "
 
           key_value do
             map "initials", to: :initials
             map "givenNameFirst", to: :given_name_first
             map "rolePlacement", to: :role_placement
             map "completenameUpcase", to: :completename_upcase
+            map "invertedAll", to: :inverted_all
+            map "listStyle", to: :list_style
+            map "surnameUpcase", to: :surname_upcase
+            map "initialsSeparator", to: :initials_separator
           end
         end
       end
