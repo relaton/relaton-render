@@ -63,13 +63,23 @@ module Relaton
           end
           m[item.id] = {
             id: item.id, ord: i, formattedref: ref,
-            citation: {
-              full: ref,
-              default: item.docidentifier.first&.content.to_s,
-              short: @renderer.citation(item),
-            },
+            citation: citation_renderings(item, ref),
           }
         end
+      end
+
+      # isodoc's styled citations consume these keys: the default is the
+      # authoritative identifier; the short cite is the style's citation,
+      # falling back to the reference rendering (the 1.x short-cite)
+      def citation_renderings(item, ref)
+        short = @renderer.citation(item)
+        short = ref if short.empty?
+
+        {
+          full: ref,
+          default: item.docidentifier.first&.content.to_s,
+          short: short,
+        }
       end
 
       # isodoc's pref_ref_code_parse reads

@@ -9,20 +9,28 @@ module Relaton
         # organization contributors.
         class Production < Element
           def present?
-            !places.empty? || !publishers.empty?
+            !places.empty? || !publishers.empty? || no_place_declared?
           end
 
           def render
-            [place_text, publishers.join("; ")]
+            return no_place_production if places.empty? && no_place_declared?
+
+            [places.join("; "), publishers.join("; ")]
               .reject(&:empty?).join(@i18n.punct_fetch("production_sep", ": "))
           end
 
-          def place_text
-            return places.join("; ") unless places.empty?
-            return "" unless @style.type_template_for(item_kind)&.no_place
-
+          # The no-place placeholder keeps the production separator even
+          # when no publisher follows ("n.p.: n.d.")
+          def no_place_production
             label = @i18n.label("no_place")
-            label == "no_place" ? "" : label
+            return "" if label.empty? || label == "no_place"
+
+            pubs = publishers.join("; ")
+            pubs.empty? ? "#{label}:" : "#{label}: #{pubs}"
+          end
+
+          def no_place_declared?
+            @style.type_template_for(item_kind)&.no_place == true
           end
 
           private
