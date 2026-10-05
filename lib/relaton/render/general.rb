@@ -25,6 +25,7 @@ module Relaton
       CiteTemplate = Struct.new(:template_raw)
 
       def initialize(options = {})
+        options = deep_symbolize(options)
         @lang = options[:language] || options[:lang] || "en"
         @renderer = Iso690::Renderer.new(
           lang: @lang,
@@ -142,6 +143,17 @@ module Relaton
           if type == "IEEE" then grouped["trademark"] || grouped[nil] || []
           else grouped[nil] || []
           end
+        end
+      end
+
+      # 1.x accepted string- and symbol-keyed options alike (the old
+      # engine deep-symbolized via metanorma-utils); isodoc's bibrenderer
+      # and every flavor still pass string keys.
+      def deep_symbolize(value)
+        case value
+        when Hash then value.to_h { |k, v| [k.to_sym, deep_symbolize(v)] }
+        when Array then value.map { |v| deep_symbolize(v) }
+        else value
         end
       end
 

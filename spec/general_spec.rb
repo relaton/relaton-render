@@ -141,3 +141,12 @@ RSpec.describe Relaton::Render::General do
     end
   end
 end
+
+RSpec.describe "Relaton::Render::General option keys" do
+  it "accepts the string-keyed options isodoc's bibrenderer passes" do
+    r = Relaton::Render::General.new("language" => "en", "script" => "Latn")
+    expect(r.instance_variable_get(:@lang)).to eq "en"
+    expect(r.instance_variable_get(:@renderer)
+      .instance_variable_get(:@script)).to eq "Latn"
+  end
+end
