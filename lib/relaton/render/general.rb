@@ -175,7 +175,8 @@ module Relaton
         ].each do |p|
           out = ids.select do |x|
             p.call(x) &&
-              !self.class.excluded_id_types.include?(facade_id_type(x))
+              !::Relaton::Render::General.excluded_id_types
+                .include?(facade_id_type(x))
           end
           out.empty? or break
         end

@@ -25,7 +25,8 @@ module Relaton
             Array(@model.date).find(&:published) ||
               Array(@model.date).find { |d| d.type.nil? } ||
               Array(@model.date).find { |d| d.type == "created" } ||
-              Array(@model.date).find { |d| d.type == "issued" }
+              Array(@model.date).find { |d| d.type == "issued" } ||
+              Array(@model.date).find { |d| d.type == "circulated" }
           end
 
           def publication_date_value
