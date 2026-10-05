@@ -27,11 +27,11 @@ module Relaton
       def initialize(options = {})
         options = deep_symbolize(options)
         @lang = options[:language] || options[:lang] || "en"
-        @renderer = Iso690::Renderer.new(
-          lang: @lang,
-          script: options[:script] || "Latn",
-          labels: options[:i18nhash] || {},
-        )
+        renderer_opts = { lang: @lang, script: options[:script] || "Latn",
+                          labels: options[:i18nhash] || {} }
+        # A flavor names its own CitationStyle instance (name or YAML path)
+        options[:style] and renderer_opts[:style] = options[:style]
+        @renderer = Iso690::Renderer.new(**renderer_opts)
         warn_general_config if options[:config]
       end
 

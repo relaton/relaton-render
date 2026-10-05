@@ -150,3 +150,16 @@ RSpec.describe "Relaton::Render::General option keys" do
       .instance_variable_get(:@script)).to eq "Latn"
   end
 end
+
+RSpec.describe "Relaton::Render::General style option" do
+  it "loads a flavor's CitationStyle by path" do
+    r = Relaton::Render::General.new(language: "en", style: File.join(__dir__, "fixtures/probe-style.yml"))
+    model = Relaton::Bib::Bibitem.from_xml(
+      "<bibitem type='standard'><title language='en'>T</title>" \
+      "<docidentifier type='ISO'>ISO 1</docidentifier>" \
+      "<contributor><role type='author'/><person><name>" \
+      "<surname>Doe</surname></name></person></contributor>" \
+      "<date type='published'><on>2020</on></date></bibitem>")
+    expect(r.render(model)).to include "DOE"
+  end
+end
