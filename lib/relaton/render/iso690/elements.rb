@@ -20,6 +20,8 @@ module Relaton
         autoload :Extent, "relaton/render/iso690/elements/extent"
         autoload :Access, "relaton/render/iso690/elements/access"
         autoload :Stddoc, "relaton/render/iso690/elements/stddoc"
+        autoload :Status, "relaton/render/iso690/elements/status"
+        autoload :Citeid, "relaton/render/iso690/elements/citeid"
 
         CLASSES = {
           creator: Creator,
@@ -37,6 +39,8 @@ module Relaton
           extent: Extent,
           access: Access,
           stddoc: Stddoc,
+          status: Status,
+          citeid: Citeid,
         }.freeze
 
         def self.build(name, model, style:, i18n:, short: false)
