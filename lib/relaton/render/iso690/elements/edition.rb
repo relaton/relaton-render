@@ -8,10 +8,12 @@ module Relaton
         # edition through Edition#number (falling back to its content).
         class Edition < Element
           def present?
-            !number.zero?
+            !raw.to_s.empty?
           end
 
           def render
+            return "#{@i18n.label('version')} #{raw}" unless word_edition?
+
             word = @i18n.label("edition_#{number}")
             return word unless word == "edition_#{number}"
 
@@ -20,8 +22,19 @@ module Relaton
 
           private
 
+          # Worded editions are document editions; online resources
+          # carry numbered builds rendered as versions
+          def word_edition?
+            number.positive? &&
+              %w[monograph component_part serial_part]
+                .include?(item_kind)
+          end
+
+          def raw
+            (@model.edition&.number || @model.edition&.content).to_s
+          end
+
           def number
-            raw = @model.edition&.number || @model.edition&.content
             Integer(raw)
           rescue ArgumentError, TypeError
             0

@@ -14,11 +14,15 @@ module Relaton
           # "NAME (eds.)." (the name-date default), "afterPeriod"
           # renders "NAME. (eds.)" (ISO 690 clause-flavour).
           attribute :role_placement, :string, default: "glue"
+          # A completename is rendered, not decomposed; styles that
+          # upcase inverted names may declare the completename treatment
+          attribute :completename_upcase, :boolean, default: -> { false }
 
           key_value do
             map "initials", to: :initials
             map "givenNameFirst", to: :given_name_first
             map "rolePlacement", to: :role_placement
+            map "completenameUpcase", to: :completename_upcase
           end
         end
       end

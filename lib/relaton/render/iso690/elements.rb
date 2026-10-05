@@ -17,6 +17,9 @@ module Relaton
         autoload :Numeration, "relaton/render/iso690/elements/numeration"
         autoload :ComponentPart, "relaton/render/iso690/elements/component_part"
         autoload :Size, "relaton/render/iso690/elements/size"
+        autoload :Extent, "relaton/render/iso690/elements/extent"
+        autoload :Access, "relaton/render/iso690/elements/access"
+        autoload :Stddoc, "relaton/render/iso690/elements/stddoc"
 
         CLASSES = {
           creator: Creator,
@@ -31,6 +34,9 @@ module Relaton
           numeration: Numeration,
           component_part: ComponentPart,
           size: Size,
+          extent: Extent,
+          access: Access,
+          stddoc: Stddoc,
         }.freeze
 
         def self.build(name, model, style:, i18n:)

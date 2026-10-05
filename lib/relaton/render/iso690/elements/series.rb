@@ -11,11 +11,12 @@ module Relaton
           end
 
           def render
-            if (form = @style.templates.series) && !form.empty?
+            if (form = series_form) && !form.empty?
               return ::Relaton::Render::Iso690::Template.new(form).evaluate(
                 "seriestitle" => Template::Field[!series_title.empty?,
                                                  series_title],
                 "seriesnumber" => Template::Field[!number.empty?, number],
+                "seriesrun" => Template::Field[!run.empty?, run],
               )
             end
 
@@ -40,6 +41,18 @@ module Relaton
 
           def number
             series&.number.to_s
+          end
+
+          def run
+            series&.run.to_s
+          end
+
+          # The style's series form for this item's resource kind, falling
+          # back to the style-wide form
+          def series_form
+            variant = @style.per_type
+              .find { |t| t.type == Kinds.kind_for(@model.type) }
+            variant&.series || @style.templates.series
           end
         end
       end
