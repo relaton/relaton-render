@@ -77,7 +77,7 @@ module Relaton
           parts = Array(person.name&.forename).map do |f|
             content = localized(f)
             next content unless content.empty?
-            next "#{f.initial}." if f.initial.to_s.length == 1
+            next initial(f.initial) if f.initial.to_s.length == 1
 
             ""
           end.reject(&:empty?)

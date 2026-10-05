@@ -11,7 +11,7 @@ module Relaton
         ELEMENT_SLOTS = %i[
           creator title edition medium series production
           date numeration component_part identifier location size
-          extent access stddoc status citeid
+          extent access stddoc status citeid updated
         ].freeze
 
         def initialize(model, style:, i18n:, disambiguator: nil,
@@ -29,7 +29,25 @@ module Relaton
             key = slot.to_s.delete("_").downcase
             table[key] = element_field(slot)
           end
+          table["dategroup"] = dategroup_field
           table.merge(name_fields)
+        end
+
+        private
+
+        # The date wrapped in the style's dateForm, with the updated
+        # date nested ("(2018 (updated November 2018))"); the bare date
+        # slot stays untouched
+        def dategroup_field
+          form = @style.templates.date_form
+          return Template::Field[false, ""] if form.empty?
+
+          date = element_field(:date)
+          updated = element_field(:updated)
+          text = ::Relaton::Render::Iso690::Template.new(form).evaluate(
+            "date" => date, "updated" => updated,
+          )
+          Template::Field[date.present? || updated.present?, text]
         end
 
         private

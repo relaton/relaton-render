@@ -13,13 +13,10 @@ module Relaton
             !render.nil?
           end
 
+          # The bare date; the style's dateForm wraps it in the
+          # dategroup slot (Fields#dategroup_field)
           def render
-            text = range || year&.to_s
-            return text if (form = @style.templates.date_form).empty?
-
-            ::Relaton::Render::Iso690::Template.new(form).evaluate(
-              "date" => Template::Field[!text.to_s.empty?, text.to_s],
-            )
+            range || year&.to_s
           end
 
           private

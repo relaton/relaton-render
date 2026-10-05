@@ -18,6 +18,9 @@ module Relaton
           attribute :creators, :string, default: ""
           attribute :uri_short, :string, default: ""
           attribute :date_form, :string, default: ""
+          # "first": cite only the first identifier (1.x
+          # authoritative_identifier|first styles)
+          attribute :identifier_mode, :string, default: "all"
 
           key_value do
             map "titleOpen", to: :title_open
@@ -30,6 +33,7 @@ module Relaton
           map "creators", to: :creators
           map "uriShort", to: :uri_short
           map "dateForm", to: :date_form
+          map "identifierMode", to: :identifier_mode
           end
         end
       end

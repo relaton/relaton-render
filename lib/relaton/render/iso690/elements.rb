@@ -22,6 +22,7 @@ module Relaton
         autoload :Stddoc, "relaton/render/iso690/elements/stddoc"
         autoload :Status, "relaton/render/iso690/elements/status"
         autoload :Citeid, "relaton/render/iso690/elements/citeid"
+        autoload :Updated, "relaton/render/iso690/elements/updated"
 
         CLASSES = {
           creator: Creator,
@@ -41,11 +42,28 @@ module Relaton
           stddoc: Stddoc,
           status: Status,
           citeid: Citeid,
+          updated: Updated,
         }.freeze
 
+        # Flavors register their own data elements: a flavor slot
+        # resolves before the built-in vocabulary
+        FLAVOUR_CLASSES = {}
+
+        class << self
+          def register(name, klass)
+            FLAVOUR_CLASSES[name.to_sym] = klass
+            klass
+          end
+
+          def resolve(name)
+            FLAVOUR_CLASSES[name.to_sym] || CLASSES.fetch(name, nil)
+          end
+        end
+
         def self.build(name, model, style:, i18n:, short: false)
-          CLASSES.fetch(name).new(model, style: style, i18n: i18n,
-                                  short: short)
+          klass = resolve(name) or
+            raise KeyError, "no data element #{name}"
+          klass.new(model, style: style, i18n: i18n, short: short)
         end
       end
     end

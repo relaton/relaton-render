@@ -12,13 +12,18 @@ module Relaton
           end
 
           def render
+            text = uri
             form = uri_form
+            if form == :bare || @from_accesslocation
+              return "#{@i18n.label('available_from')} #{text}".strip
+            end
+
             text = if form && !form.empty?
                      ::Relaton::Render::Iso690::Template.new(form).evaluate(
-                       "uri" => Template::Field[!uri.empty?, uri],
+                       "uri" => Template::Field[!text.empty?, text],
                      )
                    else
-                     uri
+                     text
                    end
 
             label = @short ? "" : "#{@i18n.label('available_from')} "
@@ -44,6 +49,7 @@ module Relaton
             from_accesslocation =
               Array(@model.accesslocation).map(&:to_s).reject(&:empty?)
             unless from_accesslocation.empty?
+              @from_accesslocation = true
               return from_accesslocation.first.to_s
             end
 
