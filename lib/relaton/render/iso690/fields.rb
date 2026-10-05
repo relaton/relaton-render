@@ -36,19 +36,18 @@ module Relaton
 
         private
 
-        # The date wrapped in the style's dateForm, with the updated
-        # date nested ("(2018 (updated November 2018))"); the bare date
-        # slot stays untouched
+        # The date with the updated date nested ("(2018 (updated
+        # November 2018))"); the bare date slot stays untouched
         def dategroup_field
-          form = @style.templates.date_form
-          return Template::Field[false, ""] if form.empty?
-
           date = element_field(:date)
           updated = element_field(:updated)
-          text = ::Relaton::Render::Iso690::Template.new(form).evaluate(
-            "date" => date, "updated" => updated,
-          )
-          Template::Field[date.present? || updated.present?, text]
+          return Template::Field[false, ""] if !date.present? &&
+            !updated.present?
+
+          inner = updated.present? ? updated.text : date.text
+          inner = "#{date.text}#{updated.text}" if date.present? &&
+            updated.present?
+          Template::Field[true, "(#{inner})"]
         end
 
         private
