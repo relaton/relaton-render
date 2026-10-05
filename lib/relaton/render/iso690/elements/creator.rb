@@ -15,7 +15,20 @@ module Relaton
           end
 
           def render
-            "#{join(names)}#{role_suffix}"
+            case role_placement
+            when "after_period"
+              editors? ? "#{join(names)}. (#{role_word}) " : join(names)
+            else
+              "#{join(names)}#{editors? ? " (#{role_word})" : ''}"
+            end
+          end
+
+          def role_placement
+            @style.scheme.name_form.role_placement || "glue"
+          end
+
+          def role_word
+            @i18n.label(creators.one? ? "ed" : "eds")
           end
 
           # In-text (name-and-date) form: the principal creator only
@@ -83,13 +96,6 @@ module Relaton
               "#{names[0..-2].join(', ')}#{@i18n.label('oxford_comma')} " \
               "#{@i18n.label('and')} #{names.last}"
             end
-          end
-
-          def role_suffix
-            return "" unless editors?
-
-            suffix = creators.one? ? @i18n.label("ed") : @i18n.label("eds")
-            " (#{suffix})"
           end
 
           def editors?

@@ -9,10 +9,16 @@ module Relaton
         class NameForm < Lutaml::Model::Serializable
           attribute :initials, :boolean, default: -> { false }
           attribute :given_name_first, :boolean, default: -> { false }
+          # Where an all-editor creator list's role marker sits relative
+          # to the name's terminating period: "glue" renders
+          # "NAME (eds.)." (the name-date default), "afterPeriod"
+          # renders "NAME. (eds.)" (ISO 690 clause-flavour).
+          attribute :role_placement, :string, default: "glue"
 
           key_value do
             map "initials", to: :initials
             map "givenNameFirst", to: :given_name_first
+            map "rolePlacement", to: :role_placement
           end
         end
       end

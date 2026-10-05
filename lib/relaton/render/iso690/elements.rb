@@ -16,6 +16,7 @@ module Relaton
         autoload :Location, "relaton/render/iso690/elements/location"
         autoload :Numeration, "relaton/render/iso690/elements/numeration"
         autoload :ComponentPart, "relaton/render/iso690/elements/component_part"
+        autoload :Size, "relaton/render/iso690/elements/size"
 
         CLASSES = {
           creator: Creator,
@@ -29,6 +30,7 @@ module Relaton
           location: Location,
           numeration: Numeration,
           component_part: ComponentPart,
+          size: Size,
         }.freeze
 
         def self.build(name, model, style:, i18n:)

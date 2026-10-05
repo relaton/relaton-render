@@ -11,6 +11,14 @@ module Relaton
           end
 
           def render
+            if (form = @style.templates.series) && !form.empty?
+              return ::Relaton::Render::Iso690::Template.new(form).evaluate(
+                "series_title" => Template::Field[!series_title.empty?,
+                                                  series_title],
+                "series_number" => Template::Field[!number.empty?, number],
+              )
+            end
+
             base = "#{@style.templates.title_open}#{series_title}" \
                    "#{@style.templates.title_close}"
             if number.empty?

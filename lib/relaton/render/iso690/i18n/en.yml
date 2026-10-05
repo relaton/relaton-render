@@ -1,6 +1,9 @@
 lang: en
 labels:
   edition: "ed"
+  size_volume: "vol."
+  size_page: "pp."
+
   series_no: "no."
   report_no: "Report no."
   available_from: "Available from:"
