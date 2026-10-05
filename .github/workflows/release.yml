@@ -14,13 +14,6 @@ on:
   repository_dispatch:
     types: [ do-release ]
 
-# Explicit permissions: CodeQL's actions/missing-workflow-permissions
-# fails the check otherwise. The file is Cimas-generated and a sync will
-# revert this; the fix belongs in relaton/support's release template
-# (same situation as the relaton monogem's rake.yml).
-permissions:
-  contents: write
-
 jobs:
   release:
     uses: relaton/support/.github/workflows/release.yml@main
