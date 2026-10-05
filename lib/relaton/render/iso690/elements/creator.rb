@@ -115,19 +115,7 @@ module Relaton
           end
 
           def join(names)
-            oxford = @i18n.label("oxford_comma")
-            if serial_list? && names.size > 1 && !oxford.empty?
-              return "#{names[0..-2].join(', ')}#{oxford} " \
-                "#{@i18n.label('and')} #{names.last}"
-            end
-
             join_names(names)
-          end
-
-          # Serial list style: every gap takes the serial form, even
-          # between two names
-          def serial_list?
-            @style.scheme.name_form.list_style == "serial"
           end
 
           def editors?

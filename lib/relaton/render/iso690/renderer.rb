@@ -25,8 +25,11 @@ module Relaton
         def initialize(style: DEFAULT_STYLE, lang: "en", script: "Latn",
                        labels: {})
           @style = Style.load(style)
-          @i18n = I18n.load(lang).overlay!(@style.scheme.locale)
+          @i18n = I18n.load(lang)
           @i18n.overlay_hash!(labels) unless labels.empty?
+          # The style instance is the citation-style authority: its
+          # declared strings win over the caller's generic i18n hash
+          @i18n.overlay!(@style.scheme.locale)
           @script = script
         end
 

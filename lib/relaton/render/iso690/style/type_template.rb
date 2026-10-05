@@ -13,6 +13,9 @@ module Relaton
           attribute :title, :string
           attribute :home, :boolean
           attribute :fallbacks, :hash, default: -> { {} }
+          # Render the style's no_place label when the publisher has no
+          # place (the book-family templates of some flavors)
+          attribute :no_place, :boolean
 
           key_value do
             map "type", to: :type
@@ -21,6 +24,7 @@ module Relaton
             map "title", to: :title
             map "home", to: :home
             map "fallbacks", to: :fallbacks
+            map "noPlace", to: :no_place
           end
         end
       end
