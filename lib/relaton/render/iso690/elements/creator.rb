@@ -11,13 +11,15 @@ module Relaton
         # rendered string.
         class Creator < Element
           def present?
-            !creators.empty?
+            !creators.empty? || !fallback_name.empty?
           end
 
           def render
             return plain_render if @short
 
-            joined = if (form = @style.templates.creators) && !form.empty?
+            joined = if creators.empty?
+                       fallback_name
+                     elsif (form = @style.templates.creators) && !form.empty?
                        ::Relaton::Render::Iso690::Template.new(form).evaluate(
                          "names" => Template::Field[true, join(names)],
                        )
@@ -28,14 +30,14 @@ module Relaton
             when "afterPeriod"
               # the in-slot trailing space separates the (eds.) marker
               # from the next element, which follows directly in the
-              # template; a lone editor is unmarked
-              if editors? && creators.size > 1
+              # template; a lone editor is unmarked unless declared
+              if editors? && marked?
                 "#{period(joined)} (#{role_word}) "
               else
                 "#{period(joined)} "
               end
             else
-              marker = editors? && creators.size > 1 ? " (#{role_word})" : ''
+              marker = editors? && marked? ? " (#{role_word})" : ''
               "#{joined}#{marker}"
             end
           end
@@ -54,6 +56,10 @@ module Relaton
 
           def period(text)
             text.end_with?(".") ? text : "#{text}."
+          end
+
+          def marked?
+            creators.size > 1 || name_form.lone_editor_marked
           end
 
           def role_word
@@ -85,6 +91,16 @@ module Relaton
               found = contributors("editor") if found.empty?
               found
             end
+          end
+
+          # The declared creator fallback (e.g. the publisher's
+          # abbreviation for standards with no personal creators)
+          def fallback_name
+            return "" unless name_form.creator_fallback == "publisher_abbrev"
+
+            contributors("publisher").map do |c|
+              localized(c.organization&.abbreviation)
+            end.reject(&:empty?).first.to_s
           end
 
           def names

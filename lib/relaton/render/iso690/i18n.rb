@@ -33,6 +33,7 @@ module Relaton
         # Style-instance localized strings win over the language pack.
         def overlay!(locale)
           labels.merge!(locale.label_map)
+          punct.merge!(locale.punct || {})
           self
         end
 

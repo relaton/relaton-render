@@ -85,9 +85,10 @@ module Relaton
         end
 
         def terminate(body)
-          # An element ending in a colon carries its own separator: the
-          # following sentence period collapses (1.x punctuation cleanup)
-          body = body.gsub(/:\s*\.\s*/, ": ")
+          # 1.x punctuation cleanup: an element ending in a colon
+          # carries its own separator (the following sentence period
+          # collapses), and spaces collapse before a comma
+          body = body.gsub(/:\s*\.\s*/, ": ").gsub(/ +,/, ",")
           return body if @terminator.strip.empty?
           return body if body.rstrip.end_with?(@terminator.strip)
 

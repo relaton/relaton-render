@@ -13,16 +13,21 @@ module Relaton
             !identifiers.empty?
           end
 
+
           def render
-            identifiers.map { |d| IdentifierKinds.render(d) }
-              .join(@i18n.punct_fetch("identifier_join", ". "))
+            d = identifiers.first or return ""
+
+            IdentifierKinds.render(d)
           end
 
           private
 
+          # Scoped identifiers (anchor, biblio-tag) are pipeline
+          # artefacts, not cited identifiers
           def identifiers
             Array(@model.docidentifier).reject do |d|
-              INTERNAL_TYPES.include?(d.type) || d.content.to_s.strip.empty?
+              INTERNAL_TYPES.include?(d.type) ||
+                !d.scope.to_s.empty? || d.content.to_s.strip.empty?
             end
           end
         end

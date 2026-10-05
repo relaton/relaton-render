@@ -17,6 +17,7 @@ module Relaton
           attribute :uri, :string, default: ""
           attribute :creators, :string, default: ""
           attribute :uri_short, :string, default: ""
+          attribute :date_form, :string, default: ""
 
           key_value do
             map "titleOpen", to: :title_open
@@ -28,6 +29,7 @@ module Relaton
           map "uri", to: :uri
           map "creators", to: :creators
           map "uriShort", to: :uri_short
+          map "dateForm", to: :date_form
           end
         end
       end

@@ -14,7 +14,12 @@ module Relaton
           end
 
           def render
-            range || year&.to_s
+            text = range || year&.to_s
+            return text if (form = @style.templates.date_form).empty?
+
+            ::Relaton::Render::Iso690::Template.new(form).evaluate(
+              "date" => Template::Field[!text.to_s.empty?, text.to_s],
+            )
           end
 
           private

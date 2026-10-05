@@ -17,6 +17,9 @@ module Relaton
           # Arbitrary label overrides (edition words, join punctuation,
           # size units): merged over the language pack verbatim.
           attribute :labels, :hash, default: -> { {} }
+          # Typographic punctuation overrides (production order and
+          # separator), declared as in the language packs
+          attribute :punct, :hash, default: -> { {} }
 
           key_value do
             map "and", to: :conj
@@ -27,6 +30,7 @@ module Relaton
             map "at", to: :at
             map "availableAt", to: :available_at
             map "labels", to: :labels
+            map "punct", to: :punct
           end
 
           LABEL_FOR = {

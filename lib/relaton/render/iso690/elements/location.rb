@@ -52,7 +52,8 @@ module Relaton
             end
             # the citation uri outranks the rest (1.x uri extraction)
             preferred = uris.find { |u| u.type == "citation" } ||
-              uris.find { |u| u.type == "attachment" } || uris.first
+              uris.find { |u| u.type == "attachment" } ||
+              uris.find { |u| u.type == "src" } || uris.first
             preferred&.content.to_s
           end
         end

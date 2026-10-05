@@ -82,17 +82,24 @@ module Relaton
             ""
           end.reject(&:empty?)
           sep = @style.scheme.name_form.initials_separator.to_s
-          return reinitials(localized(person.name&.formatted_initials),
-                            sep) if parts.empty?
-          return parts.map { |p| "#{p[0]}." }.join(sep) if initials?
+          return reinitials(localized(person.name&.formatted_initials)) if
+            parts.empty?
+          return parts.map(&method(:initial)).join(sep) if initials?
 
           parts.join(" ")
         end
 
         # Declared initials are a list in string form; rejoin them with
         # the style's separator
-        def reinitials(raw, sep)
-          raw.split(/\s+/).reject(&:empty?).join(sep)
+        def reinitials(raw)
+          sep = @style.scheme.name_form.initials_separator.to_s
+          dots = @style.scheme.name_form.initials_period
+          raw.split(/\s+/).reject(&:empty?).map { |i| dots ? i : i.delete(".") }
+            .join(sep)
+        end
+
+        def initial(name)
+          @style.scheme.name_form.initials_period ? "#{name[0]}." : name[0]
         end
 
         def initials?
@@ -100,6 +107,11 @@ module Relaton
         end
 
         def join_names(names)
+          # A style with no join word renders a plain serial list
+          if @i18n.label("and").empty? && names.size > 1
+            return names.join(", ")
+          end
+
           oxford = @i18n.label("oxford_comma")
           if serial_list? && names.size > 1 && !oxford.empty?
             return "#{names[0..-2].join(', ')}#{oxford} " \

@@ -13,10 +13,34 @@ module Relaton
           end
 
           def render
+            if publisher_first?
+              return no_place_production_publisher_first if places.empty? &&
+                no_place_declared?
+
+              return [publishers.join("; "), places.join("; ")]
+                .reject(&:empty?).join(production_sep)
+            end
+
             return no_place_production if places.empty? && no_place_declared?
 
             [places.join("; "), publishers.join("; ")]
-              .reject(&:empty?).join(@i18n.punct_fetch("production_sep", ": "))
+              .reject(&:empty?).join(production_sep)
+          end
+
+          def publisher_first?
+            @i18n.punct_fetch("production_order", "") == "publisher_first"
+          end
+
+          def production_sep
+            @i18n.punct_fetch("production_sep", ": ")
+          end
+
+          def no_place_production_publisher_first
+            label = @i18n.label("no_place")
+            return "" if label.empty? || label == "no_place"
+
+            pubs = publishers.join("; ")
+            pubs.empty? ? label : "#{pubs}, #{label}"
           end
 
           # The no-place placeholder keeps the production separator even

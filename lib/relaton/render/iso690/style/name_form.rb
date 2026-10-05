@@ -26,6 +26,13 @@ module Relaton
           # Organization names take the inverted form's casing; small-cap
           # styles keep the declared case
           attribute :org_upcase, :boolean, default: -> { true }
+          # When no personal creator exists, the creator slot falls back
+          # to the publisher's abbreviation ("ISO: ISO 712, ...")
+          attribute :creator_fallback, :string
+          # A lone editor still carries the role marker ("(ed.)")
+          attribute :lone_editor_marked, :boolean, default: -> { false }
+          # Initials without their trailing periods ("Nixon RM")
+          attribute :initials_period, :boolean, default: -> { true }
           # The inverted form's surname casing: the name-date convention
           # upcases; small-cap styles keep the declared case
           attribute :surname_upcase, :boolean, default: -> { true }
@@ -40,6 +47,9 @@ module Relaton
             map "invertedAll", to: :inverted_all
             map "listStyle", to: :list_style
             map "orgUpcase", to: :org_upcase
+            map "creatorFallback", to: :creator_fallback
+            map "loneEditorMarked", to: :lone_editor_marked
+            map "initialsPeriod", to: :initials_period
             map "surnameUpcase", to: :surname_upcase
             map "initialsSeparator", to: :initials_separator
           end
