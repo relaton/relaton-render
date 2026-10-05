@@ -12,7 +12,8 @@ module Relaton
           end
 
           def render
-            text = if (form = @style.templates.uri) && !form.empty?
+            form = uri_form
+            text = if form && !form.empty?
                      ::Relaton::Render::Iso690::Template.new(form).evaluate(
                        "uri" => Template::Field[!uri.empty?, uri],
                      )
@@ -20,10 +21,24 @@ module Relaton
                      uri
                    end
 
-            "#{@i18n.label('available_from')} #{text}".strip
+            label = @short ? "" : "#{@i18n.label('available_from')} "
+            "#{label}#{text}".strip
           end
 
           private
+
+          # The short cite renders the bare uri (1.x short templates),
+          # the reference the declared form
+          def uri_form
+            if @short
+              short_form = @style.templates.uri_short
+              return :bare if short_form.empty?
+
+              return short_form
+            end
+
+            @style.templates.uri
+          end
 
           def uri
             from_accesslocation =
@@ -32,8 +47,13 @@ module Relaton
               return from_accesslocation.first.to_s
             end
 
-            Array(@model.source).map { |u| u.content.to_s }
-              .reject(&:empty?).first.to_s
+            uris = Array(@model.source).reject do |u|
+              u.content.to_s.strip.empty?
+            end
+            # the citation uri outranks the rest (1.x uri extraction)
+            preferred = uris.find { |u| u.type == "citation" } ||
+              uris.find { |u| u.type == "attachment" } || uris.first
+            preferred&.content.to_s
           end
         end
       end

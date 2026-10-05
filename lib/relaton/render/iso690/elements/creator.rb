@@ -15,6 +15,8 @@ module Relaton
           end
 
           def render
+            return plain_render if @short
+
             joined = if (form = @style.templates.creators) && !form.empty?
                        ::Relaton::Render::Iso690::Template.new(form).evaluate(
                          "names" => Template::Field[true, join(names)],
@@ -36,6 +38,14 @@ module Relaton
               marker = editors? && creators.size > 1 ? " (#{role_word})" : ''
               "#{joined}#{marker}"
             end
+          end
+
+          # The short cite splits after the creators: they render as a
+          # plain join, without the wrap and sentence period (1.x
+          # short-cite templates carried no wrap)
+          def plain_render
+            marker = editors? && creators.size > 1 ? " (#{role_word})" : ''
+            "#{join(names)}#{marker}"
           end
 
           def role_placement

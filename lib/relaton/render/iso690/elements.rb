@@ -39,8 +39,9 @@ module Relaton
           stddoc: Stddoc,
         }.freeze
 
-        def self.build(name, model, style:, i18n:)
-          CLASSES.fetch(name).new(model, style: style, i18n: i18n)
+        def self.build(name, model, style:, i18n:, short: false)
+          CLASSES.fetch(name).new(model, style: style, i18n: i18n,
+                                  short: short)
         end
       end
     end

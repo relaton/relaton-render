@@ -52,6 +52,19 @@ module Relaton
           Array(model.docidentifier).any? { |d| types.include?(d.type) }
         end
 
+        # The short cite: the reference with the first-biblio marker
+        def render_short(model, delim)
+          kind = Kinds.kind_for(model.type)
+          template = @style.type_template_for(kind)&.short ||
+            @style.template_for(kind, home: home_docid?(model))
+          Template.new(template).evaluate_short(
+            Fields.new(model, style: @style, i18n: @i18n, short: true).to_h,
+            delim,
+          )
+        rescue ::Relaton::Render::Unrenderable
+          ""
+        end
+
         # In-text form: SURNAME, year + disambiguator (name-and-date)
         def citation(model, disambiguator: nil)
           Template.new(@style.templates.citation).evaluate(

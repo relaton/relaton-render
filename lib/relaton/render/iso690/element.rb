@@ -8,11 +8,12 @@ module Relaton
       # predicate, #render the element's formatting method. Punctuation
       # between elements belongs to the kind/style, not the element.
       class Element
-        def initialize(model, style:, i18n:, kind: nil)
+        def initialize(model, style:, i18n:, kind: nil, short: false)
           @model = model
           @style = style
           @i18n = i18n
           @kind = kind
+          @short = short
         end
 
         def present?
