@@ -14,11 +14,13 @@ module Relaton
           extent access stddoc
         ].freeze
 
-        def initialize(model, style:, i18n:, disambiguator: nil)
+        def initialize(model, style:, i18n:, disambiguator: nil,
+                       short: false)
           @model = model
           @style = style
           @i18n = i18n
           @disambiguator = disambiguator.to_s
+          @short = short
         end
 
         def to_h
@@ -33,7 +35,8 @@ module Relaton
         private
 
         def element_field(slot)
-          element = Elements.build(slot, @model, style: @style, i18n: @i18n)
+          element = Elements.build(slot, @model, style: @style,
+                                   i18n: @i18n, short: @short)
           text = element.render.to_s
           if element.present? && !text.empty?
             return Template::Field[true, text]

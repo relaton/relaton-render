@@ -14,7 +14,8 @@ module Relaton
           def render
             text = main_title
             return text if analytic?
-            if (form = @style.title_form_for(Kinds.kind_for(@model.type)))
+            if !@short &&
+               (form = @style.title_form_for(Kinds.kind_for(@model.type)))
               text = ::Relaton::Render::Iso690::Template.new(form).evaluate(
                 "title" => Template::Field[!text.empty?, text],
               )

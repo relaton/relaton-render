@@ -22,6 +22,34 @@ module Relaton
           scan(source.to_s)
         end
 
+        # The short cite renders the reference with the first-biblio
+        # marker appended to its first component: isodoc's styled
+        # references (eref2linkshort) split there (the 1.x
+        # fmt-first-biblio-delim)
+        def evaluate_short(fields, delim)
+          rendered = @slots.filter_map do |(name, head, tail)|
+            field = fields[normalise(name)] or next
+            next unless field.present?
+
+            [head, field.text, tail]
+          end
+          return "" if rendered.empty?
+
+          parts = rendered.each_with_index.map do |(head, text, tail), i|
+            if i.zero?
+              # the split marker precedes the component's trailing
+              # punctuation (1.x ret[0] += delim, then join), with the
+              # join's separating space
+              "#{head}#{text}#{delim} #{tail}"
+            elsif i == rendered.size - 1
+              "#{head}#{text}"
+            else
+              "#{head}#{text}#{tail}"
+            end
+          end
+          terminate(parts.join).rstrip
+        end
+
         def evaluate(fields)
           rendered = @slots.filter_map do |(name, head, tail)|
             field = fields[normalise(name)] or next

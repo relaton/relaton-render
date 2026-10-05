@@ -62,7 +62,8 @@ module Relaton
             next
           end
           m[item.id] = {
-            id: item.id, ord: i, formattedref: ref,
+            id: item.id, ord: i,
+            formattedref: terminate_reference(ref),
             citation: citation_renderings(item, ref),
           }
         end
@@ -71,9 +72,24 @@ module Relaton
       # isodoc's styled citations consume these keys: the default is the
       # authoritative identifier; the short cite is the style's citation,
       # falling back to the reference rendering (the 1.x short-cite)
+      FIRST_DELIM = "<span class='fmt-first-biblio-delim'/>"
+
+      # render_all feeds the bibliography list: a reference not ending
+      # in the biblio terminator takes one (the 1.x render1 behaviour;
+      # single-item render stays verbatim)
+      def terminate_reference(ref)
+        return ref if ref.empty? || ref.rstrip.end_with?(".")
+
+        "#{ref}."
+      end
+
       def citation_renderings(item, ref)
         short = @renderer.citation(item)
-        short = ref if short.empty?
+        short = if short.empty?
+                  @renderer.render_short(item, FIRST_DELIM)
+                else
+                  short
+                end
 
         {
           full: ref,
