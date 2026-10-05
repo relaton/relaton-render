@@ -15,6 +15,7 @@ module Relaton
           attribute :name, :string, default: "{{surname}}, {{givenNames}}"
           attribute :series, :string, default: ""
           attribute :uri, :string, default: ""
+          attribute :creators, :string, default: ""
 
           key_value do
             map "titleOpen", to: :title_open
@@ -24,6 +25,7 @@ module Relaton
             map "name", to: :name
           map "series", to: :series
           map "uri", to: :uri
+          map "creators", to: :creators
           end
         end
       end

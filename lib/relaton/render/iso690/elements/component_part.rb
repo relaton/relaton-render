@@ -69,7 +69,9 @@ module Relaton
 
             surname = person_surname(person)
             given = person_given(person)
-            if first
+            if @style.scheme.name_form.inverted_all
+              @style.render_name(surname: surname, given: given)
+            elsif first
               [surname, given].reject(&:empty?).join(", ")
             else
               [given, surname].reject(&:empty?).join(" ")

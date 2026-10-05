@@ -13,8 +13,15 @@ module Relaton
           end
 
           def render
-            [places.join("; "), publishers.join("; ")]
+            [place_text, publishers.join("; ")]
               .reject(&:empty?).join(@i18n.punct_fetch("production_sep", ": "))
+          end
+
+          def place_text
+            return places.join("; ") unless places.empty?
+
+            label = @i18n.label("no_place")
+            label == "no_place" ? "" : label
           end
 
           private
