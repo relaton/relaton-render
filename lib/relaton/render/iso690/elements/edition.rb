@@ -12,6 +12,9 @@ module Relaton
           end
 
           def render
+            word = @i18n.label("edition_#{number}")
+            return word unless word == "edition_#{number}"
+
             "#{ordinalize(number)} #{@i18n.label('edition')}"
           end
 

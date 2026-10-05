@@ -10,7 +10,7 @@ module Relaton
       class Fields
         ELEMENT_SLOTS = %i[
           creator title edition medium series production
-          date numeration component_part identifier location
+          date numeration component_part identifier location size
         ].freeze
 
         def initialize(model, style:, i18n:, disambiguator: nil)

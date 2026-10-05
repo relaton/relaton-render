@@ -13,6 +13,7 @@ module Relaton
           attribute :citation, :string, default: "{{surname}}, {{date}}"
           attribute :reference, :string
           attribute :name, :string, default: "{{surname}}, {{givenNames}}"
+          attribute :series, :string, default: ""
 
           key_value do
             map "titleOpen", to: :title_open
@@ -20,6 +21,7 @@ module Relaton
             map "citation", to: :citation
             map "reference", to: :reference
             map "name", to: :name
+          map "series", to: :series
           end
         end
       end
