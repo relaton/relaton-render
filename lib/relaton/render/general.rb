@@ -74,6 +74,11 @@ module Relaton
       # falling back to the reference rendering (the 1.x short-cite)
       FIRST_DELIM = "<span class='fmt-first-biblio-delim'/>"
 
+      # A creator list alone (flavors' document-history name forms)
+      def creator_names(item)
+        @renderer.render_creators(to_model(item))
+      end
+
       # render_all feeds the bibliography list: a reference not ending
       # in the biblio terminator takes one (the 1.x render1 behaviour;
       # single-item render stays verbatim)
