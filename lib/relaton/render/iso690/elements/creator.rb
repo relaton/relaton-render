@@ -16,8 +16,10 @@ module Relaton
 
           def render
             case role_placement
-            when "after_period"
-              editors? ? "#{join(names)}. (#{role_word}) " : join(names)
+            when "afterPeriod"
+              # the in-slot trailing space separates the (ed.) marker from
+              # the next element, which follows directly in the template
+              editors? ? "#{join(names)}. (#{role_word}) " : "#{join(names)}. "
             else
               "#{join(names)}#{editors? ? " (#{role_word})" : ''}"
             end

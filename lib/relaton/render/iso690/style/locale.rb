@@ -14,6 +14,9 @@ module Relaton
           attribute :in_str, :string
           attribute :at, :string
           attribute :available_at, :string
+          # Arbitrary label overrides (edition words, join punctuation,
+          # size units): merged over the language pack verbatim.
+          attribute :labels, :hash, default: -> { {} }
 
           key_value do
             map "and", to: :conj
@@ -23,6 +26,7 @@ module Relaton
             map "in", to: :in_str
             map "at", to: :at
             map "availableAt", to: :available_at
+            map "labels", to: :labels
           end
 
           LABEL_FOR = {
@@ -32,10 +36,11 @@ module Relaton
           }.freeze
 
           def label_map
-            LABEL_FOR.filter_map do |attr, label|
+            base = LABEL_FOR.filter_map do |attr, label|
               value = public_send(attr)
               [label, value] unless value.nil?
             end.to_h
+            base.merge(labels || {})
           end
         end
       end
