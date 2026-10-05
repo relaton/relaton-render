@@ -23,6 +23,9 @@ module Relaton
           # "serial": the oxford comma appears at every gap of the
           # creator list, including between two names
           attribute :list_style, :string, default: ""
+          # Organization names take the inverted form's casing; small-cap
+          # styles keep the declared case
+          attribute :org_upcase, :boolean, default: -> { true }
           # The inverted form's surname casing: the name-date convention
           # upcases; small-cap styles keep the declared case
           attribute :surname_upcase, :boolean, default: -> { true }
@@ -36,6 +39,7 @@ module Relaton
             map "completenameUpcase", to: :completename_upcase
             map "invertedAll", to: :inverted_all
             map "listStyle", to: :list_style
+            map "orgUpcase", to: :org_upcase
             map "surnameUpcase", to: :surname_upcase
             map "initialsSeparator", to: :initials_separator
           end

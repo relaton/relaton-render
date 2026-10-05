@@ -48,8 +48,12 @@ module Relaton
         end
 
         def org_name(contributor)
+          shown = ->(n) do
+            text = localized(n)
+            @style.scheme.name_form.org_upcase ? text.upcase : text
+          end
           name = Array(contributor.organization&.name)
-            .map { |n| localized(n).upcase }.join(", ")
+            .map(&shown).join(", ")
           abbrev = localized(contributor.organization&.abbreviation)
           return name if name.empty? || abbrev.empty?
 
@@ -95,14 +99,26 @@ module Relaton
         end
 
         def join_names(names)
+          oxford = @i18n.label("oxford_comma")
+          if serial_list? && names.size > 1 && !oxford.empty?
+            return "#{names[0..-2].join(', ')}#{oxford} " \
+              "#{@i18n.label('and')} #{names.last}"
+          end
+
           case names.size
           when 0 then ""
           when 1 then names.first
           when 2 then names.join(" #{@i18n.label('and')} ")
           else
-            "#{names[0..-2].join(', ')}#{@i18n.label('oxford_comma')} " \
+            "#{names[0..-2].join(', ')}#{oxford} " \
             "#{@i18n.label('and')} #{names.last}"
           end
+        end
+
+        # Serial list style: the oxford comma appears at every gap of a
+        # name list, including between two names
+        def serial_list?
+          @style.scheme.name_form.list_style == "serial"
         end
       end
     end

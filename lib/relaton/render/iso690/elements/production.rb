@@ -19,6 +19,7 @@ module Relaton
 
           def place_text
             return places.join("; ") unless places.empty?
+            return "" unless @style.type_template_for(item_kind)&.no_place
 
             label = @i18n.label("no_place")
             label == "no_place" ? "" : label
