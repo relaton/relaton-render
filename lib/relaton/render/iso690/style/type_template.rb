@@ -12,6 +12,7 @@ module Relaton
           attribute :series, :string
           attribute :title, :string
           attribute :home, :boolean
+          attribute :fallbacks, :hash, default: -> { {} }
 
           key_value do
             map "type", to: :type
@@ -19,6 +20,7 @@ module Relaton
             map "series", to: :series
             map "title", to: :title
             map "home", to: :home
+            map "fallbacks", to: :fallbacks
           end
         end
       end

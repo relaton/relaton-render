@@ -40,7 +40,8 @@ module Relaton
           def host_title_text
             return localized(relation&.description) if host.nil?
 
-            Array(host.title).map { |t| localized(t) }.join(" ").strip
+            titles_in_lang(host.title).map { |t| localized(t) }
+              .join(" ").strip
           end
 
           def host_title

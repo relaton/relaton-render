@@ -52,6 +52,15 @@ module Relaton
           candidates.first&.template || templates.reference
         end
 
+        def type_template_for(type)
+          per_type.find { |t| t.type == type.to_s }
+        end
+
+        # The absent-slot replacement text declared for a type, when any
+        def fallback_for(type, slot)
+          type_template_for(type)&.fallbacks&.[](slot.to_s)
+        end
+
         def title_form_for(type)
           per_type.lazy.select { |t| t.type == type.to_s }
             .find { |t| t.title && !t.title.empty? }&.title
