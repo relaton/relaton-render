@@ -21,6 +21,11 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.required_ruby_version = Gem::Requirement.new(">= 3.3.0")
 
+  spec.add_dependency "htmlentities"
+  spec.add_development_dependency "relaton-bib"
+  spec.add_dependency "liquid", "~> 5"
   spec.add_dependency "lutaml-model"
+  spec.add_dependency "nokogiri"
+  spec.add_dependency "twitter_cldr"
   # spec.metadata["rubygems_mfa_required"] = "true"
 end
