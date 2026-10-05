@@ -147,6 +147,15 @@ module Relaton
       EXCLUDED_ID_TYPES = %w(METANORMA METANORMA-ORDINAL AUTHOR-DATE TITLE
                              URN ISO-REFERENCE ISSN ISBN DOI).freeze
 
+      # Flavors extend the authoritative-identifier exclusions
+      class << self
+        attr_writer :excluded_id_types
+
+        def excluded_id_types
+          @excluded_id_types || EXCLUDED_ID_TYPES
+        end
+      end
+
       def facade_docids(doc)
         node = doc
         unless node.respond_to?(:xpath)
@@ -165,7 +174,8 @@ module Relaton
           ->(_x) { true },
         ].each do |p|
           out = ids.select do |x|
-            p.call(x) && !EXCLUDED_ID_TYPES.include?(facade_id_type(x))
+            p.call(x) &&
+              !self.class.excluded_id_types.include?(facade_id_type(x))
           end
           out.empty? or break
         end

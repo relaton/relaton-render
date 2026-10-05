@@ -12,6 +12,7 @@ module Relaton
           creator title edition medium series production
           date numeration component_part identifier location size
           extent access stddoc status citeid updated
+          nistpublisher draft
         ].freeze
 
         def initialize(model, style:, i18n:, disambiguator: nil,
@@ -54,7 +55,8 @@ module Relaton
 
         def element_field(slot)
           element = Elements.build(slot, @model, style: @style,
-                                   i18n: @i18n, short: @short)
+                                   i18n: @i18n, short: @short) or
+            return Template::Field[false, ""]
           text = element.render.to_s
           if element.present? && !text.empty?
             return Template::Field[true, text]

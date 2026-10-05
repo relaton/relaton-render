@@ -61,8 +61,7 @@ module Relaton
         end
 
         def self.build(name, model, style:, i18n:, short: false)
-          klass = resolve(name) or
-            raise KeyError, "no data element #{name}"
+          klass = resolve(name) or return nil
           klass.new(model, style: style, i18n: i18n, short: short)
         end
       end

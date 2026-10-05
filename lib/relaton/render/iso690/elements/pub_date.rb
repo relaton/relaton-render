@@ -24,7 +24,8 @@ module Relaton
           def publication_date
             Array(@model.date).find(&:published) ||
               Array(@model.date).find { |d| d.type.nil? } ||
-              Array(@model.date).find { |d| d.type == "created" }
+              Array(@model.date).find { |d| d.type == "created" } ||
+              Array(@model.date).find { |d| d.type == "issued" }
           end
 
           def publication_date_value
@@ -36,7 +37,9 @@ module Relaton
             d = publication_date or return nil
             dash = @i18n.label("date_range")
             if d.from && d.to
-              "#{d.from.to_date.year}#{dash}#{d.to.to_date.year}"
+              fy = d.from.to_date.year
+              ty = d.to.to_date.year
+              fy == ty ? fy.to_s : "#{fy}#{dash}#{ty}"
             elsif d.from
               "#{d.from.to_date.year}#{dash}"
             end
