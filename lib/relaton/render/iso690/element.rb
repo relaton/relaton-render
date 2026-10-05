@@ -29,6 +29,14 @@ module Relaton
           value&.content.to_s
         end
 
+        # Localizable values scoped to the render language: the variants
+        # declared in that language, or all of them when none matches
+        def titles_in_lang(values)
+          titles = Array(values)
+          in_lang = titles.select { |t| Array(t.language).include?(@i18n.lang) }
+          in_lang.empty? ? titles : in_lang
+        end
+
         def contributors(role)
           Array(@model.contributor).select { |c| has_role?(c, role) }
         end

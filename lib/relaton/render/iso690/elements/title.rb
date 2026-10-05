@@ -33,10 +33,14 @@ module Relaton
               .include?(Kinds.kind_for(@model.type))
           end
 
+          # A typed main title wins; an untyped title is main by
+          # default, but yields to a typed one
           def main_title
-            t = Array(@model.title).find { |x| (x.type || "main") == "main" } ||
-              Array(@model.title).first
-            localized(t)
+            titles = Array(@model.title)
+            mains = titles.select { |x| x.type == "main" }
+            mains = titles.select { |x| x.type.nil? } if mains.empty?
+            mains = titles if mains.empty?
+            localized(titles_in_lang(mains).first)
           end
         end
       end

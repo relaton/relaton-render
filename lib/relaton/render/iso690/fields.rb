@@ -35,7 +35,18 @@ module Relaton
         def element_field(slot)
           element = Elements.build(slot, @model, style: @style, i18n: @i18n)
           text = element.render.to_s
-          Template::Field[element.present? && !text.empty?, text]
+          if element.present? && !text.empty?
+            return Template::Field[true, text]
+          end
+
+          fallback = @style.fallback_for(item_kind, slot)
+          return Template::Field[true, fallback] if fallback
+
+          Template::Field[false, ""]
+        end
+
+        def item_kind
+          Kinds.kind_for(@model.type)
         end
 
         def name_fields

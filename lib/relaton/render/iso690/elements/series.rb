@@ -36,7 +36,8 @@ module Relaton
           end
 
           def series_title
-            Array(series&.title).map { |t| localized(t) }.join(" ").strip
+            titles_in_lang(series&.title).map { |t| localized(t) }
+              .join(" ").strip
           end
 
           def number
