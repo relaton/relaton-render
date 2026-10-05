@@ -9,10 +9,16 @@ module Relaton
         class TypeTemplate < Lutaml::Model::Serializable
           attribute :type, :string
           attribute :template, :string
+          attribute :series, :string
+          attribute :title, :string
+          attribute :home, :boolean
 
           key_value do
             map "type", to: :type
             map "template", to: :template
+            map "series", to: :series
+            map "title", to: :title
+            map "home", to: :home
           end
         end
       end

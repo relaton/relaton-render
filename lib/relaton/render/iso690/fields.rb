@@ -11,6 +11,7 @@ module Relaton
         ELEMENT_SLOTS = %i[
           creator title edition medium series production
           date numeration component_part identifier location size
+          extent access stddoc
         ].freeze
 
         def initialize(model, style:, i18n:, disambiguator: nil)

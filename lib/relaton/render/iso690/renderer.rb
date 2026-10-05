@@ -33,12 +33,20 @@ module Relaton
         end
 
         def render(model)
-          out = Template.new(@style.template_for(Kinds.kind_for(model.type))).evaluate(
+          kind = Kinds.kind_for(model.type)
+          template = @style.template_for(kind, home: home_docid?(model))
+          out = Template.new(template).evaluate(
             Fields.new(model, style: @style, i18n: @i18n).to_h,
           )
           raise Unrenderable, "no renderable elements" if out.strip.empty?
 
           out
+        end
+
+        def home_docid?(model)
+          type = @style.scheme.home_docid_type
+          !type.nil? && !type.empty? &&
+            Array(model.docidentifier).any? { |d| d.type == type }
         end
 
         # In-text form: SURNAME, year + disambiguator (name-and-date)

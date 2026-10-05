@@ -20,8 +20,16 @@ module Relaton
           private
 
           def places
-            Array(@model.place).map { |p| p.city.to_s }
-              .reject { |c| c.strip.empty? }
+            Array(@model.place).map do |p|
+              structured = [p.city.to_s, p.region.map(&:content),
+                            p.country.map(&:content)]
+                .flatten.reject { |c| c.strip.empty? }
+              if structured.empty? && !p.formatted_place.to_s.empty?
+                next p.formatted_place.to_s
+              end
+
+              structured.join(", ")
+            end.reject(&:empty?)
           end
 
           def publishers

@@ -41,10 +41,20 @@ module Relaton
         end
 
         # Per-type template selection is a data lookup; unmatched types
-        # fall back to the general reference template.
-        def template_for(type)
-          per_type.find { |t| t.type == type.to_s }&.template ||
-            templates.reference
+        # fall back to the general reference template. When a kind has
+        # home-flagged variants, the split is resolved by whether the item
+        # carries the scheme's home document identifier.
+        def template_for(type, home: nil)
+          candidates = per_type.select { |t| t.type == type.to_s }
+          if candidates.size > 1 && !home.nil?
+            candidates = candidates.select { |t| (t.home || false) == home }
+          end
+          candidates.first&.template || templates.reference
+        end
+
+        def title_form_for(type)
+          per_type.lazy.select { |t| t.type == type.to_s }
+            .find { |t| t.title && !t.title.empty? }&.title
         end
 
         # First-creator name form: the style's declared name template with

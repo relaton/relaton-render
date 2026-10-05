@@ -17,16 +17,26 @@ module Relaton
           def render
             case role_placement
             when "afterPeriod"
-              # the in-slot trailing space separates the (ed.) marker from
-              # the next element, which follows directly in the template
-              editors? ? "#{join(names)}. (#{role_word}) " : "#{join(names)}. "
+              # the in-slot trailing space separates the (eds.) marker
+              # from the next element, which follows directly in the
+              # template; a lone editor is unmarked
+              if editors? && creators.size > 1
+                "#{period(join(names))} (#{role_word}) "
+              else
+                "#{period(join(names))} "
+              end
             else
-              "#{join(names)}#{editors? ? " (#{role_word})" : ''}"
+              marker = editors? && creators.size > 1 ? " (#{role_word})" : ''
+              "#{join(names)}#{marker}"
             end
           end
 
           def role_placement
             @style.scheme.name_form.role_placement || "glue"
+          end
+
+          def period(text)
+            text.end_with?(".") ? text : "#{text}."
           end
 
           def role_word
@@ -70,9 +80,17 @@ module Relaton
 
           def format(contributor, first:)
             person = contributor.person or return org_name(contributor)
-            name = completename(person) ||
+            name = completename_name(person, first: first) ||
               personal_name(person, first: first)
             name.empty? ? org_name(contributor) : name
+          end
+
+          def completename_name(person, first:)
+            complete = completename(person) or return nil
+            return complete unless name_form.completename_upcase
+
+            first ? @style.render_name(surname: complete, given: "") :
+              complete.upcase
           end
 
           def personal_name(person, first:)
@@ -90,14 +108,7 @@ module Relaton
           end
 
           def join(names)
-            case names.size
-            when 0 then ""
-            when 1 then names.first
-            when 2 then names.join(" #{@i18n.label('and')} ")
-            else
-              "#{names[0..-2].join(', ')}#{@i18n.label('oxford_comma')} " \
-              "#{@i18n.label('and')} #{names.last}"
-            end
+            join_names(names)
           end
 
           def editors?
@@ -105,30 +116,21 @@ module Relaton
           end
 
           def completename(person)
-            value = localized(person.name&.completename)
+            value = person_completename(person)
             value.empty? ? nil : value
           end
 
           def surname(person)
-            value = localized(person.name&.surname)
+            value = person_surname(person)
             value.empty? ? nil : value
           end
 
           def given_names(person)
-            names = Array(person.name&.forename).map { |f| localized(f) }
-              .reject(&:empty?)
-            return names.map { |n| "#{n[0]}." }.join(" ") if name_form.initials
-
-            names.join(" ")
+            person_given(person)
           end
 
           def org_name(contributor)
-            name = Array(contributor.organization&.name)
-              .map { |n| localized(n).upcase }.join(", ")
-            abbrev = localized(contributor.organization&.abbreviation)
-            return name if name.empty? || abbrev.empty?
-
-            "#{name} (#{abbrev})"
+            super
           end
         end
       end

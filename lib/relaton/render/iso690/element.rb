@@ -8,10 +8,11 @@ module Relaton
       # predicate, #render the element's formatting method. Punctuation
       # between elements belongs to the kind/style, not the element.
       class Element
-        def initialize(model, style:, i18n:)
+        def initialize(model, style:, i18n:, kind: nil)
           @model = model
           @style = style
           @i18n = i18n
+          @kind = kind
         end
 
         def present?
@@ -35,6 +36,56 @@ module Relaton
         def has_role?(contributor, role)
           Array(contributor.role).any? do |r|
             r.is_a?(String) ? r == role : r.type == role
+          end
+        end
+
+        def org_name(contributor)
+          name = Array(contributor.organization&.name)
+            .map { |n| localized(n).upcase }.join(", ")
+          abbrev = localized(contributor.organization&.abbreviation)
+          return name if name.empty? || abbrev.empty?
+
+          "#{name} (#{abbrev})"
+        end
+
+        def item_kind
+          @kind || Kinds.kind_for(@model.type)
+        end
+
+        def person_completename(person)
+          localized(person.name&.completename)
+        end
+
+        def person_surname(person)
+          localized(person.name&.surname)
+        end
+
+        def person_given(person)
+          parts = Array(person.name&.forename).map do |f|
+            content = localized(f)
+            next content unless content.empty?
+            next "#{f.initial}." if f.initial.to_s.length == 1
+
+            ""
+          end.reject(&:empty?)
+          return localized(person.name&.formatted_initials) if parts.empty?
+          return parts.map { |p| "#{p[0]}." }.join(" ") if initials?
+
+          parts.join(" ")
+        end
+
+        def initials?
+          @style.scheme.name_form.initials
+        end
+
+        def join_names(names)
+          case names.size
+          when 0 then ""
+          when 1 then names.first
+          when 2 then names.join(" #{@i18n.label('and')} ")
+          else
+            "#{names[0..-2].join(', ')}#{@i18n.label('oxford_comma')} " \
+            "#{@i18n.label('and')} #{names.last}"
           end
         end
       end

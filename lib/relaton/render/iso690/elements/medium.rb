@@ -12,13 +12,18 @@ module Relaton
           end
 
           def render
-            "[#{medium}]"
+            medium
           end
 
           private
 
           def medium
-            localized(@model.medium)
+            genre = @model.medium&.genre.to_s
+            return genre.sub(/^\w/) { |c| c.upcase } unless genre.empty?
+
+            key = "medium_#{@model.type}"
+            label = @i18n.label(key)
+            label == key ? "" : label
           end
         end
       end

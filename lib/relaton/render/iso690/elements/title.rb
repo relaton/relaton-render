@@ -12,11 +12,26 @@ module Relaton
           end
 
           def render
-            "#{@style.templates.title_open}#{main_title}" \
+            text = main_title
+            return text if analytic?
+            if (form = @style.title_form_for(Kinds.kind_for(@model.type)))
+              text = ::Relaton::Render::Iso690::Template.new(form).evaluate(
+                "title" => Template::Field[!text.empty?, text],
+              )
+            end
+
+            "#{@style.templates.title_open}#{text}" \
               "#{@style.templates.title_close}"
           end
 
           private
+
+          # ISO 690: analytic titles are not emphasised; the host or
+          # serial carries the emphasis
+          def analytic?
+            %w[component_part serial_part]
+              .include?(Kinds.kind_for(@model.type))
+          end
 
           def main_title
             t = Array(@model.title).find { |x| (x.type || "main") == "main" } ||
