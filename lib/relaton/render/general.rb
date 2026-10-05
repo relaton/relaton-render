@@ -35,12 +35,19 @@ module Relaton
         warn_general_config if options[:config]
       end
 
-      def render(model, **opts)
-        @renderer.render(model, **opts)
+      def render(model, embedded: false, **opts)
+        model = to_model(model)
+        text =
+          if model.respond_to?(:formattedref) && model.formattedref
+            model.formattedref.content
+          else
+            @renderer.render(model, **opts)
+          end
+        embedded ? text : "<formattedref>#{text}</formattedref>"
       end
 
       def citation(model, **opts)
-        @renderer.citation(model, **opts)
+        @renderer.citation(to_model(model), **opts)
       end
 
       # isodoc's references rendering: renderings[id][:formattedref]
@@ -155,6 +162,15 @@ module Relaton
         when Array then value.map { |v| deep_symbolize(v) }
         else value
         end
+      end
+
+      # 1.x render/citation accepted a bibitem XML string; the Iso690
+      # engine consumes model instances.
+      def to_model(model)
+        return model unless model.is_a?(String)
+
+        klass = facade_bibitem_class
+        klass.from_xml(model)
       end
 
       def warn_general_config

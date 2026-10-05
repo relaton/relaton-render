@@ -25,8 +25,13 @@ RSpec.describe Relaton::Render::General do
     renderer = described_class.new(
       language: "en", script: "Latn", i18nhash: {}, config: nil,
     )
-    expect(renderer.render(item))
+    # bare with embedded:, formattedref-wrapped by default (the 1.x
+    # render contract the flavors and isodoc consume)
+    expect(renderer.render(item, embedded: true))
       .to eq "FARRAR, Frederic. _Eric, or Little by Little_. 1971."
+    expect(renderer.render(item))
+      .to eq "<formattedref>FARRAR, Frederic. " \
+             "_Eric, or Little by Little_. 1971.</formattedref>"
     expect(renderer.citation(item)).to eq "FARRAR, 1971"
   end
 
@@ -161,5 +166,15 @@ RSpec.describe "Relaton::Render::General style option" do
       "<surname>Doe</surname></name></person></contributor>" \
       "<date type='published'><on>2020</on></date></bibitem>")
     expect(r.render(model)).to include "DOE"
+  end
+end
+
+RSpec.describe "Relaton::Render::General XML-string input" do
+  it "renders a bibitem XML string like the 1.x engine did" do
+    r = Relaton::Render::General.new(language: "en")
+    out = r.render("<bibitem type='standard'><title language='en'>T</title>" \
+      "<contributor><role type='author'/><person><name><surname>Doe</surname>" \
+      "</name></person></contributor></bibitem>")
+    expect(out).to include "DOE"
   end
 end
