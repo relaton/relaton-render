@@ -15,9 +15,12 @@ module Relaton
 
 
           def render
-            d = identifiers.first or return ""
+            return "" if identifiers.empty?
 
-            IdentifierKinds.render(d)
+            ids = @style.templates.identifier_mode == "first" ?
+              [identifiers.first] : identifiers
+            ids.map { |d| IdentifierKinds.render(d) }
+              .join(@i18n.punct_fetch("identifier_join", ". "))
           end
 
           private
