@@ -52,6 +52,12 @@ module Relaton
           Array(model.docidentifier).any? { |d| types.include?(d.type) }
         end
 
+        # A creator list alone (flavors' document-history name forms)
+        def render_creators(model)
+          Elements.build(:creator, model, style: @style, i18n: @i18n,
+                         short: true).render
+        end
+
         # The short cite: the reference with the first-biblio marker
         def render_short(model, delim)
           kind = Kinds.kind_for(model.type)
