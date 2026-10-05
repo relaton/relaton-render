@@ -56,7 +56,11 @@ module Relaton
       def render_all(bib, type: "author-date")
         items = facade_bibitems(bib) or return nil
         items.each_with_object({}).with_index do |(item, m), i|
-          ref = @renderer.render(item)
+          ref = begin
+            @renderer.render(item)
+          rescue ::Relaton::Render::Unrenderable
+            next
+          end
           m[item.id] = {
             id: item.id, ord: i, formattedref: ref,
             citation: {

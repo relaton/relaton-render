@@ -8,8 +8,6 @@ module Relaton
       # the template evaluator to the field resolver. No XML, no
       # intermediate hashes.
       class Renderer
-        class Unrenderable < StandardError; end
-
         DEFAULT_STYLE = "author-date"
 
         class << self
@@ -38,7 +36,8 @@ module Relaton
           out = Template.new(template).evaluate(
             Fields.new(model, style: @style, i18n: @i18n).to_h,
           )
-          raise Unrenderable, "no renderable elements" if out.strip.empty?
+          raise ::Relaton::Render::Unrenderable,
+                "no renderable elements" if out.strip.empty?
 
           out
         end

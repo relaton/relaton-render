@@ -84,6 +84,22 @@ RSpec.describe Relaton::Render::General do
     it "returns nil for input without bibitems, as 1.x did" do
       expect(described_class.new(language: "en").render_all("<other/>")).to be_nil
     end
+
+    it "skips bibitems whose template resolves to nothing" do
+      renderings = described_class.new(language: "en").render_all(<<~X)
+        <references>
+          <bibitem id="f1" type="book">
+            <title>Eric, or Little by Little</title>
+            <date type="published"><on>1971</on></date>
+            <contributor><role type="author"/>
+              <person><name><surname>Farrar</surname><forename>Frederic</forename></name></person>
+            </contributor>
+          </bibitem>
+          <bibitem id="empty"/>
+        </references>
+      X
+      expect(renderings.keys).to eq ["f1"]
+    end
   end
 
   describe "#parse — isodoc's pref_ref_code entry" do
