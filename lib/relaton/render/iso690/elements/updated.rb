@@ -14,12 +14,11 @@ module Relaton
           def render
             d = Array(@model.date).find { |x| x.type == "updated" } or
               return ""
-            value = (d.at || d.from || d.to).to_s
-            return "" if value.empty?
+            value = d.at || d.from || d.to or return ""
 
-            date = ::Date.parse(value)
+            date = value.to_date
             " (#{label('updated')} #{month(date.month)} #{date.year})"
-          rescue ArgumentError
+          rescue ArgumentError, TypeError
             ""
           end
 
