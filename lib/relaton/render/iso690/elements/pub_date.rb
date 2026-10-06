@@ -13,8 +13,6 @@ module Relaton
             !render.nil?
           end
 
-          # The bare date; the style's dateForm wraps it in the
-          # dategroup slot (Fields#dategroup_field)
           def render
             range || year&.to_s
           end
