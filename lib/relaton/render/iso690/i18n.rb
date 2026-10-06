@@ -61,6 +61,9 @@ module Relaton
               fallback_warn(code)
               path = File.join(__dir__, "i18n", "en.yml")
               raise ArgumentError, "no i18n declarations for language #{code}" unless File.file?(path)
+              # The pack supplies the labels; the requested language still
+              # governs localization (bilingual titles select by it)
+              return from_yaml(File.read(path)).tap { |i| i.lang = code }
             end
 
             from_yaml(File.read(path))
