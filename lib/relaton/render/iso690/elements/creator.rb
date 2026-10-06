@@ -66,11 +66,19 @@ module Relaton
             @i18n.label(creators.one? ? "ed" : "eds")
           end
 
-          # In-text (name-and-date) form: the principal creator only
+          # In-text (name-and-date) form: the principal creator only;
+          # at the style's et-al threshold the cite truncates
+          # ("Aluffi <em>et al.</em>")
           def in_text
             principal = creators.first or return ""
             person = principal.person or return org_name(principal)
-            completename(person) || surname(person)&.upcase || ""
+            name = completename(person) || surname(person)&.upcase || ""
+            etal? ? "#{name} <em>et al.</em>" : name
+          end
+
+          def etal?
+            count = name_form.etal_count
+            count.positive? && creators.size >= count
           end
 
           # The principal creator's given names, as the name form declares
@@ -141,7 +149,11 @@ module Relaton
             if (first || name_form.inverted_all) && !name_form.given_name_first
               @style.render_name(surname: surname, given: given)
             else
-              [given, surname.upcase].reject(&:empty?).join(" ")
+              # the direct form initializes per the style's initials
+              # knob ("S. Payne" over "Sam Payne")
+              shown = name_form.subsequent_surname_upcase ? surname.upcase :
+                        surname
+              [person_given(person), shown].reject(&:empty?).join(" ")
             end
           end
 
