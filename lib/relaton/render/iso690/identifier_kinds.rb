@@ -16,19 +16,10 @@ module Relaton
           "MRN" => ->(content) { content },
         }.freeze
 
-        # Flavor-registered kinds, consulted before the built-ins; the
-        # registry is process-wide by design
-        OVERRIDES = {}
-
         class << self
-          def register(type, kind)
-            OVERRIDES[type] = kind
-            kind
-          end
-
           def render(docidentifier)
             content = docidentifier.content.to_s
-            kind = OVERRIDES[docidentifier.type] || KINDS[docidentifier.type]
+            kind = KINDS[docidentifier.type]
             kind ? kind.call(content) : content
           end
         end

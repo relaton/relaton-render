@@ -93,14 +93,23 @@ module Relaton
             end
           end
 
-          # The declared creator fallback (e.g. the publisher's
-          # abbreviation for standards with no personal creators)
+          # The declared creator fallback for items with no personal
+          # creators: the publisher's abbreviation or full name
           def fallback_name
-            return "" unless name_form.creator_fallback == "publisher_abbrev"
-
-            contributors("publisher").map do |c|
-              localized(c.organization&.abbreviation)
-            end.reject(&:empty?).first.to_s
+            orgs = contributors("publisher")
+            name = case name_form.creator_fallback
+                   when "publisher_abbrev"
+                     orgs.map do |c|
+                       localized(c.organization&.abbreviation)
+                     end
+                   when "publisher_name"
+                     orgs.map do |c|
+                       localized(Array(c.organization&.name).first)
+                     end
+                   else
+                     []
+                   end
+            name.reject(&:empty?).first.to_s
           end
 
           def names

@@ -45,23 +45,18 @@ module Relaton
           updated: Updated,
         }.freeze
 
-        # Flavors register their own data elements: a flavor slot
-        # resolves before the built-in vocabulary
-        FLAVOUR_CLASSES = {}
-
         class << self
-          def register(name, klass)
-            FLAVOUR_CLASSES[name.to_sym] = klass
-            klass
-          end
-
-          def resolve(name)
-            FLAVOUR_CLASSES[name.to_sym] || CLASSES.fetch(name, nil)
+          # Flavors extend the vocabulary through the renderer's
+          # element map: a flavor slot resolves before the built-ins,
+          # scoped to that renderer alone (never process-wide)
+          def resolve(name, elements = {})
+            elements[name.to_sym] || CLASSES.fetch(name, nil)
           end
         end
 
-        def self.build(name, model, style:, i18n:, short: false)
-          klass = resolve(name) or return nil
+        def self.build(name, model, style:, i18n:, short: false,
+                       elements: {})
+          klass = resolve(name, elements) or return nil
           klass.new(model, style: style, i18n: i18n, short: short)
         end
       end

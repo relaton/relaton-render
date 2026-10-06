@@ -82,6 +82,33 @@ RSpec.describe Relaton::Render::Iso690::Template do
     it { is_expected.to be_empty }
   end
 
+  context "with a sentence period colliding with a comma or period" do
+    let(:fields) do
+      { "title" => field_class[true, "_Cereals_"],
+        "serialdate" => field_class[true, ", 2013–2014"],
+        "identifier" => field_class[true, "ISO 20483"] }
+    end
+    let(:source) { "{{title}}. {{serialdate}}. {{identifier}}." }
+
+    it "collapses the periods into the comma (the serial date owns the
+        separator)" do
+      expect(output).to eq "_Cereals_, 2013–2014. ISO 20483."
+    end
+  end
+
+  context "with a fallback ending in its own period" do
+    let(:fields) do
+      { "title" => field_class[true, "_A journal_"],
+        "date" => field_class[true, "n.d."],
+        "identifier" => field_class[true, "ISSN: ISSN"] }
+    end
+    let(:source) { "{{title}}. {{date}}. {{identifier}}." }
+
+    it "does not double the period" do
+      expect(output).to eq "_A journal_. n.d. ISSN: ISSN."
+    end
+  end
+
   context "with slot names differing in case or underscores" do
     let(:fields) do
       { "componentpart" => field_class[true, "In: _A host_"],

@@ -23,7 +23,8 @@ module Relaton
         end
 
         def initialize(style: DEFAULT_STYLE, lang: "en", script: "Latn",
-                       labels: {})
+                       labels: {}, elements: {})
+          @elements = elements
           @style = Style.load(style)
           @i18n = I18n.load(lang)
           @i18n.overlay_hash!(labels) unless labels.empty?
@@ -37,7 +38,8 @@ module Relaton
           kind = Kinds.kind_for(model.type)
           template = @style.template_for(kind, home: home_docid?(model))
           out = Template.new(template).evaluate(
-            Fields.new(model, style: @style, i18n: @i18n).to_h,
+            Fields.new(model, style: @style, i18n: @i18n,
+                       elements: @elements).to_h,
           )
           raise ::Relaton::Render::Unrenderable,
                 "no renderable elements" if out.strip.empty?
@@ -55,7 +57,7 @@ module Relaton
         # A creator list alone (flavors' document-history name forms)
         def render_creators(model)
           Elements.build(:creator, model, style: @style, i18n: @i18n,
-                         short: true).render
+                         short: true, elements: @elements).render
         end
 
         # The short cite: the reference with the first-biblio marker
@@ -64,7 +66,8 @@ module Relaton
           template = @style.type_template_for(kind)&.short ||
             @style.template_for(kind, home: home_docid?(model))
           Template.new(template).evaluate_short(
-            Fields.new(model, style: @style, i18n: @i18n, short: true).to_h,
+            Fields.new(model, style: @style, i18n: @i18n, short: true,
+                       elements: @elements).to_h,
             delim,
           )
         rescue ::Relaton::Render::Unrenderable
@@ -75,7 +78,8 @@ module Relaton
         def citation(model, disambiguator: nil)
           Template.new(@style.templates.citation).evaluate(
             Fields.new(model, style: @style, i18n: @i18n,
-                       disambiguator: disambiguator).to_h,
+                       disambiguator: disambiguator,
+                       elements: @elements).to_h,
           )
         end
       end

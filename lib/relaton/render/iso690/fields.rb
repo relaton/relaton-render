@@ -12,26 +12,35 @@ module Relaton
           creator title edition medium series production
           date numeration component_part identifier location size
           extent access stddoc status citeid updated
-          nistpublisher draft
         ].freeze
 
         def initialize(model, style:, i18n:, disambiguator: nil,
-                       short: false)
+                       short: false, elements: {})
           @model = model
           @style = style
           @i18n = i18n
           @disambiguator = disambiguator.to_s
           @short = short
+          @elements = elements
         end
 
         def to_h
           table = {}
-          ELEMENT_SLOTS.each do |slot|
+          slots.each do |slot|
             key = slot.to_s.delete("_").downcase
             table[key] = element_field(slot)
           end
           table["dategroup"] = dategroup_field
+          unless table["dategroup"].present?
+            table["dategroup"] = fallback_field(:dategroup)
+          end
           table.merge(name_fields)
+        end
+
+        def fallback_field(slot)
+          fallback = @style.fallback_for(item_kind, slot)
+          fallback ? Template::Field[true, fallback] :
+            Template::Field[false, ""]
         end
 
         private
@@ -39,8 +48,8 @@ module Relaton
         # The date with the updated date nested ("(2018 (updated
         # November 2018))"); the bare date slot stays untouched
         def dategroup_field
-          date = element_field(:date)
-          updated = element_field(:updated)
+          date = raw_field(:date)
+          updated = raw_field(:updated)
           return Template::Field[false, ""] if !date.present? &&
             !updated.present?
 
@@ -52,17 +61,38 @@ module Relaton
 
         private
 
+        def slots
+          ELEMENT_SLOTS | @elements.keys
+        end
+
+        # The element's own render, before any absent-slot fallback:
+        # the creator-date group cites real dates only
+        def raw_field(slot)
+          element_field = build_field(slot)
+          return element_field if element_field.present?
+
+          Template::Field[false, ""]
+        end
+
         def element_field(slot)
+          field = build_field(slot)
+          return field if field.present?
+
+          fallback = @style.fallback_for(item_kind, slot)
+          return Template::Field[true, fallback] if fallback
+
+          Template::Field[false, ""]
+        end
+
+        def build_field(slot)
           element = Elements.build(slot, @model, style: @style,
-                                   i18n: @i18n, short: @short) or
+                                   i18n: @i18n, short: @short,
+                                   elements: @elements) or
             return Template::Field[false, ""]
           text = element.render.to_s
           if element.present? && !text.empty?
             return Template::Field[true, text]
           end
-
-          fallback = @style.fallback_for(item_kind, slot)
-          return Template::Field[true, fallback] if fallback
 
           Template::Field[false, ""]
         end
@@ -72,7 +102,8 @@ module Relaton
         end
 
         def name_fields
-          creator = Elements.build(:creator, @model, style: @style, i18n: @i18n)
+          creator = Elements.build(:creator, @model, style: @style,
+                                   i18n: @i18n, elements: @elements)
           {
             "surname" => Template::Field[creator.present?, creator.in_text],
             "givennames" => Template::Field[!creator.principal_given.empty?,
