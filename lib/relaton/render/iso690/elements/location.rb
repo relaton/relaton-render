@@ -14,8 +14,10 @@ module Relaton
           def render
             text = uri
             form = uri_form
-            if form == :bare || @from_accesslocation
-              return "#{@i18n.label('available_from')} #{text}".strip
+            # an access location cites its own label ("At: Library"); a
+            # uri carries the availability label
+            if @from_accesslocation
+              return "#{@i18n.label('at_url')} #{text}".strip
             end
 
             text = if form && !form.empty?

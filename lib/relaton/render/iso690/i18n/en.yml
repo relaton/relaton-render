@@ -26,6 +26,7 @@ labels:
   series_no: "no."
   report_no: "Report no."
   available_from: "Available from:"
+  at_url: "At:"
   in: "In:"
   and: "and"
   oxford_comma: ","

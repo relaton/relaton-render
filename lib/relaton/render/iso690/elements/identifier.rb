@@ -19,8 +19,14 @@ module Relaton
 
             ids = @style.templates.identifier_mode == "first" ?
               [identifiers.first] : identifiers
-            ids.map { |d| IdentifierKinds.render(d) }
+            ids.map { |d| render_id(d) }
               .join(@i18n.punct_fetch("identifier_join", ". "))
+          end
+
+          # A flavor's identifier kinds subclass this element and
+          # override here
+          def render_id(docidentifier)
+            IdentifierKinds.render(docidentifier)
           end
 
           private
