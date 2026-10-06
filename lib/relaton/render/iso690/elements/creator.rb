@@ -73,7 +73,9 @@ module Relaton
           def in_text
             principal = creators.first or return ""
             person = principal.person or return org_name(principal)
-            name = completename(person) || surname(person)&.upcase || ""
+            raw = surname(person).to_s
+            surname = name_form.surname_upcase ? raw.upcase : raw
+            name = completename(person) || surname || ""
             etal? ? "#{name} <em>et al.</em>" : name
           end
 
