@@ -17,10 +17,11 @@ RSpec.describe Relaton::Render::Iso690::I18n do
     expect(described_class.load(nil).lang).to eq "en"
   end
 
-  it "falls back to English for an undeclared language" do
+  it "falls back to English for an undeclared language, keeping the requested one for localization" do
     i18n = nil
     expect { i18n = described_class.load("zz") }
       .to output(/falling back to en/).to_stderr
-    expect(i18n.lang).to eq "en"
+    expect(i18n.label("and")).to eq "and"
+    expect(i18n.lang).to eq "zz"
   end
 end
