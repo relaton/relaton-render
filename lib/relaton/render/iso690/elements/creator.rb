@@ -130,7 +130,9 @@ module Relaton
           end
 
           # The declared creator fallback for items with no personal
-          # creators: the publisher's abbreviation or full name
+          # creators: the publishers' abbreviation or full name — all
+          # publishers cite, joined per the style's list style ("ISO and
+          # IEC")
           def fallback_name
             orgs = contributors("publisher")
             name = case name_form.creator_fallback
@@ -145,7 +147,7 @@ module Relaton
                    else
                      []
                    end
-            name.reject(&:empty?).first.to_s
+            join_names(name.reject(&:empty?))
           end
 
           def names
