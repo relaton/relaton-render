@@ -15,7 +15,7 @@ module Relaton
             text = main_title
             return text if analytic? && @short
             if !@short &&
-               (form = @style.title_form_for(Kinds.kind_for(@model.type)))
+               (form = @style.title_form_for(@style.kind_for(@model.type)))
               # the kind's own form carries the whole emphasis
               return ::Relaton::Render::Iso690::Template.new(form)
                 .evaluate("title" => Template::Field[!text.empty?, text])
@@ -31,7 +31,7 @@ module Relaton
           # serial carries the emphasis
           def analytic?
             %w[component_part serial_part]
-              .include?(Kinds.kind_for(@model.type))
+              .include?(@style.kind_for(@model.type))
           end
 
           # A typed main title wins; an untyped title is main by
