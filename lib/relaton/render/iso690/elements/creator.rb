@@ -17,7 +17,9 @@ module Relaton
           def render
             return plain_render if @short
 
-            joined = if creators.empty?
+            joined = if (truncated = truncated_creators)
+                       truncated
+                     elsif creators.empty?
                        fallback_name
                      elsif (form = @style.templates.creators) && !form.empty?
                        ::Relaton::Render::Iso690::Template.new(form).evaluate(
@@ -129,6 +131,22 @@ module Relaton
               format(contributor,
                      first: index.zero?)
             end
+          end
+
+          # The style's et-al truncation ("Aluffi, P., D. Anderson,
+          # M. Hering <em>et al.</em>"): at etalCount creators, the
+          # first etalDisplay names cite, comma-joined without the
+          # terminal and-join
+          def truncated_creators
+            count = name_form.etal_count
+            display = name_form.etal_display
+            return nil if count <= 0 || display <= 0 ||
+              creators.size < count
+
+            creators.first(display).each_with_index
+              .map do |contributor, index|
+              format(contributor, first: index.zero?)
+            end.join(", ") + " <em>et al.</em>"
           end
 
           def format(contributor, first:)

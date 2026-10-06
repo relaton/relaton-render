@@ -42,9 +42,10 @@ module Relaton
           # the name-date convention upcases
           attribute :subsequent_surname_upcase, :boolean,
                     default: -> { true }
-          # At this many creators the in-text cite truncates to the
-          # first surname with "et al." (0 disables)
+          # At this many creators the creator list truncates to the
+          # first etalDisplay names with "et al." (0 disables)
           attribute :etal_count, :integer, default: 0
+          attribute :etal_display, :integer, default: 0
           # Editor lists carry the role marker ("(Eds.)")
           attribute :editors_marked, :boolean, default: -> { true }
 
@@ -63,6 +64,7 @@ module Relaton
             map "initialsSeparator", to: :initials_separator
             map "subsequentSurnameUpcase", to: :subsequent_surname_upcase
             map "etalCount", to: :etal_count
+            map "etalDisplay", to: :etal_display
             map "editorsMarked", to: :editors_marked
           end
         end
