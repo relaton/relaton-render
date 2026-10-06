@@ -13,12 +13,12 @@ module Relaton
 
           def render
             text = main_title
-            return text if analytic?
+            return text if analytic? && @short
             if !@short &&
                (form = @style.title_form_for(Kinds.kind_for(@model.type)))
-              text = ::Relaton::Render::Iso690::Template.new(form).evaluate(
-                "title" => Template::Field[!text.empty?, text],
-              )
+              # the kind's own form carries the whole emphasis
+              return ::Relaton::Render::Iso690::Template.new(form)
+                .evaluate("title" => Template::Field[!text.empty?, text])
             end
 
             "#{@style.templates.title_open}#{text}" \
