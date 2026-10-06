@@ -98,7 +98,7 @@ module Relaton
         end
 
         def item_kind
-          Kinds.kind_for(@model.type)
+          @style.kind_for(@model.type)
         end
 
         def name_fields

@@ -63,7 +63,7 @@ module Relaton
           end
           m[item.id] = {
             id: item.id, ord: i,
-            formattedref: terminate_reference(ref),
+            formattedref: terminate_reference(ref, item),
             citation: citation_renderings(item, ref),
           }
         end
@@ -82,7 +82,9 @@ module Relaton
       # render_all feeds the bibliography list: a reference not ending
       # in the biblio terminator takes one (the 1.x render1 behaviour;
       # single-item render stays verbatim)
-      def terminate_reference(ref)
+      # The bibliography terminator; flavors override to suppress it
+      # (1.x use_terminator?), receiving the item it terminates
+      def terminate_reference(ref, _item = nil)
         return ref if ref.empty? || ref.rstrip.end_with?(".")
 
         "#{ref}."

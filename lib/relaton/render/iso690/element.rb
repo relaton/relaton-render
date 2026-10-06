@@ -62,7 +62,7 @@ module Relaton
         end
 
         def item_kind
-          @kind || Kinds.kind_for(@model.type)
+          @kind || @style.kind_for(@model.type)
         end
 
         def person_completename(person)
