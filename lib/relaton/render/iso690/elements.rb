@@ -21,6 +21,7 @@ module Relaton
         autoload :Access, "relaton/render/iso690/elements/access"
         autoload :Stddoc, "relaton/render/iso690/elements/stddoc"
         autoload :Status, "relaton/render/iso690/elements/status"
+        autoload :Authorizer, "relaton/render/iso690/elements/authorizer"
         autoload :Citeid, "relaton/render/iso690/elements/citeid"
         autoload :Updated, "relaton/render/iso690/elements/updated"
 
@@ -41,6 +42,7 @@ module Relaton
           access: Access,
           stddoc: Stddoc,
           status: Status,
+          authorizer: Authorizer,
           citeid: Citeid,
           updated: Updated,
         }.freeze
