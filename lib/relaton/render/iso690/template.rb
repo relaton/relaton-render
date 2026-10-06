@@ -132,7 +132,7 @@ module Relaton
           body = body.gsub(/\.\s*\./, ". ")
           body = body.gsub(/:\s*\.\s*/, ": ")
           body = body.gsub(/\(\s*\)/, "")
-          body = body.gsub(/ +/, " ").gsub(" ,", ",")
+          body = body.gsub(/ +/, " ").gsub(" ,", ",").gsub(/ +:/, ":")
           terminator = unbalanced_close(body, @terminator)
           return body if terminator.strip.empty?
           if terminator !~ /[<\w]/ && body.rstrip.end_with?(terminator.strip)
