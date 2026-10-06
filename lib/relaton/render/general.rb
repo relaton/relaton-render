@@ -32,7 +32,22 @@ module Relaton
         # A flavor names its own CitationStyle instance (name or YAML path)
         options[:style] and renderer_opts[:style] = options[:style]
         @renderer = Iso690::Renderer.new(**renderer_opts)
+        @renderer_opts = renderer_opts
+        @renderers_by_lang = {}
         warn_general_config if options[:config]
+      end
+
+      # A collection's items may each declare their own language; the
+      # renderer localizes by language, so a reference renders in its
+      # own language within a document of another (the 1.x plateau
+      # per-reference behaviour)
+      def renderer_for(lang)
+        return @renderer if lang.nil? || lang == @lang
+
+        @renderers_by_lang[lang] ||= Iso690::Renderer.new(
+          **@renderer_opts.merge(lang: lang,
+                                 script: %w(ja ko zh).include?(lang) ? nil : "Latn")
+        )
       end
 
       def render(model, embedded: false, **opts)
@@ -57,15 +72,16 @@ module Relaton
         items = facade_bibitems(bib) or return nil
         disambiguators = date_disambiguators(items)
         items.each_with_object({}).with_index do |(item, m), i|
+          renderer = renderer_for(Array(item.language).first)
           ref = begin
-            @renderer.render(item, disambiguator: disambiguators[item.id])
+            renderer.render(item, disambiguator: disambiguators[item.id])
           rescue ::Relaton::Render::Unrenderable
             next
           end
           m[item.id] = {
             id: item.id, ord: i,
             formattedref: terminate_reference(ref, item),
-            citation: citation_renderings(item, ref),
+            citation: citation_renderings(item, ref, renderer),
           }
         end
       end
@@ -116,10 +132,10 @@ module Relaton
         "#{ref}."
       end
 
-      def citation_renderings(item, ref)
-        short = @renderer.citation(item)
+      def citation_renderings(item, ref, renderer = @renderer)
+        short = renderer.citation(item)
         short = if short.empty?
-                  @renderer.render_short(item, FIRST_DELIM)
+                  renderer.render_short(item, FIRST_DELIM)
                 else
                   short
                 end
