@@ -31,10 +31,19 @@ module Relaton
             table[key] = element_field(slot)
           end
           table["dategroup"] = dategroup_field
+          table["disambiguateddate"] = disambiguated_date_field(table["date"])
           unless table["dategroup"].present?
             table["dategroup"] = fallback_field(:dategroup)
           end
           table.merge(name_fields)
+        end
+
+        # The date carrying the batch disambiguation suffix ("2022a"):
+        # identity when the caller passes none
+        def disambiguated_date_field(date)
+          return date if @disambiguator.empty? || !date.present?
+
+          Template::Field[true, "#{date.text}#{@disambiguator}"]
         end
 
         def fallback_field(slot)

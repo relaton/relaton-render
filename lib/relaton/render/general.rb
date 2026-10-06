@@ -55,9 +55,10 @@ module Relaton
       # presentation_function/refs.rb).
       def render_all(bib, type: "author-date")
         items = facade_bibitems(bib) or return nil
+        disambiguators = date_disambiguators(items)
         items.each_with_object({}).with_index do |(item, m), i|
           ref = begin
-            @renderer.render(item)
+            @renderer.render(item, disambiguator: disambiguators[item.id])
           rescue ::Relaton::Render::Unrenderable
             next
           end
@@ -82,6 +83,31 @@ module Relaton
       # render_all feeds the bibliography list: a reference not ending
       # in the biblio terminator takes one (the 1.x render1 behaviour;
       # single-item render stays verbatim)
+      # The batch disambiguation suffixes ("2022a"): items sharing a
+      # principal-creator surname and a date take alphabetical
+      # suffixes in bibliography order (the 1.x
+      # disambig_author_date_citations)
+      def date_disambiguators(items)
+        keys = items.filter_map do |item|
+          begin
+            [item.id, @renderer.author_key(item),
+             @renderer.citation(item)]
+          rescue ::Relaton::Render::Unrenderable
+            nil
+          end
+        end
+        groups = keys.group_by { |_, author, cite| [author, cite] }
+        suffixes = {}
+        groups.each_value do |group|
+          next if group.size < 2
+
+          group.each_with_index do |(id, _author, _cite), i|
+            suffixes[id] = ("a".ord + i).chr
+          end
+        end
+        suffixes
+      end
+
       # The bibliography terminator; flavors override to suppress it
       # (1.x use_terminator?), receiving the item it terminates
       def terminate_reference(ref, _item = nil)

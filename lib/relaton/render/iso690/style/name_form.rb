@@ -38,6 +38,13 @@ module Relaton
           attribute :surname_upcase, :boolean, default: -> { true }
           # Initials are a list; this separates them ("J. K." vs "J.K.")
           attribute :initials_separator, :string, default: " "
+          # The direct-order surname casing after the first creator:
+          # the name-date convention upcases
+          attribute :subsequent_surname_upcase, :boolean,
+                    default: -> { true }
+          # At this many creators the in-text cite truncates to the
+          # first surname with "et al." (0 disables)
+          attribute :etal_count, :integer, default: 0
 
           key_value do
             map "initials", to: :initials
@@ -52,6 +59,8 @@ module Relaton
             map "initialsPeriod", to: :initials_period
             map "surnameUpcase", to: :surname_upcase
             map "initialsSeparator", to: :initials_separator
+            map "subsequentSurnameUpcase", to: :subsequent_surname_upcase
+            map "etalCount", to: :etal_count
           end
         end
       end

@@ -34,11 +34,12 @@ module Relaton
           @script = script
         end
 
-        def render(model)
+        def render(model, disambiguator: nil)
           kind = @style.kind_for(model.type)
           template = @style.template_for(kind, home: home_docid?(model))
           out = Template.new(template).evaluate(
             Fields.new(model, style: @style, i18n: @i18n,
+                       disambiguator: disambiguator,
                        elements: @elements).to_h,
           )
           raise ::Relaton::Render::Unrenderable,
@@ -72,6 +73,14 @@ module Relaton
           )
         rescue ::Relaton::Render::Unrenderable
           ""
+        end
+
+        # The in-text author key (the principal creator's surname, as
+        # the citation renders it): the batch disambiguation groups by
+        # it
+        def author_key(model)
+          Fields.new(model, style: @style, i18n: @i18n,
+                     elements: @elements).to_h["surname"].text
         end
 
         # In-text form: SURNAME, year + disambiguator (name-and-date)

@@ -144,3 +144,109 @@ RSpec.describe Relaton::Render::Iso690::Elements::Authorizer do
     expect(element.render).to eq "RFC Series"
   end
 end
+
+RSpec.describe "batch disambiguation and name-form knobs" do
+  def bib(xml)
+    Relaton::Bib::Bibitem.from_xml(xml)
+  end
+
+  def two_books(suffix)
+    <<~X
+      <bibitem type="book" id="a1">
+        <title>First book on #{suffix}</title>
+        <docidentifier type="ISBN">ISBN 1</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <contributor><role type="author"/>
+          <person><name><surname>Aluffi</surname><forename>Paolo</forename></name></person>
+        </contributor>
+        <contributor><role type="author"/>
+          <person><name><surname>Payne</surname><forename>Sam</forename></name></person>
+        </contributor>
+      </bibitem>
+      <bibitem type="book" id="a2">
+        <title>Second book on #{suffix}</title>
+        <docidentifier type="ISBN">ISBN 2</docidentifier>
+        <date type="published"><on>2022</on></date>
+        <contributor><role type="author"/>
+          <person><name><surname>Aluffi</surname><forename>Paolo</forename></name></person>
+        </contributor>
+        <contributor><role type="author"/>
+          <person><name><surname>Payne</surname><forename>Sam</forename></name></person>
+        </contributor>
+      </bibitem>
+    X
+  end
+
+  it "suffixes colliding creator-date pairs in render_all" do
+    style = File.join(Dir.mktmpdir, "disambig.yml")
+    File.write(style, <<~Y)
+      name: disambiguated-date style
+      scheme:
+        system: name-date
+      templates:
+        titleOpen: "_"
+        titleClose: "_"
+        reference: "{{creator}}. {{title}}. {{disambiguateddate}}."
+    Y
+    refs = Relaton::Render::General.new(style: style).render_all(
+      "<references>#{two_books('one')}</references>",
+    )
+    expect(refs["a1"][:formattedref]).to include("2022a")
+    expect(refs["a2"][:formattedref]).to include("2022b")
+  end
+
+  it "truncates the in-text cite at the et-al threshold" do
+    style = File.join(Dir.mktmpdir, "etal.yml")
+    File.write(style, <<~Y)
+      name: et-al style
+      scheme:
+        system: name-date
+        nameForm:
+          etalCount: 3
+      templates:
+        titleOpen: "_"
+        titleClose: "_"
+        citation: "{{surname}}, {{date}}"
+        reference: "{{creator}}. {{title}}. {{date}}."
+    Y
+    model = bib(<<~X)
+      <bibitem type="book">
+        <title>T</title>
+        <date type="published"><on>2020</on></date>
+        <contributor><role type="author"/><person><name><surname>A</surname><forename>X</forename></name></person></contributor>
+        <contributor><role type="author"/><person><name><surname>B</surname><forename>Y</forename></name></person></contributor>
+        <contributor><role type="author"/><person><name><surname>C</surname><forename>Z</forename></name></person></contributor>
+      </bibitem>
+    X
+    out = Relaton::Render::Iso690::Renderer.new(style: style).citation(model)
+    expect(out).to eq "A <em>et al.</em>, 2020"
+  end
+
+  it "keeps subsequent surnames mixed-case when the style declares it" do
+    style = File.join(Dir.mktmpdir, "mixed.yml")
+    File.write(style, <<~Y)
+      name: mixed subsequent style
+      scheme:
+        system: name-date
+        nameForm:
+          initials: true
+          surnameUpcase: false
+          subsequentSurnameUpcase: false
+      templates:
+        titleOpen: "_"
+        titleClose: "_"
+        reference: "{{creator}}. {{title}}. {{date}}."
+        name: "{{surname}}, {{givenNames}}"
+    Y
+    model = bib(<<~X)
+      <bibitem type="book">
+        <title>T</title>
+        <date type="published"><on>2020</on></date>
+        <contributor><role type="author"/><person><name><surname>Aluffi</surname><forename>Paolo</forename></name></person></contributor>
+        <contributor><role type="author"/><person><name><surname>Payne</surname><forename>Sam</forename></name></person></contributor>
+      </bibitem>
+    X
+    out = Relaton::Render::Iso690::Renderer.new(style: style).render(model)
+    expect(out).to eq "Aluffi, P. and S. Payne. _T_. 2020."
+  end
+end
