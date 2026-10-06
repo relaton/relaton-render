@@ -62,7 +62,9 @@ module Relaton
             preferred = uris.find { |u| u.type == "citation" } ||
               uris.find { |u| u.type == "attachment" } ||
               uris.find { |u| u.type == "src" } || uris.first
-            preferred&.content.to_s
+            # the uri lands inside a markup attribute: escape it
+            require "cgi"
+            CGI.escapeHTML(preferred&.content.to_s)
           end
         end
       end
