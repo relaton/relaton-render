@@ -52,7 +52,7 @@ module Relaton
           # back to the style-wide form
           def series_form
             variant = @style.per_type
-              .find { |t| t.type == Kinds.kind_for(@model.type) }
+              .find { |t| t.type == @style.kind_for(@model.type) }
             variant&.series || @style.templates.series
           end
         end
