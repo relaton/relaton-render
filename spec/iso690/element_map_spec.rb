@@ -126,3 +126,22 @@ RSpec.describe "renderer element maps" do
     expect(out).to include("ISO: ISO 712")
   end
 end
+
+RSpec.describe Relaton::Render::Iso690::Elements::Authorizer do
+  it "cites the authorizing body" do
+    xml = <<~X
+      <bibitem type="standard">
+        <title>T</title>
+        <contributor><role type="authorizer"/>
+          <organization><name>RFC Series</name></organization>
+        </contributor>
+      </bibitem>
+    X
+    require "nokogiri"
+    model = Relaton::Bib::Bibitem.from_xml(Nokogiri::XML(xml).root)
+    style = Relaton::Render::Iso690::Style.load("author-date")
+    i18n = Relaton::Render::Iso690::I18n.load("en")
+    element = described_class.new(model, style: style, i18n: i18n)
+    expect(element.render).to eq "RFC Series"
+  end
+end
