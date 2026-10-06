@@ -59,7 +59,8 @@ module Relaton
           end
 
           def marked?
-            creators.size > 1 || name_form.lone_editor_marked
+            name_form.editors_marked &&
+              (creators.size > 1 || name_form.lone_editor_marked)
           end
 
           def role_word
