@@ -38,6 +38,9 @@ module Relaton
           attribute :surname_upcase, :boolean, default: -> { true }
           # Initials are a list; this separates them ("J. K." vs "J.K.")
           attribute :initials_separator, :string, default: " "
+          # The first forename cites in full, the rest as initials
+          # ("Milena S."; document-history name forms)
+          attribute :subsequent_initials, :boolean, default: -> { false }
           # The direct-order surname casing after the first creator:
           # the name-date convention upcases
           attribute :subsequent_surname_upcase, :boolean,
@@ -69,6 +72,7 @@ module Relaton
             map "initialsPeriod", to: :initials_period
             map "surnameUpcase", to: :surname_upcase
             map "initialsSeparator", to: :initials_separator
+            map "subsequentInitials", to: :subsequent_initials
             map "subsequentSurnameUpcase", to: :subsequent_surname_upcase
             map "etalCount", to: :etal_count
             map "etalDisplay", to: :etal_display

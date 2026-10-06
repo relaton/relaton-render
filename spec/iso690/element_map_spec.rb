@@ -356,3 +356,34 @@ RSpec.describe "creator-list et-al truncation" do
       .to eq "S1, F1, F2 S2, F3 S3 <em>et al.</em>. _T_. 2020."
   end
 end
+
+RSpec.describe "subsequent initials name form" do
+  it "cites the first forename in full, the rest as initials" do
+    style = File.join(Dir.mktmpdir, "history-names.yml")
+    File.write(style, <<~Y)
+      name: history-names style
+      scheme:
+        system: name-date
+        nameForm:
+          initials: true
+          subsequentInitials: true
+          initialsPeriod: true
+      templates:
+        titleOpen: "_"
+        titleClose: "_"
+        name: "{{surname}}, {{givenNames}}"
+        reference: "{{creator}}. {{title}}. {{date}}."
+    Y
+    model = Relaton::Bib::Bibitem.from_xml(<<~X)
+      <bibitem type="book">
+        <title>T</title>
+        <contributor><role type="author"/>
+          <person><name><surname>Hering</surname><forename>Milena</forename><forename>Sofia</forename></name></person>
+        </contributor>
+      </bibitem>
+    X
+    out = Relaton::Render::Iso690::Renderer.new(style: style)
+      .render_creators(model)
+    expect(out).to eq "HERING, Milena S."
+  end
+end
