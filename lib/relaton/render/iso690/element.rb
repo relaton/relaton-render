@@ -84,9 +84,20 @@ module Relaton
           sep = @style.scheme.name_form.initials_separator.to_s
           return reinitials(localized(person.name&.formatted_initials)) if
             parts.empty?
-          return parts.map(&method(:initial)).join(sep) if initials?
+          return given_with_first_full(parts, sep) if initials?
 
           parts.join(" ")
+        end
+
+        # The document-history name form: the first forename cites in
+        # full, the rest as initials ("Milena S.")
+        def given_with_first_full(parts, sep)
+          initials = parts.map { |p| initial(p) }
+          return initials.join(sep) unless
+            @style.scheme.name_form.subsequent_initials
+
+          rest = parts.drop(1).map { |p| initial(p) }.join(sep)
+          rest.empty? ? parts.first : "#{parts.first}#{sep}#{rest}"
         end
 
         # Declared initials are a list in string form; rejoin them with
