@@ -250,3 +250,38 @@ RSpec.describe "batch disambiguation and name-form knobs" do
     expect(out).to eq "Aluffi, P. and S. Payne. _T_. 2020."
   end
 end
+
+RSpec.describe "creator-list et-al truncation" do
+  it "truncates the creator list at the style's thresholds" do
+    style = File.join(Dir.mktmpdir, "etal-list.yml")
+    File.write(style, <<~Y)
+      name: et-al list style
+      scheme:
+        system: name-date
+        nameForm:
+          etalCount: 6
+          etalDisplay: 3
+      templates:
+        titleOpen: "_"
+        titleClose: "_"
+        reference: "{{creator}}. {{title}}. {{date}}."
+        name: "{{surname}}, {{givenNames}}"
+    Y
+    people = (1..7).map do |i|
+      "<contributor><role type=\"author\"/><person><name>" \
+        "<surname>S#{i}</surname><forename>F#{i}</forename></name>" \
+        "</person></contributor>"
+    end.join
+    require "nokogiri"
+    model = Relaton::Bib::Bibitem.from_xml(<<~X)
+      <bibitem type="book">
+        <title>T</title>
+        <date type="published"><on>2020</on></date>
+        #{people}
+      </bibitem>
+    X
+    out = Relaton::Render::Iso690::Renderer.new(style: style).render(model)
+    expect(out)
+      .to eq "S1, F1, F2 S2, F3 S3 <em>et al.</em>. _T_. 2020."
+  end
+end

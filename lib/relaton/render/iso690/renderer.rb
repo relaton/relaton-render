@@ -75,6 +75,13 @@ module Relaton
           ""
         end
 
+        # The in-text creator with its et-al truncation: the
+        # author-date tag's author part
+        def in_text_author(model)
+          Elements.build(:creator, model, style: @style, i18n: @i18n,
+                         elements: @elements).in_text
+        end
+
         # The in-text author key (the principal creator's surname, as
         # the citation renders it): the batch disambiguation groups by
         # it
