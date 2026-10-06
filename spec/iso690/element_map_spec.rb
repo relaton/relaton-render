@@ -137,8 +137,7 @@ RSpec.describe Relaton::Render::Iso690::Elements::Authorizer do
         </contributor>
       </bibitem>
     X
-    require "nokogiri"
-    model = Relaton::Bib::Bibitem.from_xml(Nokogiri::XML(xml).root)
+    model = Relaton::Bib::Bibitem.from_xml(xml)
     style = Relaton::Render::Iso690::Style.load("author-date")
     i18n = Relaton::Render::Iso690::I18n.load("en")
     element = described_class.new(model, style: style, i18n: i18n)
