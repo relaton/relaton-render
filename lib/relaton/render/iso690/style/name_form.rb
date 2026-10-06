@@ -46,6 +46,13 @@ module Relaton
           # first etalDisplay names with "et al." (0 disables)
           attribute :etal_count, :integer, default: 0
           attribute :etal_display, :integer, default: 0
+          # The in-text cite truncates separately from the creator
+          # list: at this many creators it shows the first
+          # inTextEtalDisplay names with "et al." (0 disables; IEEE
+          # cites 3+ as "Aluffi et al." while listing 6 in the
+          # bibliography)
+          attribute :in_text_etal_count, :integer, default: 0
+          attribute :in_text_etal_display, :integer, default: 1
           # Editor lists carry the role marker ("(Eds.)")
           attribute :editors_marked, :boolean, default: -> { true }
 
@@ -65,6 +72,8 @@ module Relaton
             map "subsequentSurnameUpcase", to: :subsequent_surname_upcase
             map "etalCount", to: :etal_count
             map "etalDisplay", to: :etal_display
+            map "inTextEtalCount", to: :in_text_etal_count
+            map "inTextEtalDisplay", to: :in_text_etal_display
             map "editorsMarked", to: :editors_marked
           end
         end

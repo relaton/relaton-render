@@ -11,6 +11,12 @@ module Relaton
             !main_title.empty?
           end
 
+          # The citation capsule's plain title (the 1.x citetemplate's
+          # "{{ title }}"): the same resolution, no style markers
+          def plain
+            main_title
+          end
+
           def render
             text = main_title
             return text if analytic? && @short

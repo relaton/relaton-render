@@ -102,15 +102,25 @@ module Relaton
           end
         end
 
-        # A literal bridges two present elements when at least one
-        # present element stands on each side of it; a leading literal
-        # (no slot precedes it) attaches to the first slot, emitting
-        # only when that slot is present
+        # A literal is the trailing separator of the element that
+        # precedes it: it renders when that element renders and a
+        # later element renders, and it is the FIRST literal of its
+        # gap (the 1.x segment join — absent elements between two
+        # present ones leave the single separator that follows the
+        # earlier present element; an absent slot directly before a
+        # present one, as "{{date}}{{disambiguator}}, {{access}}",
+        # does not swallow it). A leading literal (no slot precedes
+        # it) attaches to the first slot, emitting only when that
+        # slot is present.
         def bridged?(index, present)
           first_slot = @chunks.index { |(kind, _)| kind == :slot }
           return present.include?(first_slot) if index < first_slot
 
-          present.any? { |i| i < index } && present.any? { |i| i > index }
+          left = present.select { |i| i < index }.max
+          left && present.any? { |i| i > index } &&
+            !@chunks[(left + 1)...index].any? do |(kind, _)|
+              kind == :text
+            end
         end
 
         # A template's paired literal ("({{production}})") closes even

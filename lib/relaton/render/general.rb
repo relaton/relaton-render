@@ -80,8 +80,12 @@ module Relaton
           end
           m[item.id] = {
             id: item.id, ord: i,
+            author: renderer.in_text_author(item),
             formattedref: terminate_reference(ref, item),
-            citation: citation_renderings(item, ref, renderer),
+            citation: citation_renderings(item, ref, renderer,
+                                          type: type,
+                                          disambiguator:
+                                            disambiguators[item.id]),
           }
         end
       end
@@ -132,7 +136,11 @@ module Relaton
         "#{ref}."
       end
 
-      def citation_renderings(item, ref, renderer = @renderer)
+      # The style-keyed capsule ("citation" => { author_date: "..." })
+      # is what isodoc's styled erefs consume (their style attribute
+      # names the key)
+      def citation_renderings(item, ref, renderer, type: "author-date",
+                              disambiguator: nil)
         short = renderer.citation(item)
         short = if short.empty?
                   renderer.render_short(item, FIRST_DELIM)
@@ -144,6 +152,11 @@ module Relaton
           full: ref,
           default: item.docidentifier.first&.content.to_s,
           short: short,
+          author_date: renderer.author_date_citation(
+            item, disambiguator: disambiguator,
+          ),
+          author: renderer.in_text_author(item),
+          title: renderer.title_citation(item),
         }
       end
 
