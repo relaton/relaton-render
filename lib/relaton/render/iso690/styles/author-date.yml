@@ -9,6 +9,9 @@ scheme:
   nameForm:
     initials: false
     givenNameFirst: false
+    # ISO 690 marks an editor list's role ("(éd.)") also when the list
+    # holds a single editor; flavors opt out per their own style
+    loneEditorMarked: true
 templates:
   titleOpen: "_"
   titleClose: "_"
