@@ -38,6 +38,12 @@ module Relaton
 
         DEFAULT_KIND = "report"
 
+        class << self
+          def mapped?(type)
+            TO_KIND.key?(type.to_s)
+          end
+        end
+
         def self.kind_for(type)
           TO_KIND.fetch(type.to_s, DEFAULT_KIND)
         end

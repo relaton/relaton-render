@@ -35,7 +35,7 @@ module Relaton
         end
 
         def render(model)
-          kind = Kinds.kind_for(model.type)
+          kind = @style.kind_for(model.type)
           template = @style.template_for(kind, home: home_docid?(model))
           out = Template.new(template).evaluate(
             Fields.new(model, style: @style, i18n: @i18n,
@@ -62,7 +62,7 @@ module Relaton
 
         # The short cite: the reference with the first-biblio marker
         def render_short(model, delim)
-          kind = Kinds.kind_for(model.type)
+          kind = @style.kind_for(model.type)
           template = @style.type_template_for(kind)&.short ||
             @style.template_for(kind, home: home_docid?(model))
           Template.new(template).evaluate_short(

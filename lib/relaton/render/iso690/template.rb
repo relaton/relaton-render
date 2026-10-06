@@ -17,7 +17,7 @@ module Relaton
         Field = Struct.new(:present?, :text)
 
         def initialize(source)
-          @slots = []
+          @chunks = []
           @terminator = ""
           scan(source.to_s)
         end
@@ -27,41 +27,56 @@ module Relaton
         # references (eref2linkshort) split there (the 1.x
         # fmt-first-biblio-delim)
         def evaluate_short(fields, delim)
-          rendered = @slots.filter_map do |(name, head, tail)|
-            field = fields[normalise(name)] or next
-            next unless field.present?
+          present = present_indices(fields)
+          return "" if present.empty?
 
-            [head, field.text, tail]
-          end
-          return "" if rendered.empty?
+          out = +""
+          first_seen = false
+          @chunks.each_with_index do |(kind, value), i|
+            text =
+              case kind
+              when :slot
+                field = fields[normalise(value)]
+                next unless field&.present?
 
-          parts = rendered.each_with_index.map do |(head, text, tail), i|
-            if i.zero?
-              # the split marker precedes the component's trailing
-              # punctuation (1.x ret[0] += delim, then join), with the
-              # join's separating space
-              "#{head}#{text}#{delim} #{tail}"
-            elsif i == rendered.size - 1
-              "#{head}#{text}"
-            else
-              "#{head}#{text}#{tail}"
-            end
+                first_seen ? field.text : "#{field.text}#{delim} "
+              else
+                # the split marker precedes the component's trailing
+                # punctuation (1.x ret[0] += delim, then join), with
+                # the join's separating space
+                next unless bridged?(i, present)
+
+                value
+              end
+            first_seen = true if @chunks[i].first == :slot
+            out << text unless text.nil?
           end
-          terminate(parts.join).rstrip
+          terminate(out).rstrip
         end
 
+        # 1.x segment-join semantics: present elements joined with the
+        # template's separators — a literal renders only when it
+        # separates (a run of absent elements between) two present
+        # elements; leading and trailing literals drop with the
+        # elements they would have attached to
         def evaluate(fields)
-          rendered = @slots.filter_map do |(name, head, tail)|
-            field = fields[normalise(name)] or next
-            next unless field.present?
+          present = present_indices(fields)
+          return "" if present.empty?
 
-            [head, field.text, tail]
+          out = +"".dup
+          @chunks.each_with_index do |(kind, value), i|
+            if kind == :slot
+              field = fields[normalise(value)]
+              out << field.text if field&.present?
+            elsif bridged?(i, present) ||
+                  (value.include?("<") && present.any? { |j| j < i })
+              # markup attaches to the element it closes
+              out << value
+            elsif close_pending_paren?(out, value)
+              out << value
+            end
           end
-          return "" if rendered.empty?
-
-          terminate(rendered.each_with_index.map do |(head, text, tail), i|
-            i == rendered.size - 1 ? "#{head}#{text}" : "#{head}#{text}#{tail}"
-          end.join).rstrip
+          terminate(out).rstrip
         end
 
         private
@@ -69,37 +84,74 @@ module Relaton
         def scan(source)
           rest = source
           while (slot = SLOT.match(rest))
-            head = @slots.empty? ? rest[0...slot.begin(0)] : ""
-            @slots << [slot[1], head, ""]
+            @chunks << [:text, rest[0...slot.begin(0)]] if
+              slot.begin(0).positive?
+            @chunks << [:slot, slot[1]]
             rest = rest[slot.end(0)..]
-            following = SLOT.match(rest)
-            boundary = following ? following.begin(0) : rest.length
-            literal = rest[0...boundary]
-            if following
-              @slots.last[2] = literal
-            else
-              @terminator = literal
-            end
-            rest = rest[boundary..]
+          end
+          @terminator = rest
+        end
+
+        def present_indices(fields)
+          @chunks.each_index.select do |i|
+            kind, value = @chunks[i]
+            next false unless kind == :slot
+
+            field = fields[normalise(value)]
+            !field.nil? && field.present?
           end
         end
 
+        # A literal bridges two present elements when at least one
+        # present element stands on each side of it; a leading literal
+        # (no slot precedes it) attaches to the first slot, emitting
+        # only when that slot is present
+        def bridged?(index, present)
+          first_slot = @chunks.index { |(kind, _)| kind == :slot }
+          return present.include?(first_slot) if index < first_slot
+
+          present.any? { |i| i < index } && present.any? { |i| i > index }
+        end
+
+        # A template's paired literal ("({{production}})") closes even
+        # when nothing follows the present element it wraps
+        def close_pending_paren?(out, value)
+          value.start_with?(")") && out.count("(") > out.count(")")
+        end
+
         def terminate(body)
-          # 1.x punctuation cleanup: an element ending in a colon
-          # carries its own separator (the following sentence period
-          # collapses); a sentence period followed by a spaced comma
-          # or another period collapses into one (", 2013" over
-          # ". , 2013"; "n.d.." into "n.d.") — an initials period
-          # before a comma ("P.,") stands; spaces collapse before a
-          # comma
+          # 1.x punctuation cleanup: a sentence period before a spaced
+          # comma yields to the comma (", 2013" over ". , 2013"; an
+          # initials period before a comma ("P.,") stands, being
+          # unspaced), and stacked separators around absent elements
+          # collapse into one (". : ." into ". "); an empty pair left
+          # by an absent element drops
           body = body.gsub(/:\s*\.\s*/, ": ")
           body = body.gsub(/\.\s+,/, ",")
-          body = body.gsub(/\.\s*\./, ".")
+          body = body.gsub(/(?:[.,:;]\s+)+[.,:;]/, ". ")
+          body = body.gsub(/\.\s*\./, ". ")
+          body = body.gsub(/:\s*\.\s*/, ": ")
+          body = body.gsub(/\(\s*\)/, "")
           body = body.gsub(/ +/, " ").gsub(" ,", ",")
-          return body if @terminator.strip.empty?
-          return body if body.rstrip.end_with?(@terminator.strip)
+          terminator = unbalanced_close(body, @terminator)
+          return body if terminator.strip.empty?
+          if terminator !~ /[<\w]/ && body.rstrip.end_with?(terminator.strip)
+            return body
+          end
 
-          "#{body}#{@terminator}"
+          "#{body}#{terminator}"
+        end
+
+        # The terminator's closing parens stand only when the body
+        # opened them (their "(" died with an absent element)
+        def unbalanced_close(body, terminator)
+          return terminator unless terminator.start_with?(")")
+
+          open = body.count("(") - body.count(")")
+          return terminator.sub(/\A\)+/) { |closes| closes[0, open] } if
+            open.positive?
+
+          terminator.sub(/\A\)+/, "")
         end
 
         def normalise(slot)

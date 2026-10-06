@@ -40,6 +40,16 @@ module Relaton
           [SortRule.new(attribute: "creator"), SortRule.new(attribute: "date")]
         end
 
+        # The ISO 690 kind of an item: the vocabulary's mapping, or
+        # the style's declared kind for types the vocabulary does not
+        # map (a flavor whose untyped items are not reports)
+        def kind_for(type)
+          return Kinds.kind_for(type) if Kinds.mapped?(type)
+
+          declared = scheme.default_kind.to_s
+          declared.empty? ? Kinds.kind_for(type) : declared
+        end
+
         # Per-type template selection is a data lookup; unmatched types
         # fall back to the general reference template. When a kind has
         # home-flagged variants, the split is resolved by whether the item

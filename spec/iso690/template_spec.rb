@@ -109,6 +109,49 @@ RSpec.describe Relaton::Render::Iso690::Template do
     end
   end
 
+  context "with absent elements between present ones (1.x segment join)" do
+    let(:fields) do
+      { "title" => field_class[true, "_A book_"],
+        "medium" => field_class[false, ""],
+        "edition" => field_class[false, ""],
+        "production" => field_class[true, "London: Hamilton"],
+        "date" => field_class[true, "1971"] }
+    end
+    let(:source) do
+      "{{title}}. {{medium}}. {{edition}}. {{production}}. {{date}}."
+    end
+
+    it "joins the present elements with one separator" do
+      expect(output).to eq "_A book_. London: Hamilton. 1971."
+    end
+  end
+
+  context "with a paired literal around a trailing present element" do
+    let(:fields) do
+      { "title" => field_class[true, "_A book_"],
+        "production" => field_class[true, "London: Hamilton"],
+        "series" => field_class[false, ""] }
+    end
+    let(:source) { "{{title}}. ({{production}}) {{series}}." }
+
+    it "closes the pair when nothing follows it (the enclosing pass
+        tidies the spacing before the terminator)" do
+      expect(output).to eq "_A book_. (London: Hamilton) ."
+    end
+  end
+
+  context "with markup closing an absent element's group" do
+    let(:fields) do
+      { "seriestitle" => field_class[true, "Metrologia"],
+        "seriesrun" => field_class[false, ""] }
+    end
+    let(:source) { "{{seriesTitle}} ({{seriesRun}})" }
+
+    it "keeps the structural close for the enclosing template" do
+      expect(output.rstrip).to eq "Metrologia"
+    end
+  end
+
   context "with slot names differing in case or underscores" do
     let(:fields) do
       { "componentpart" => field_class[true, "In: _A host_"],
