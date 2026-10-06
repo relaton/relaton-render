@@ -82,6 +82,23 @@ module Relaton
                          elements: @elements).in_text
         end
 
+        # The author-date in-text capsule ("Aluffi <em>et al.</em>
+        # 2022a"): the in-text creator and the disambiguated date
+        def author_date_citation(model, disambiguator: nil)
+          f = Fields.new(model, style: @style, i18n: @i18n,
+                         disambiguator: disambiguator,
+                         elements: @elements).to_h
+          [in_text_author(model), f["disambiguateddate"].text]
+            .reject(&:empty?).join(" ")
+        end
+
+        # The title citation ("{{ title }}" in the 1.x citetemplate):
+        # the title element's plain form, no style markers
+        def title_citation(model)
+          Elements.build(:title, model, style: @style, i18n: @i18n,
+                         elements: @elements).plain
+        end
+
         # The in-text author key (the principal creator's surname, as
         # the citation renders it): the batch disambiguation groups by
         # it

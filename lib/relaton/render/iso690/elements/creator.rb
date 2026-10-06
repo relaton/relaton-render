@@ -73,12 +73,35 @@ module Relaton
           # at the style's et-al threshold the cite truncates
           # ("Aluffi <em>et al.</em>")
           def in_text
-            principal = creators.first or return ""
-            person = principal.person or return org_name(principal)
-            raw = surname(person).to_s
-            surname = name_form.surname_upcase ? raw.upcase : raw
-            name = completename(person) || surname || ""
+            return in_text_etal if in_text_etal?
+
+            name = creators.first ? in_text_name(creators.first) : ""
             etal? ? "#{name} <em>et al.</em>" : name
+          end
+
+          # The in-text cite truncates at its own threshold: at
+          # inTextEtalCount creators it shows the first
+          # inTextEtalDisplay surnames ("Aluffi <em>et al.</em>")
+          def in_text_etal
+            names = creators.first(name_form.in_text_etal_display)
+              .map { |c| in_text_name(c) }
+            "#{join(names)} <em>et al.</em>"
+          end
+
+          # The in-text cite names by surname alone (the 1.x
+          # authorcitetemplate), never by initials
+          def in_text_name(contributor)
+            person = contributor.person or return org_name(contributor)
+            complete = completename(person)
+            return complete unless complete.nil?
+
+            raw = surname(person).to_s
+            name_form.surname_upcase ? raw.upcase : raw
+          end
+
+          def in_text_etal?
+            count = name_form.in_text_etal_count
+            count.positive? && creators.size >= count
           end
 
           def etal?

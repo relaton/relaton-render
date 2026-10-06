@@ -222,6 +222,77 @@ RSpec.describe "batch disambiguation and name-form knobs" do
     expect(out).to eq "A <em>et al.</em>, 2020"
   end
 
+  it "truncates the in-text cite at its own et-al threshold" do
+    style = File.join(Dir.mktmpdir, "intext-etal.yml")
+    File.write(style, <<~Y)
+      name: in-text et-al style
+      scheme:
+        system: name-date
+        nameForm:
+          etalCount: 6
+          inTextEtalCount: 3
+          inTextEtalDisplay: 1
+      templates:
+        titleOpen: "_"
+        titleClose: "_"
+        reference: "{{creator}}. {{title}}. {{date}}."
+    Y
+    model = bib(<<~X)
+      <bibitem type="book">
+        <title>T</title>
+        <contributor><role type="author"/><person><name><surname>A</surname><forename>X</forename></name></person></contributor>
+        <contributor><role type="author"/><person><name><surname>B</surname><forename>Y</forename></name></person></contributor>
+        <contributor><role type="author"/><person><name><surname>C</surname><forename>Z</forename></name></person></contributor>
+      </bibitem>
+    X
+    renderer = Relaton::Render::Iso690::Renderer.new(style: style)
+    expect(renderer.in_text_author(model)).to eq "A <em>et al.</em>"
+  end
+
+  it "composes the author-date capsule with its disambiguator" do
+    style = File.join(Dir.mktmpdir, "capsule.yml")
+    File.write(style, <<~Y)
+      name: capsule style
+      scheme:
+        system: name-date
+      templates:
+        titleOpen: "_"
+        titleClose: "_"
+        reference: "{{creator}}. {{title}}. {{date}}."
+    Y
+    model = bib(<<~X)
+      <bibitem type="book">
+        <title>T</title>
+        <date type="published"><on>2020</on></date>
+        <contributor><role type="author"/><person><name><surname>A</surname><forename>X</forename></name></person></contributor>
+      </bibitem>
+    X
+    out = Relaton::Render::Iso690::Renderer.new(style: style)
+      .author_date_citation(model, disambiguator: "a")
+    expect(out).to eq "A 2020a"
+  end
+
+  it "exposes the 1.x renderings keys to isodoc" do
+    style = File.join(Dir.mktmpdir, "renderings.yml")
+    File.write(style, <<~Y)
+      name: renderings style
+      scheme:
+        system: name-date
+      templates:
+        titleOpen: "_"
+        titleClose: "_"
+        reference: "{{creator}}. {{title}}. {{date}}."
+    Y
+    refs = Relaton::Render::General.new(style: style).render_all(
+      "<references>#{two_books('one')}</references>",
+    )
+    expect(refs["a1"][:author]).to eq "ALUFFI"
+    expect(refs["a1"][:citation][:author_date]).to eq "ALUFFI 2022a"
+    expect(refs["a1"][:citation][:default]).to eq "ISBN 1"
+    expect(refs["a1"][:citation][:author]).to eq "ALUFFI"
+    expect(refs["a1"][:citation][:title]).to eq "First book on one"
+  end
+
   it "keeps subsequent surnames mixed-case when the style declares it" do
     style = File.join(Dir.mktmpdir, "mixed.yml")
     File.write(style, <<~Y)
