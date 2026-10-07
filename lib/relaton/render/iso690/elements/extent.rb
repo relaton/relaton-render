@@ -31,6 +31,9 @@ module Relaton
           end
 
           def group_sep
+            sep = @i18n.label("extent_group_separator")
+            return sep unless sep == "extent_group_separator"
+
             cjk?(@i18n.label("page")) ? "、 " : ", "
           end
 
