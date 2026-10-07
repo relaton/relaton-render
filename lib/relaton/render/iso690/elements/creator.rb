@@ -66,6 +66,12 @@ module Relaton
             @i18n.punct_fetch("marker-space", " ")
           end
 
+          # The template-level role slot ("{{role}}"): the marker with
+          # its locale spacing, when the creators are all editors
+          def role_marker
+            editors? ? "#{role_space}#{role_parenthesis}".strip : ""
+          end
+
           def role_placement
             @style.scheme.name_form.role_placement || "glue"
           end
