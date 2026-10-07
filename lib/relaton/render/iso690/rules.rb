@@ -8,7 +8,16 @@ module Relaton
       # rules: { slot: rule_name }. Flavors migrate their ELEMENTS maps
       # onto registered rules; nothing references a flavor class.
       module Rules
-        REGISTRY = {}
+        # The bare status: unparenthesized, no label ("Recommendation")
+        class BareStatus < Elements::Status
+          def render
+            stage.to_s
+          end
+        end
+
+        REGISTRY = {
+          "status_bare" => BareStatus,
+        }.freeze
 
         class << self
           def register(name, klass)
