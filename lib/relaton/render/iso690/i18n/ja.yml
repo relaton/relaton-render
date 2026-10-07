@@ -30,7 +30,7 @@ punct:
   size-join: ""
   marker-space: ""
   production_sep: "： "
-  cjk-latin-separator: "、"
+  cjk-latin-separator: "、 "
   period: "。"
   comma: "、"
   colon: "："
