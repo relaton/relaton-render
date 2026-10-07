@@ -1,6 +1,16 @@
 lang: en
 labels:
   edition: "ed"
+  ordinal_word_1: "First"
+  ordinal_word_2: "Second"
+  ordinal_word_3: "Third"
+  ordinal_word_4: "Fourth"
+  ordinal_word_5: "Fifth"
+  ordinal_word_6: "Sixth"
+  ordinal_word_7: "Seventh"
+  ordinal_word_8: "Eighth"
+  ordinal_word_9: "Ninth"
+  ordinal_word_10: "Tenth"
   size_volume: "vol."
   size_page: "pp."
   page: "p."

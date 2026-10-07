@@ -14,25 +14,39 @@ module Relaton
           def render
             return "#{@i18n.label('version')} #{raw}" unless word_edition?
 
-            # CJK editions cite as a cardinal template ("第N版")
-            cardinal = locale_template("edition_cardinal", number)
-            return cardinal if cardinal
+            # The worded forms first ("First edition", "第N版" via the
+            # ordinal template), the cardinal last
+            ordinal = locale_template("edition_ordinal", number)
+            return ordinal if ordinal
 
             word = @i18n.label("edition_#{number}")
             return word unless word == "edition_#{number}"
 
-            "#{ordinalize(number)} #{@i18n.label('edition')}"
+            cardinal_form || "#{ordinalize(number)} #{@i18n.label('edition')}"
+          end
+
+          # The plain cardinal form ("edition 7")
+          def cardinal_form
+            locale_template("edition_cardinal", number) ||
+              locale_template("version_cardinal", number)
           end
 
           private
 
-          # A locale template carrying {{ var1 }} populated with the
-          # edition number; a bare label (no placeholder) is not one
+          # A locale template carrying {{ var1 }} (optionally through
+          # the ordinal_word filter) populated with the edition number;
+          # a bare label (no placeholder) is not one
           def locale_template(key, value)
             raw = @i18n.label(key)
-            return nil if raw == key || raw !~ /\{\{/
+            return nil if raw == key || raw !~ /\{{/
 
-            raw.gsub("{{ var1 }}", value.to_s)
+            if raw.include?("ordinal_word")
+              word = @i18n.label("ordinal_word_#{value}")
+              word = ordinalize(value) if word == "ordinal_word_#{value}"
+              raw.gsub(/\{\{\s*var1[^}]*\}\}/, word)
+            else
+              raw.gsub("{{ var1 }}", value.to_s)
+            end
           end
 
           private
