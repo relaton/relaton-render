@@ -11,8 +11,10 @@ module Relaton
         DEFAULT_STYLE = "author-date"
 
         class << self
-          def render(model, style: DEFAULT_STYLE, lang: "en", script: "Latn")
-            new(style: style, lang: lang, script: script).render(model)
+          def render(model, style: DEFAULT_STYLE, lang: "en", script: "Latn",
+                     elements: {})
+            new(style: style, lang: lang, script: script,
+                elements: elements).render(model)
           end
 
           def citation(model, disambiguator: nil, style: DEFAULT_STYLE,
