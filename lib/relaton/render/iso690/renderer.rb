@@ -24,8 +24,8 @@ module Relaton
 
         def initialize(style: DEFAULT_STYLE, lang: "en", script: "Latn",
                        labels: {}, elements: {})
-          @elements = elements
           @style = Style.load(style)
+          @elements = Rules.resolve(@style.rules, elements)
           @i18n = I18n.load(lang)
           @i18n.overlay_hash!(labels) unless labels.empty?
           # The style instance is the citation-style authority: its
