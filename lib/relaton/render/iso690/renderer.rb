@@ -92,6 +92,28 @@ module Relaton
             .reject(&:empty?).join(" ")
         end
 
+        # The bracketed author-date in-text capsule ("Aluffi （2022）"):
+        # the author and the date in the locale's parentheses
+        def bracketed_date_citation(model, disambiguator: nil)
+          f = Fields.new(model, style: @style, i18n: @i18n,
+                         disambiguator: disambiguator,
+                         elements: @elements).to_h
+          date = f["disambiguateddate"].text
+          return "" if date.empty?
+
+          open = @i18n.punct_fetch("open-paren", "(")
+          close = @i18n.punct_fetch("close-paren", ")")
+          [in_text_author(model), "#{open}#{date}#{close}"]
+            .reject(&:empty?).join(" ")
+        end
+
+        # The disambiguated date alone (the citation renderings' date)
+        def disambiguated_date(model, disambiguator: nil)
+          Fields.new(model, style: @style, i18n: @i18n,
+                     disambiguator: disambiguator,
+                     elements: @elements).to_h["disambiguateddate"].text
+        end
+
         # The title citation ("{{ title }}" in the 1.x citetemplate):
         # the title element's plain form, no style markers
         def title_citation(model)

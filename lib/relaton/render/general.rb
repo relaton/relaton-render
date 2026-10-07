@@ -148,6 +148,8 @@ module Relaton
                   short
                 end
 
+        title = renderer.title_citation(item)
+
         {
           full: ref,
           default: item.docidentifier.first&.content.to_s,
@@ -155,8 +157,14 @@ module Relaton
           author_date: renderer.author_date_citation(
             item, disambiguator: disambiguator,
           ),
+          author_date_br: renderer.bracketed_date_citation(
+            item, disambiguator: disambiguator,
+          ),
           author: renderer.in_text_author(item),
-          title: renderer.title_citation(item),
+          date: renderer.disambiguated_date(item, disambiguator: disambiguator),
+          reference_tag: "",
+          title: title,
+          title_reference_tag: title,
         }
       end
 
