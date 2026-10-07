@@ -69,7 +69,7 @@ module Relaton
           # The template-level role slot ("{{role}}"): the marker with
           # its locale spacing, when the creators are all editors
           def role_marker
-            editors? ? "#{role_space}#{role_parenthesis}".strip : ""
+            editors? ? "#{role_space}#{role_parenthesis}" : ""
           end
 
           def role_placement

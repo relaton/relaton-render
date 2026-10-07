@@ -43,6 +43,7 @@ module Relaton
           known = %w[
             edition series_no report_no available_from in and oxford_comma
             ed eds date_range others no_date no_author at
+            edition_ordinal edition_cardinal version_cardinal
           ]
           hash.each do |key, value|
             labels[key.to_s] = value if known.include?(key.to_s) && !value.nil?
