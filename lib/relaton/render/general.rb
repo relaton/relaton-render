@@ -264,7 +264,8 @@ module Relaton
       # and every flavor still pass string keys.
       def deep_symbolize(value)
         case value
-        when Hash then value.to_h { |k, v| [k.to_sym, deep_symbolize(v)] }
+        # isodoc i18n hashes carry nil keys (an unlabeled punct slot)
+        when Hash then value.to_h { |k, v| [k&.to_sym, deep_symbolize(v)] }
         when Array then value.map { |v| deep_symbolize(v) }
         else value
         end
