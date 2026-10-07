@@ -100,3 +100,6 @@ Liquid templates described below for rendering: it is the hash of bibliographic 
 
 For the configuation YAML used in relaton-render, refer to https://relaton.org/specs/relaton-render 
 
+== Documentation
+
+* link:docs/citation-style-pack.adoc[Defining a Citation Style: the pack format] — the authoritative spec for CitationStyle YAML packs: resource types, presentation patterns, model presentation templates, locale/punctuation, inheritance and conformance.
