@@ -30,12 +30,27 @@ module Relaton
             key = slot.to_s.delete("_").downcase
             table[key] = element_field(slot)
           end
+          table["role"] = role_field
           table["dategroup"] = dategroup_field
           table["disambiguateddate"] = disambiguated_date_field(table["date"])
           unless table["dategroup"].present?
             table["dategroup"] = fallback_field(:dategroup)
           end
           table.merge(name_fields)
+        end
+
+        # The creators' editor-role marker ("(eds.)", "（編）"), as a
+        # template slot: a creator list that is not all editors cites no
+        # role
+        def role_field
+          creator = Elements.build(:creator, @model, style: @style,
+                                   i18n: @i18n, elements: @elements)
+          return Template::Field[false, ""] unless
+            creator&.present? && creator.respond_to?(:role_marker)
+
+          marker = creator.role_marker
+          marker.empty? ? Template::Field[false, ""] :
+            Template::Field[true, marker]
         end
 
         # The date carrying the batch disambiguation suffix ("2022a"):
