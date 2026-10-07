@@ -22,7 +22,7 @@ labels:
   edition_ordinal: "第{{ var1 }}版"
   version_cardinal: "第{{ var1 }}版"
   in_series: "シリーズ"
-  list_separator: "、"
+  list_separator: "、 "
   and: ""
   oxford_comma: ""
   date_range: "–"
