@@ -28,6 +28,7 @@ labels:
   date_range: "–"
 punct:
   size-join: ""
+  marker-space: ""
   production_sep: "： "
   cjk-latin-separator: "、"
   period: "。"
