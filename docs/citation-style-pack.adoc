@@ -1,0 +1,367 @@
+= Defining a Citation Style: the Pack Format
+
+This document is the authoritative authoring specification for a
+CitationStyle pack: the one file that fully describes a citation style.
+It is the contract between three parties — style authors, the rendering
+engine, and the relaton-models citation schema.
+
+Status markers: **[impl]** shipped on this engine line; **[spec]** the
+committed design this engine line converges to (tracked in the
+promotion backlog, section 12).
+
+== 1. The laws
+
+1. **Models are ISO 690.** The relaton-models citation module
+   (`Relaton::Bib::Item` and friends) is the single data substrate for
+   every style. There are no LNCS models, no Chicago models. A
+   bibliographic item is parsed, stored and exchanged once.
+2. **A citation style is one encapsulated data pack.** Everything a
+   style knows lives in the pack: the scheme (name forms, citation
+   system), the locale (labels, punctuation), the presentation
+   templates (citation, reference, per-type patterns), and the
+   presentation-of-models (how each 690 model element presents).
+   Nothing lives in flavor Ruby.
+3. **The pack's field vocabulary is a superset of CSL-JSON.** Every
+   CSL-JSON term has a home; the standards-specific extensions CSL
+   lacks (designations/docids, typed stages, host relations, ordinal
+   editions, bilingual and CJK forms) extend it. The same is true of
+   the logic vocabulary (section 8): it supersets CSL's condition
+   grammar, not a general template engine.
+4. **Engines hold zero styles.** The engine is a generic evaluator of
+   packs. Canonical packs (the ISO 690 default, LNCS, Chicago,
+   IEEE-SA) ship beside the engine while the vocabulary co-evolves and
+   extract to a data repository once it stabilises — the CSL precedent
+   being a separate styles distribution consumed by many processors.
+5. **No Liquid.** The template language is the chunk grammar
+   (section 8): declarative, schema-validated, sandboxed, identical in
+   Ruby and relaton-ts. A fenced `procedural:` escape may exist for
+   experimental packs; canonical styles never reference it.
+
+== 2. The pack file
+
+One YAML document. **[impl]** Loaded and validated by the
+CitationStyle model (`Relaton::Render::Iso690::Style.load` accepts a
+path or a hash; unknown keys are rejected). **[spec]** The model
+itself is owned by relaton-models' citation module; this engine loads
+it, and relaton-ts loads its mirror.
+
+Skeleton — every key, in order:
+
+....
+name: "ISO 690 (metanorma-iso flavour)"
+family: iso690                      # [spec] iso690 | lncs | chicago | ieee-sa
+extends: null                      # [spec] name of a base pack this deltas
+requires:                          # [spec] capability gates this pack needs
+  - extent_group_separator
+
+scheme:
+  system: name-date                # name-date | numeric | designation
+  shortFromReference: true
+  homeDocidType: [ISO, IEC]         # docid types that mark a "home" standard
+  defaultKind: ""                  # kind for types the taxonomy leaves unmapped
+  nameForm:  { ... }               # section 7
+  locale:     { ... }              # section 6
+
+templates:                         # style-wide templates, section 5
+  titleOpen: "_"
+  titleClose: "_"
+  citation: "{{surname}}, {{date}}"
+  reference: "{{creator}}. {{title}}. ..."
+  name: "{{surname}}, {{givenNames}}"
+  series: ""
+  creators: ""
+  uri: "<fmt-link target='{{uri}}'>{{uri}}</fmt-link>"
+  uriShort: ""
+  identifierMode: all              # all | first
+
+types:                             # [spec] section 4: the resource-type taxonomy
+  article-journal: { alias: continuing }
+  standard:      { alias: report }
+
+perType:                           # section 5: the presentation patterns
+  - type: report
+    home: true
+    template: "{{title}}"
+    title: "<span class='stddocTitle'>{{title}}</span>"
+    short: "{{title}}, {{extent}}"
+  - type: monograph
+    noPlace: true
+    fallbacks: { date: "n.d" }
+    template: "{{creator}}{{role}}. {{title}}. ..."
+
+sortKey:                           # index sorting
+  - attribute: creator
+  - attribute: date
+
+rules:                             # [spec] section 9: presentation-of-models
+  identifier: itu                  # named engine rule selections
+  creator: nist_series_publisher
+
+postProcess:                       # [spec] ordered gsub rule chain
+  - pattern: "。+"
+    replace: "。"
+....
+
+== 3. Lifecycle
+
+* **Adopt** — a flavor points its `bibrenderer` at a named canonical
+  pack. Zero code, zero YAML. The target state for new and generic
+  flavors.
+* **Inherit-and-override** — **[spec]** `extends: <pack>` plus a delta.
+  The merge semantics are part of this specification (section 11):
+  `perType`/`types` merge per type key (a delta re-declaring `article`
+  never drops the base's `monograph`); `labels`, `punct`, `fallbacks`
+  and rule selections merge per key; scheme scalars replace. The
+  merge is deterministic and identical in Ruby and TS.
+* **Own pack** — a fully self-contained instance. Last resort; the
+  existing flavor YAMLs are this, and most should collapse into deltas
+  over a canonical base.
+
+**[spec] `requires:`** names engine capabilities, so a resolver fails
+loudly (`pack requires extent_group_separator`) instead of silently
+mis-rendering. Capability names are frozen per engine minor line.
+
+== 4. Info-resource-types
+
+Different information resource types present with different patterns
+in nearly every citation style. The pack's type taxonomy is the axis
+those patterns hang on.
+
+**[impl]** The engine normalises a bibliographic item's wire `type`
+value to an ISO 690 clause-8 resource *kind* through the Kinds table;
+perType entries select on kinds. **[spec]** The taxonomy becomes pack
+data (`types:`), aligned name-for-name with the CSL resource types —
+the same superset law as the fields — with the standards extensions
+CSL lacks.
+
+.Kind taxonomy (ISO 690 clause 8) and its wire-type synonyms [impl]
+[cols="1,3"]
+|===
+|Kind |Wire types
+
+|`monograph` |book, booklet, manual, proceedings, thesis
+|`report` |standard, techreport, report *(the clause 8.11 fallback)*
+|`patent` |patent
+|`continuing` |journal, serial, article-journal, article-magazine
+|`component_part` |inbook, incollection, inproceedings
+|`serial_part` |article
+|`online` |software, unpublished, dataset, webpage, online
+|`webdoc` |website, webresource
+|===
+
+**[spec]** The full recommended taxonomy carries every CSL type
+(`article-journal`, `article-magazine`, `article-newspaper`, `bill`,
+`book`, `broadcast`, `chapter`, `classic`, `collection`, `dataset`,
+`document`, `entry`, `entry-dictionary`, `entry-encyclopedia`,
+`event`, `figure`, `graphic`, `hearing`, `interview`, `legal_case`,
+`legislation`, `manuscript`, `map`, `motion_picture`, `musical_score`,
+`pamphlet`, `paper-conference`, `patent`, `performance`, `periodical`,
+`personal_communication`, `post`, `post-weblog`, `regulation`,
+`report`, `review`, `review-book`, `software`, `song`, `speech`,
+`standard`, `statute`, `thesis`, `treaty`, `webpage`) plus the
+relaton extensions (`techreport`, `inbook`, `incollection`,
+`inproceedings`, `webresource`, `webdoc`, `online`). Rules of the
+taxonomy:
+
+* **Complete, explicit coverage.** Every type resolves to a declared
+  pattern — through an entry, an `alias`, or the declared `fallthrough`
+  (`report`). Nothing inherits silently.
+* **Aliasing is declared**, never engine-hardcoded: `booklet: book`.
+* **Home/external splits sit on top** — for standards-producing
+  bodies, the *same* type carries two patterns, selected by whether
+  the item bears one of `scheme.homeDocidType`'s designations.
+  IEEE-SA's `standard` pattern is *only* designation + title; a
+  Chicago `standard` is cited differently again — same type, different
+  packs, different patterns.
+
+== 5. Presentation patterns (`perType`)
+
+The pattern — not the template — is the unit. A journal-article
+pattern is not a reordered book template; it is its own arrangement
+(quoted title form, italic container, vol/no/pp placement,
+month-abbreviated dates) *plus* its own short cite, fallbacks and
+terminator behaviour. The perType entry carries all of it:
+
+[cols="1,3"]
+|===
+|Field |Meaning
+
+|`type` |the kind (or **[spec]** taxonomy type) this pattern serves
+|`template` |the reference (bibliography entry) arrangement
+|`title`, `series` |per-slot form overrides for this pattern
+|`short` |the short-cite template (falls back to the reference in short mode)
+|`home` |`true` marks the pattern serving items bearing a home docid; two entries of one type split on it
+|`fallbacks` |absent-slot replacement texts, per slot (`date: "n.d"`, `dategroup: "(n.d.)"`)
+|`noPlace` |render the locale's `no_place` label when production lacks a place
+|===
+
+Multiple entries of one `type` resolve: home-flagged variants split by
+the home test; otherwise the first match wins; unmatched kinds fall to
+`templates.reference`.
+
+== 6. Locale, labels and punctuation
+
+**[impl]** Packs overlay the engine language packs (`i18n/<lang>.yml`)
+per language; the pack wins. Adding a language is a new language pack,
+never code.
+
+* `locale.and|others|noDate|noAuthor|in|at|availableAt` — connective
+  strings.
+* `locale.labels` — arbitrary label overrides merged verbatim:
+  `and`, `oxford_comma`, `list_separator`, `series_no`, `no_place`,
+  `available_from`, `ed`/`eds`, `edition_ordinal`/`edition_cardinal`/
+  `version_cardinal` (locale templates, `{{ var1 }}` with the
+  `ordinal_word` filter), extent unit templates (`volume: "vol. %"`,
+  `page: "%頁"` — the `%` carries the value, so a CJK locale places
+  its unit after the number), `extent_group_separator`, month names.
+* `locale.punct` — typographic punctuation: `production_sep`,
+  `production_order` (`publisher_first` for LNCS-style orders),
+  `open-paren`/`close-paren` (ASCII vs fullwidth), `cjk-latin-separator`,
+  `size-join`, `marker-space`.
+* **[spec] `postProcess:`** — the CJK spacing rules that flavors
+  carry as Ruby today become ordered `pattern/replace` rule chains in
+  the pack, so bilingual typography travels with the style.
+
+== 7. Name forms (`scheme.nameForm`) [impl]
+
+Every knob of creator presentation:
+
+[cols="1,3"]
+|===
+|Knob |Effect
+
+|`initials`, `initialsSeparator`, `initialsPeriod` |initials vs given names, "A. B." vs "AB"
+|`invertedAll`, `givenNameFirst` |surname-first for all names / direct order
+|`surnameUpcase`, `subsequentSurnameUpcase`, `subsequentInitials` |caps and second-name forms
+|`completenameUpcase`, `orgUpcase` |verbatim names and organisations
+|`editorsMarked`, `loneEditorMarked`, `rolePlacement` |"(eds.)" markers and their placement
+|`listStyle`, `creatorFallback` |join style; fallback source when no personal creator (OGC: `publisher_abbrev`)
+|`etalCount`, `etalDisplay` |bibliography et-al truncation
+|`inTextEtalCount`, `inTextEtalDisplay` |in-text et-al truncation
+|===
+
+== 8. The template language
+
+**[impl]** Templates are chunk strings: `{{slot}}` fields and literal
+text. The evaluator carries the segment-join semantics — a literal
+renders when it separates two present fields, so absent elements
+swallow their separators; leading and trailing literals drop with
+their fields; parenthetical literals (`({{series}})`, `（{{series}}）`)
+pair as groups that drop whole when the field is absent, balanced on
+the template's literal parens alone; stacked separators collapse;
+trailing terminators apply per style. The short-cite evaluator splits
+after the leading field run at the first-biblio delimiter, which the
+presentation layer turns into the cross-reference capsule.
+
+Slots resolve to the 690 model presentations: `creator`, `title`,
+`edition`, `medium`, `series`, `production`, `date`, `numeration`,
+`component_part`, `identifier`, `location`, `size`, `extent`,
+`access`, `stddoc`, `status`, `citeid`, `authorizer`, `updated`;
+derived fields `role`, `dategroup` (the parenthesised date group),
+`disambiguateddate` (the batch-suffixed date, "2022a"); and the name
+fields (`surname`, `givenNames`, ...).
+
+**[spec]** The logic vocabulary supersets CSL's condition grammar:
+
+* **Conditionals** — `choose`/`if`/`else-if` over `type`, field
+  presence, `home`, and `disambiguated` ( CSL `position`-adjacent ),
+  as declarative blocks inside `perType` entries and templates.
+* **Fallback chains** — `creator: [authors, publisher_abbrev]`:
+  first present source wins, replacing today's single `creatorFallback`
+  knob and OGC's hack.
+* No loops, no arbitrary filters, no string mutation — those are
+  `postProcess` rules or named rules, never template logic.
+
+== 9. Model presentation templates (`rules`) — presentation-of-models
+
+Each 690 model element has a declarative presentation vocabulary; the
+pack selects per-slot rule implementations by name. **[impl]** the
+declarative surface (extent unit `%`-templates, production orders,
+group separators, locale templates, fallbacks); **[spec]** the
+registry: engine implements each named rule once, conformance-tested
+per rule, mirrored in relaton-ts, and addressable as pack data —
+`identifier: itu`, `creator: nist_series_publisher`.
+
+The promotion backlog — every flavor element override still standing
+is a rule to promote:
+
+[cols="2,2"]
+|===
+|Flavor override |Becomes rule
+
+|`ItuIdentifier` |`identifier: itu`
+|`NistIdentifier`, `NistCreator`, `NistDate`, `SerialDate`, `NistSeries`, `NistComponentPart`, `NistPublisher`, `Draft` |the NIST author-year rule set
+|`IeeeIdentifier`, `IeeeComponentPart`, `IeeeAccess`, `IeeeMedium` |the IEEE-SA rule set (designation-first standards)
+|`BipmCreator`, `BipmComponentPart`, `BipmProduction`, `BipmExtent`, `BipmMedium`, `BipmEdition`, `BipmVolume` |the BIPM rule set
+|`IhoEdition`, `IhoCreator` |affiliation-composite creators
+|`JisComponentPart`, `JisSeries`, `JisExtent` |the JIS host-citation rules
+|`BsiStatus` |status presentation
+|===
+
+== 10. Citation forms
+
+**[impl]** The renderings capsule every pack produces (the isodoc
+contract): `author`, `date`, `citation{full, default, short,
+author_date, author_date_br, author, date, reference_tag, title,
+title_reference_tag}`, `formattedref`. `templates.citation` is the
+in-text form; `shortFromReference` takes the reference form with the
+first-biblio marker; batch disambiguation suffixes derive from
+author+date collisions; `identifierMode` governs `default` (first vs
+all designations). **[spec]** `system: numeric | designation` selects
+numeric `[1]`/`[B4]` and designation-led citation systems — the
+IEEE-SA and JIS/BSI homes — as first-class engines, not author-date
+approximations.
+
+== 11. Deltas and the flavor triangle
+
+**[spec]** `extends` resolves base-then-delta at load, on model
+instances (never ad-hoc hash merges):
+
+* `perType`, `types`: merge **per type key** — a delta's `article`
+  entry overlays the base's; the base's other entries survive.
+* `labels`, `punct`, `fallbacks`: per-key merge.
+* `nameForm` knobs, `templates.*`, rule selections: replace.
+* `sortKey`, `requires`: union.
+
+The forcing test: PLATEAU's four near-copy styles (document-language
+x item-language quadrants) collapse to `extends: jis` plus two
+punct/label deltas. If the merge cannot express that, the merge is
+wrong.
+
+== 12. Validation, versioning, conformance
+
+* **Schema** — the CitationStyle model validates every pack; unknown
+  keys fail at load, not at render. [impl]
+* **`requires:`** — capability gating, frozen names per engine minor
+  line. [spec]
+* **Conformance corpora** — every canonical pack ships a corpus of
+  examples with expected renderings, in the iso690-test tradition:
+  LNCS from Springer's authors' instructions; Chicago from CMOS;
+  IEEE-SA from the Standards Style Manual clause 17 (`[B1] ASME
+  BPVC-I-2004, Title.` designation-only standards; Chicago-derived
+  books/articles with only the first name inverted). CI renders the
+  matrix: every declared type, every pattern, both engine ports.
+* **Portability & safety** — packs are data: they validate, sandbox
+  and render identically server-side (the CF Workers API) and in
+  relaton-ts. No interpreters, no Liquid, no flavor Ruby.
+
+== 13. Authoring walkthrough (LNCS, abridged)
+
+. Declare the pack: `family: lncs`, `extends: null` (canonical),
+  `requires: [production_order, extent_units]`.
+. Name forms: initials without periods, `invertedAll`, direct-order
+  subsequent names, `creatorFallback: [publisher_abbrev]` for
+  standards with no personal authors.
+. Locale: `production_order: publisher_first`, `production_sep: ", "`,
+  year trailing in parentheses (the `dategroup` form).
+. Types and patterns: `paper-conference` ("`{{creator}}: {{title}}.
+  In: {{componentpart}} {{extent}} {{production}} {{dategroup}}.`"),
+  `chapter`, `article-journal`, `book`, `thesis`, `webpage` — one
+  entry each, own `title`/`series` forms, own `short` cites.
+. Rules: `identifier: lncs-series` (LNCS vol./pp. forms).
+. Conformance: the Springer instruction examples become the corpus;
+  the pack merges only when the matrix is green.
+
+The same walk with CMOS examples yields Chicago; with the IEEE-SA
+manual, `family: ieee-sa` — whose `standard` pattern is two fields
+long.
