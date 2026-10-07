@@ -19,6 +19,21 @@ module Relaton
         autoload :TypeTemplate, "relaton/render/iso690/style/type_template"
 
         attribute :name, :string
+        # The citation-style family the pack belongs to (iso690 | lncs |
+        # chicago | ieee-sa | apa): selects the presentation-of-models
+        # conventions the templates address
+        attribute :family, :string, default: "iso690"
+        # A named pack this one deltas over; resolved at load with the
+        # documented merge semantics (#merge_delta)
+        attribute :extends, :string
+        # Engine capabilities the pack addresses; a resolver that lacks
+        # one fails loudly instead of mis-rendering
+        attribute :requires, :string, collection: true, default: []
+        # Pack-declared taxonomy: wire type -> kind (aliasing or
+        # fallthrough), consulted before the engine's Kinds table
+        attribute :types, :hash, default: -> { {} }
+        # Presentation-of-models selections: slot -> named engine rule
+        attribute :rules, :hash, default: -> { {} }
         attribute :scheme, Scheme, default: -> { Scheme.new }
         attribute :templates, TemplateMap, default: -> { TemplateMap.new }
         attribute :per_type, TypeTemplate, collection: true, default: []
@@ -26,6 +41,11 @@ module Relaton
 
         key_value do
           map "name", to: :name
+          map "family", to: :family
+          map "extends", to: :extends
+          map "requires", to: :requires
+          map "types", to: :types
+          map "rules", to: :rules
           map "scheme", to: :scheme
           map "templates", to: :templates
           map "perType", to: :per_type
@@ -44,6 +64,12 @@ module Relaton
         # the style's declared kind for types the vocabulary does not
         # map (a flavor whose untyped items are not reports)
         def kind_for(type)
+          declared_type = types[type.to_s]
+          unless declared_type.to_s.empty?
+            return Kinds.mapped?(declared_type) ? Kinds.kind_for(declared_type) :
+              declared_type
+          end
+
           return Kinds.kind_for(type) if Kinds.mapped?(type)
 
           declared = scheme.default_kind.to_s
@@ -97,11 +123,88 @@ module Relaton
           )
         end
 
+        # The documented delta merge: perType entries merge per type
+        # key (a delta re-declaring `article` never drops the base's
+        # `monograph`); hash sections merge per key; scalars, templates
+        # and rule selections replace; sortKey and requires union.
+        # Deterministic and engine-portable.
+        def merge_delta(base)
+          merged_per_type = base.per_type.dup
+          per_type.each do |delta|
+            index = merged_per_type.find_index do |b|
+              b.type == delta.type && (b.home || false) == (delta.home || false)
+            end
+            index ? merged_per_type[index] = delta : merged_per_type << delta
+          end
+          self.per_type = merged_per_type
+          self.types = base.types.merge(types)
+          self.rules = base.rules.merge(rules)
+          merge_scheme(base)
+          merge_templates(base)
+          self.sort_key = (base.sort_key + sort_key).uniq
+          self.requires = (base.requires + requires).uniq
+          self
+        end
+
+        private
+
+        def merge_scheme(base)
+          fresh = NameForm.new
+          NameForm.attributes.each_key do |attr|
+            val = scheme.name_form.send(attr)
+            next unless val == fresh.send(attr)
+
+            base_val = base.scheme.name_form.send(attr)
+            scheme.name_form.send("#{attr}=", base_val) if
+              base_val != fresh.send(attr)
+          end
+
+          scheme.system = base.scheme.system if scheme.system.to_s.empty?
+          scheme.short_from_reference = base.scheme.short_from_reference unless
+            scheme.short_from_reference
+          scheme.home_docid_type = base.scheme.home_docid_type if
+            Array(scheme.home_docid_type).empty?
+          scheme.default_kind = base.scheme.default_kind if
+            scheme.default_kind.to_s.empty?
+
+          locale = scheme.locale
+          base_locale = base.scheme.locale
+          locale.conj ||= base_locale.conj
+          locale.others ||= base_locale.others
+          locale.no_date ||= base_locale.no_date
+          locale.no_author ||= base_locale.no_author
+          locale.in_str ||= base_locale.in_str
+          locale.at ||= base_locale.at
+          locale.available_at ||= base_locale.available_at
+          locale.labels.merge!(base_locale.label_map) { |_k, _b, d| d }
+          locale.punct = (base_locale.punct || {}).merge(locale.punct || {})
+        end
+
+        def merge_templates(base)
+          fresh = TemplateMap.new
+          TemplateMap.attributes.each_key do |attr|
+            val = templates.send(attr)
+            base_val = base.templates.send(attr)
+            next unless val == fresh.send(attr) && base_val != fresh.send(attr)
+
+            templates.send("#{attr}=", base_val)
+          end
+        end
+
         class << self
-          def load(name_or_path)
+          def load(name_or_path, seen = [])
             path = style_path(name_or_path) or
               raise ArgumentError, "unknown style #{name_or_path}"
-            from_yaml(File.read(path))
+            style = from_yaml(File.read(path))
+            return style if style.extends.to_s.empty?
+
+            style.extends.split(/\s+/).each do |base_name|
+              raise ArgumentError,
+                    "circular extends #{base_name}" if seen.include?(base_name)
+
+              style.merge_delta(load(base_name, seen + [base_name]))
+            end
+            style
           end
 
           private

@@ -15,8 +15,8 @@ RSpec.describe Relaton::Render::Iso690::Style do
     end
 
     it "raises for an unknown style" do
-      expect { described_class.load("chicago") }
-        .to raise_error ArgumentError, /unknown style chicago/
+      expect { described_class.load("turbabian") }
+        .to raise_error ArgumentError, /unknown style turbabian/
     end
   end
 
@@ -55,6 +55,87 @@ RSpec.describe Relaton::Render::Iso690::Style do
         style.scheme.locale,
       )
       expect(i18n.label("and")).to eq "ainsi que"
+    end
+  end
+end
+
+RSpec.describe Relaton::Render::Iso690::Style do
+  context "delta packs" do
+    def write_pack(name, yaml)
+      path = File.join(Dir.mktmpdir, "#{name}.yml")
+      File.write(path, yaml)
+      path
+    end
+
+    it "merges perType per type key, keeps the base's other patterns" do
+      base = write_pack("delta-base", <<~YML)
+        name: delta base
+        perType:
+          - type: monograph
+            template: "BASE {{title}}"
+          - type: article
+            template: "BASE-A {{title}}"
+      YML
+      delta = write_pack("delta-pack", <<~YML)
+        name: delta pack
+        extends: #{base}
+        perType:
+          - type: article
+            template: "DELTA-A {{title}}"
+      YML
+      style = described_class.load(delta)
+      expect(style.template_for("article")).to eq "DELTA-A {{title}}"
+      expect(style.template_for("monograph")).to eq "BASE {{title}}"
+    end
+
+    it "merges labels per key and name-form knobs only when undeclared" do
+      base = write_pack("label-base", <<~YML)
+        name: label base
+        scheme:
+          nameForm:
+            invertedAll: true
+            initials: true
+          locale:
+            labels:
+              "and": "&"
+      YML
+      delta = write_pack("label-pack", <<~YML)
+        name: label pack
+        extends: #{base}
+        scheme:
+          nameForm:
+            surnameUpcase: false
+          locale:
+            labels:
+              series_no: ""
+      YML
+      style = described_class.load(delta)
+      # a knob at the model default counts as unset: it inherits
+      expect(style.scheme.name_form.surname_upcase).to be(false) # declared wins
+      expect(style.scheme.name_form.initials).to be(true) # inherited
+      expect(style.scheme.name_form.inverted_all).to be(true) # inherited
+      expect(style.scheme.locale.label_map["and"]).to eq "&" # inherited
+      expect(style.scheme.locale.label_map["series_no"]).to eq "" # declared
+    end
+
+    it "unions requires and resolves the pack taxonomy before Kinds" do
+      base = write_pack("req-base", <<~YML)
+        name: req base
+        requires: [production_order]
+      YML
+      delta = write_pack("req-pack", <<~YML)
+        name: req pack
+        extends: #{base}
+        requires: [extent_units]
+        types:
+          article-journal: continuing
+          dataset: webdoc
+      YML
+      style = described_class.load(delta)
+      expect(style.requires.sort).to eq %w[extent_units production_order]
+      expect(style.kind_for("article-journal")).to eq "continuing"
+      expect(style.kind_for("dataset")).to eq "webdoc"
+      expect(style.kind_for("book")).to eq "monograph" # Kinds fallthrough
     end
   end
 end

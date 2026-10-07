@@ -320,7 +320,10 @@ instances (never ad-hoc hash merges):
 * `perType`, `types`: merge **per type key** — a delta's `article`
   entry overlays the base's; the base's other entries survive.
 * `labels`, `punct`, `fallbacks`: per-key merge.
-* `nameForm` knobs, `templates.*`, rule selections: replace.
+* `nameForm` knobs, `templates.*`, rule selections: replace — with
+  the caveat that a knob left at its model default counts as unset and
+  inherits (a Lutaml model cannot distinguish an explicit default from
+  an absent key).
 * `sortKey`, `requires`: union.
 
 The forcing test: PLATEAU's four near-copy styles (document-language
