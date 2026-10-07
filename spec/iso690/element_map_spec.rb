@@ -287,13 +287,13 @@ RSpec.describe "batch disambiguation and name-form knobs" do
       "<references>#{two_books('one')}</references>",
     )
     expect(refs["a1"][:author]).to eq "ALUFFI"
-    expect(refs["a1"][:citation][:author_date]).to eq "ALUFFI 2022a"
+    expect(refs["a1"][:citation][:author_date]).to eq "ALUFFI, 2022"
     expect(refs["a1"][:citation][:default]).to eq "ISBN 1"
     expect(refs["a1"][:citation][:author]).to eq "ALUFFI"
     expect(refs["a1"][:citation][:title]).to eq "First book on one"
-    expect(refs["a1"][:citation][:author_date_br]).to eq "ALUFFI (2022a)"
-    expect(refs["a1"][:citation][:date]).to eq "2022a"
-    expect(refs["a1"][:citation][:reference_tag]).to eq ""
+    expect(refs["a1"][:citation][:author_date_br]).to eq "ALUFFI (2022)"
+    expect(refs["a1"][:citation][:date]).to eq "2022"
+    expect(refs["a1"][:citation][:reference_tag]).to be_nil
     expect(refs["a1"][:citation][:title_reference_tag])
       .to eq "First book on one"
   end

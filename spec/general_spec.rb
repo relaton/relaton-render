@@ -112,7 +112,7 @@ RSpec.describe Relaton::Render::General do
         </bibitem>
       X
       data, = renderer.parse(doc)
-      expect(data[:authoritative_identifier]).to eq ["ISO 19115-1:2014"]
+      expect(data[:authoritative_identifier]).to eq ["<esc>ISO 19115-1:2014</esc>"]
     end
 
     it "finds docidentifiers on a node that still carries the document " \
@@ -124,7 +124,7 @@ RSpec.describe Relaton::Render::General do
         </bibitem>
       X
       data, = renderer.parse(doc)
-      expect(data[:authoritative_identifier]).to eq ["ISO 712"]
+      expect(data[:authoritative_identifier]).to eq ["<esc>ISO 712</esc>"]
     end
 
     it "keeps only the primary identifiers when a cascade tier matches, " \
@@ -139,7 +139,7 @@ RSpec.describe Relaton::Render::General do
         </bibitem>
       X
       data, = renderer.parse(doc)
-      expect(data[:authoritative_identifier]).to eq ["RFC 2119"]
+      expect(data[:authoritative_identifier]).to eq ["<esc>RFC 2119</esc>"]
     end
 
     it "falls through the cascade to all identifiers when none is primary" do
@@ -151,7 +151,7 @@ RSpec.describe Relaton::Render::General do
         </bibitem>
       X
       data, = renderer.parse(doc)
-      expect(data[:authoritative_identifier]).to eq ["ISO 712", "IEC 61082"]
+      expect(data[:authoritative_identifier]).to eq ["<esc>ISO 712</esc>", "<esc>IEC 61082</esc>"]
     end
   end
 

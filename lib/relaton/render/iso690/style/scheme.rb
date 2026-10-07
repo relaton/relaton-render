@@ -13,12 +13,18 @@ module Relaton
           attribute :home_docid_type, :string, collection: true
           attribute :default_kind, :string, default: ""
 
-          key_value do
+          # The renderings' short cite takes the reference form with the
+      # first-biblio marker (the 1.x citetemplate short), not the
+      # citation template
+      attribute :short_from_reference, :boolean, default: -> { false }
+
+      key_value do
             map "system", to: :system
             map "nameForm", to: :name_form
             map "locale", to: :locale
             map "homeDocidType", to: :home_docid_type
             map "defaultKind", to: :default_kind
+            map "shortFromReference", to: :short_from_reference
           end
         end
       end

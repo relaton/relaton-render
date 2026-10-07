@@ -79,13 +79,15 @@ module Relaton
             next
           end
           m[item.id] = {
-            id: item.id, ord: i,
             author: renderer.in_text_author(item),
-            formattedref: terminate_reference(ref, item),
+            date: renderer.disambiguated_date(item,
+                                              disambiguator:
+                                                disambiguators[item.id]),
             citation: citation_renderings(item, ref, renderer,
                                           type: type,
                                           disambiguator:
                                             disambiguators[item.id]),
+            formattedref: terminate_reference(ref, item),
           }
         end
       end
@@ -93,7 +95,7 @@ module Relaton
       # isodoc's styled citations consume these keys: the default is the
       # authoritative identifier; the short cite is the style's citation,
       # falling back to the reference rendering (the 1.x short-cite)
-      FIRST_DELIM = "<span class='fmt-first-biblio-delim'/>"
+      FIRST_DELIM = '<span class="fmt-first-biblio-delim"/>'
 
       # A creator list alone (flavors' document-history name forms)
       def creator_names(item)
@@ -141,11 +143,14 @@ module Relaton
       # names the key)
       def citation_renderings(item, ref, renderer, type: "author-date",
                               disambiguator: nil)
-        short = renderer.citation(item)
-        short = if short.empty?
+        # A style declaring shortFromReference takes the reference form
+        # with the first-biblio marker (the 1.x citetemplate short)
+        short = if renderer.short_from_reference?
                   renderer.render_short(item, FIRST_DELIM)
                 else
-                  short
+                  short = renderer.citation(item)
+                  short.empty? ? renderer.render_short(item, FIRST_DELIM) :
+                    short
                 end
 
         title = renderer.title_citation(item)
@@ -154,15 +159,15 @@ module Relaton
           full: ref,
           default: item.docidentifier.first&.content.to_s,
           short: short,
-          author_date: renderer.author_date_citation(
-            item, disambiguator: disambiguator,
-          ),
+          author_date: renderer.citation(item,
+                                         disambiguator: disambiguator),
           author_date_br: renderer.bracketed_date_citation(
             item, disambiguator: disambiguator,
           ),
           author: renderer.in_text_author(item),
-          date: renderer.disambiguated_date(item, disambiguator: disambiguator),
-          reference_tag: "",
+          date: renderer.disambiguated_date(item),
+          # reference_tag: no rendering — isodoc falls back to the
+          # biblio-tag anchor (the 1.x nil)
           title: title,
           title_reference_tag: title,
         }
@@ -240,7 +245,9 @@ module Relaton
           end
           out.empty? or break
         end
-        out.map { |x| x.text.strip }
+        # esc-wrapped: isodoc's l10n skips the tags, leaving a standard
+        # identifier's punctuation verbatim (the 1.x Parse behaviour)
+        out.map { |x| "<esc>#{x.text.strip}</esc>" }
       end
 
       def facade_id_type(id)

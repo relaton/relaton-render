@@ -12,17 +12,34 @@ module Relaton
 
           def render
             groups = [numeration, page_range].reject { |g| g.empty? }
-            groups.join(", ")
+            groups.join(group_sep)
           end
 
           private
+
+          # An extent label is a template over its value: "vol. %" in
+          # the Latin pack, "巻%" / "%頁" in the CJK packs
+          def unit(type, value)
+            label = @i18n.label(type)
+            return "#{label} #{value}" unless label.include?("%")
+
+            label.sub("%", value)
+          end
+
+          def cjk?(label)
+            label.match?(/\p{Han}|\p{Hiragana}|\p{Katakana}/)
+          end
+
+          def group_sep
+            cjk?(@i18n.label("page")) ? "、 " : ", "
+          end
 
           def numeration
             %w[volume issue].filter_map do |type|
               loc = localities.find { |l| l.type == type }
               next if loc.nil? || loc.reference_from.to_s.empty?
 
-              "#{@i18n.label(type)} #{loc.reference_from}"
+              unit(type, loc.reference_from)
             end.join(" ")
           end
 
@@ -31,10 +48,10 @@ module Relaton
             from = loc.reference_from.to_s
             to = loc.reference_to.to_s
             if to.empty? || to == from
-              "#{@i18n.label('page')} #{from}"
+              unit("page", from)
             else
-              "#{@i18n.label('pages')} " \
-                "#{from}#{@i18n.label('date_range')}#{to}"
+              range = "#{from}#{@i18n.label('date_range')}#{to}"
+              unit("pages", range)
             end
           end
 

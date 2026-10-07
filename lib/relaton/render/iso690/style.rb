@@ -66,6 +66,17 @@ module Relaton
           per_type.find { |t| t.type == type.to_s }
         end
 
+        # The home split applies to the short cite as it does to the
+        # reference template (a home standard's short cite is not an
+        # external standard's)
+        def short_template_for(type, home: nil)
+          candidates = per_type.select { |t| t.type == type.to_s }
+          if candidates.size > 1 && !home.nil?
+            candidates = candidates.select { |t| (t.home || false) == home }
+          end
+          candidates.filter_map(&:short).first
+        end
+
         # The absent-slot replacement text declared for a type, when any
         def fallback_for(type, slot)
           type_template_for(type)&.fallbacks&.[](slot.to_s)
