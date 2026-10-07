@@ -34,12 +34,12 @@ module Relaton
               # from the next element, which follows directly in the
               # template; a lone editor is unmarked unless declared
               if editors? && marked?
-                "#{period(joined)} (#{role_word}) "
+                "#{period(joined)} #{role_parenthesis} "
               else
                 "#{period(joined)} "
               end
             else
-              marker = editors? && marked? ? " (#{role_word})" : ''
+              marker = editors? && marked? ? " #{role_parenthesis}" : ''
               "#{joined}#{marker}"
             end
           end
@@ -48,8 +48,17 @@ module Relaton
           # plain join, without the wrap and sentence period (1.x
           # short-cite templates carried no wrap)
           def plain_render
-            marker = editors? && creators.size > 1 ? " (#{role_word})" : ''
+            marker = editors? && creators.size > 1 ?
+              " #{role_parenthesis}" : ''
             "#{join(names)}#{marker}"
+          end
+
+          # The editor role marker's parentheses follow the locale
+          # (ASCII for Latin scripts, fullwidth for CJK)
+          def role_parenthesis
+            open = @i18n.punct_fetch("open-paren", "(")
+            close = @i18n.punct_fetch("close-paren", ")")
+            "#{open}#{role_word}#{close}"
           end
 
           def role_placement

@@ -17,17 +17,24 @@ module Relaton
               return no_place_production_publisher_first if places.empty? &&
                 no_place_declared?
 
-              return [publishers.join("; "), places.join("; ")]
+              return [publishers.join("; "), places.map { |p| cjk_place(p) }]
                 .reject(&:empty?).join(production_sep)
             end
 
             return no_place_production if places.empty? && no_place_declared?
 
-            [places.join("; "), publishers.join("; ")]
+            [places.map { |p| cjk_place(p) }, publishers.join("; ")]
               .reject(&:empty?).join(production_sep)
           end
 
-          def publisher_first?
+          # A CJK locale's place names carry the CJK-Latin separator
+        # ("Cambridge、UK" over "Cambridge, UK")
+        def cjk_place(place)
+          sep = @i18n.punct_fetch("cjk-latin-separator", "")
+          sep.empty? ? place : place.gsub(", ", sep)
+        end
+
+        def publisher_first?
             @i18n.punct_fetch("production_order", "") == "publisher_first"
           end
 

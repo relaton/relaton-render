@@ -28,7 +28,11 @@ module Relaton
 
             type = value.is_a?(Hash) ? value[:type] : value.type
             unit = type && @i18n.label("size_#{type}")
-            unit.nil? || unit == "size_#{type}" ? content : "#{content} #{unit}"
+            return content if unit.nil? || unit == "size_#{type}"
+
+            # The value/unit glue is locale-declared (CJK cites tight,
+            # "巻1" over "vol. 1")
+            "#{unit}#{@i18n.punct_fetch('size-join', ' ')}#{content}"
           end
         end
       end

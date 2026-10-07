@@ -14,10 +14,25 @@ module Relaton
           def render
             return "#{@i18n.label('version')} #{raw}" unless word_edition?
 
+            # CJK editions cite as a cardinal template ("第N版")
+            cardinal = locale_template("edition_cardinal", number)
+            return cardinal if cardinal
+
             word = @i18n.label("edition_#{number}")
             return word unless word == "edition_#{number}"
 
             "#{ordinalize(number)} #{@i18n.label('edition')}"
+          end
+
+          private
+
+          # A locale template carrying {{ var1 }} populated with the
+          # edition number; a bare label (no placeholder) is not one
+          def locale_template(key, value)
+            raw = @i18n.label(key)
+            return nil if raw == key || raw !~ /\{\{/
+
+            raw.gsub("{{ var1 }}", value.to_s)
           end
 
           private

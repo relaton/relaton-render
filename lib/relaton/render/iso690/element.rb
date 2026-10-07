@@ -118,9 +118,12 @@ module Relaton
         end
 
         def join_names(names)
-          # A style with no join word renders a plain serial list
+          # A style with no join word renders a plain serial list,
+          # separated per the locale (the comma, or the CJK 、)
           if @i18n.label("and").empty? && names.size > 1
-            return names.join(", ")
+            sep = @i18n.label("list_separator")
+            sep = ", " if sep == "list_separator"
+            return names.join(sep)
           end
 
           oxford = @i18n.label("oxford_comma")
