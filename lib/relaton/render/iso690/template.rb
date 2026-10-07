@@ -124,9 +124,14 @@ module Relaton
         end
 
         # A template's paired literal ("({{production}})") closes even
-        # when nothing follows the present element it wraps
+        # when nothing follows the present element it wraps. Fullwidth
+        # parens (CJK) pair the same way
         def close_pending_paren?(out, value)
-          value.start_with?(")") && out.count("(") > out.count(")")
+          return false unless value.start_with?(")", "\uFF09")
+
+          opens = out.count("(") + out.count("\uFF08")
+          closes = out.count(")") + out.count("\uFF09")
+          opens > closes
         end
 
         def terminate(body)
