@@ -64,7 +64,8 @@ module Relaton
         # The short cite: the reference with the first-biblio marker
         def render_short(model, delim)
           kind = @style.kind_for(model.type)
-          template = @style.type_template_for(kind)&.short ||
+          template = @style.short_template_for(kind,
+                                               home: home_docid?(model)) ||
             @style.template_for(kind, home: home_docid?(model))
           Template.new(template).evaluate_short(
             Fields.new(model, style: @style, i18n: @i18n, short: true,
@@ -93,12 +94,12 @@ module Relaton
         end
 
         # The bracketed author-date in-text capsule ("Aluffi （2022）"):
-        # the author and the date in the locale's parentheses
-        def bracketed_date_citation(model, disambiguator: nil)
+        # the author and the PLAIN date (un-disambiguated, the 1.x
+        # citetemplate's {{ date }}) in the locale's parentheses
+        def bracketed_date_citation(model, **)
           f = Fields.new(model, style: @style, i18n: @i18n,
-                         disambiguator: disambiguator,
                          elements: @elements).to_h
-          date = f["disambiguateddate"].text
+          date = f["date"].text
           return "" if date.empty?
 
           open = @i18n.punct_fetch("open-paren", "(")
@@ -112,6 +113,10 @@ module Relaton
           Fields.new(model, style: @style, i18n: @i18n,
                      disambiguator: disambiguator,
                      elements: @elements).to_h["disambiguateddate"].text
+        end
+
+        def short_from_reference?
+          @style.scheme.short_from_reference
         end
 
         # The title citation ("{{ title }}" in the 1.x citetemplate):

@@ -25,7 +25,11 @@ module Relaton
             if number.empty?
               base
             else
-              "#{base}, #{@i18n.label('series_no')} #{number}"
+              # an empty series_no label joins on the space alone (the
+              # CJK form: "Series 472")
+              label = @i18n.label("series_no")
+              label.empty? ? "#{base} #{number}" :
+                "#{base}, #{label} #{number}"
             end
           end
 

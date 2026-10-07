@@ -48,8 +48,7 @@ module Relaton
           # plain join, without the wrap and sentence period (1.x
           # short-cite templates carried no wrap)
           def plain_render
-            marker = editors? && creators.size > 1 ?
-              "#{role_space}#{role_parenthesis}" : ''
+            marker = editors? && marked? ? "#{role_space}#{role_parenthesis}" : ''
             "#{join(names)}#{marker}"
           end
 

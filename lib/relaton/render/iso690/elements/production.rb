@@ -57,7 +57,8 @@ module Relaton
             return "" if label.empty? || label == "no_place"
 
             pubs = publishers.join("; ")
-            pubs.empty? ? "#{label}:" : "#{label}: #{pubs}"
+            pubs.empty? ? "#{label}#{production_sep}".rstrip :
+              "#{label}#{production_sep}#{pubs}"
           end
 
           def no_place_declared?
