@@ -34,12 +34,12 @@ module Relaton
               # from the next element, which follows directly in the
               # template; a lone editor is unmarked unless declared
               if editors? && marked?
-                "#{period(joined)} #{role_parenthesis} "
+                "#{period(joined)}#{role_space}#{role_parenthesis} "
               else
                 "#{period(joined)} "
               end
             else
-              marker = editors? && marked? ? " #{role_parenthesis}" : ''
+              marker = editors? && marked? ? "#{role_space}#{role_parenthesis}" : ''
               "#{joined}#{marker}"
             end
           end
@@ -49,7 +49,7 @@ module Relaton
           # short-cite templates carried no wrap)
           def plain_render
             marker = editors? && creators.size > 1 ?
-              " #{role_parenthesis}" : ''
+              "#{role_space}#{role_parenthesis}" : ''
             "#{join(names)}#{marker}"
           end
 
@@ -59,6 +59,11 @@ module Relaton
             open = @i18n.punct_fetch("open-paren", "(")
             close = @i18n.punct_fetch("close-paren", ")")
             "#{open}#{role_word}#{close}"
+          end
+
+          # CJK cites the role marker tight against the name list
+          def role_space
+            @i18n.punct_fetch("marker-space", " ")
           end
 
           def role_placement
