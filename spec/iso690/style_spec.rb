@@ -60,6 +60,15 @@ RSpec.describe Relaton::Render::Iso690::Style do
 end
 
 RSpec.describe Relaton::Render::Iso690::Style do
+  context "canonical jis packs" do
+    it "loads by registry name and carries the jis scheme" do
+      style = described_class.load("jis-en")
+      expect(style.family).to eq "iso690"
+      expect(style.scheme.short_from_reference).to be(true)
+      expect(style.per_type.map(&:type)).to include("report", "monograph")
+    end
+  end
+
   context "delta packs" do
     def write_pack(name, yaml)
       path = File.join(Dir.mktmpdir, "#{name}.yml")
