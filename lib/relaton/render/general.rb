@@ -140,7 +140,11 @@ module Relaton
         return ref if ref.empty? || ref.rstrip.end_with?(".")
 
         if (fn = ref.rindex("<fn"))
-          return "#{ref[0...fn]}.#{ref[fn..]}"
+          head = ref[0...fn].rstrip
+          return ref if head.empty?
+
+          sep = head.end_with?(".") ? "" : "."
+          return "#{head}#{sep}#{ref[fn..]}"
         end
 
         "#{ref}."
