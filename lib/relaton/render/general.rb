@@ -131,9 +131,17 @@ module Relaton
       end
 
       # The bibliography terminator; flavors override to suppress it
-      # (1.x use_terminator?), receiving the item it terminates
+      # (1.x use_terminator?), receiving the item it terminates. A
+      # reference closing on a footnote closes the sentence before it:
+      # the terminator lands ahead of the trailing fn.
+      FOOTNOTE_CLOSE = "</fn>".freeze
+
       def terminate_reference(ref, _item = nil)
         return ref if ref.empty? || ref.rstrip.end_with?(".")
+
+        if (fn = ref.rindex("<fn"))
+          return "#{ref[0...fn]}.#{ref[fn..]}"
+        end
 
         "#{ref}."
       end
