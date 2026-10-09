@@ -96,7 +96,9 @@ module Relaton
                 "#{from}#{@i18n.label('date_range')}#{to}"
               return text if item_kind == "serial_part"
 
-              "#{@i18n.label(to.empty? || to == from ? 'page' : 'pages')} #{text}"
+              label = @i18n.label(to.empty? || to == from ? "page" : "pages")
+              # the page labels are %-templates ("pp. %")
+              label.include?("%") ? label.sub("%", text) : "#{label} #{text}"
             end
           end
 
