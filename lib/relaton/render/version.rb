@@ -1,5 +1,5 @@
 module Relaton
   module Render
-    VERSION = "3.0.0.pre.alpha.34".freeze
+    VERSION = "3.0.0.pre.alpha.35".freeze
   end
 end
