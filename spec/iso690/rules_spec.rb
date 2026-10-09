@@ -69,6 +69,29 @@ RSpec.describe Relaton::Render::Iso690::Rules do
       .to eq "_A work_. DOI: https://doi.org/10.1017/9781108877831."
   end
 
+  it "the itu identifier rule labels ISBN and ISSN with a colon" do
+    model = Relaton::Bib::Item.from_xml(<<~XML)
+      <bibitem type="book">
+        <title>A handbook</title>
+        <docidentifier type="ISBN">92-61-12521-9</docidentifier>
+        <date type="published"><on>1998</on></date>
+      </bibitem>
+    XML
+    pack = File.join(Dir.mktmpdir, "itu-id-pack.yml")
+    File.write(pack, <<~YML)
+      name: itu identifier pack
+      rules:
+        identifier: itu_identifier
+      templates:
+        identifierMode: first
+        reference: "{{title}}. {{identifier}}."
+    YML
+    rendered = Relaton::Render::Iso690::Renderer.render(
+      model, style: pack, lang: "en",
+    )
+    expect(rendered).to eq "_A handbook_. ISBN: 92-61-12521-9."
+  end
+
   it "the ieee component part rule cites the host in the IEEE-SA form" do
     model = Relaton::Bib::Item.from_xml(<<~XML)
       <bibitem type="book">
