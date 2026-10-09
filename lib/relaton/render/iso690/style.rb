@@ -176,7 +176,12 @@ module Relaton
           locale.in_str ||= base_locale.in_str
           locale.at ||= base_locale.at
           locale.available_at ||= base_locale.available_at
-          locale.labels.merge!(base_locale.label_map) { |_k, _b, d| d }
+          # delta labels win per key; the base's label map only fills
+          # gaps. Hash#merge! yields |key, receiver, other|, so the
+          # delta value is the second argument.
+          locale.labels.merge!(base_locale.label_map) { |_k, delta, _base| delta }
+          # a delta's named attributes assert over the inherited labels
+          locale.named_label_map.each_key { |k| locale.labels.delete(k) }
           locale.punct = (base_locale.punct || {}).merge(locale.punct || {})
         end
 

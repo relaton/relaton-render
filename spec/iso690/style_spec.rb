@@ -127,6 +127,30 @@ RSpec.describe Relaton::Render::Iso690::Style do
       expect(style.scheme.locale.label_map["series_no"]).to eq "" # declared
     end
 
+    it "lets a delta label win per key and a named attribute assert over the base's labels" do
+      base = write_pack("label-base2", <<~YML)
+        name: label base 2
+        scheme:
+          locale:
+            availableAt: "Available at:"
+            labels:
+              "and": "&"
+      YML
+      delta = write_pack("label-delta2", <<~YML)
+        name: label delta 2
+        extends: #{base}
+        scheme:
+          locale:
+            availableAt: "\u5165\u624B\u5148\uFF1A"
+            labels:
+              "and": ""
+      YML
+      style = described_class.load(delta)
+      expect(style.scheme.locale.label_map["and"]).to eq "" # declared wins
+      expect(style.scheme.locale.label_map["available_from"])
+        .to eq "\u5165\u624B\u5148\uFF1A" # named attribute asserts
+    end
+
     it "unions requires and resolves the pack taxonomy before Kinds" do
       base = write_pack("req-base", <<~YML)
         name: req base

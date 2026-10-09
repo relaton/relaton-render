@@ -39,12 +39,18 @@ module Relaton
             "available_at" => "available_from",
           }.freeze
 
-          def label_map
-            base = LABEL_FOR.filter_map do |attr, label|
+          # The named attributes' label map alone: a delta's named
+          # attribute (availableAt) outranks the base pack's labels
+          # hash carrying the same label key
+          def named_label_map
+            LABEL_FOR.filter_map do |attr, label|
               value = public_send(attr)
               [label, value] unless value.nil?
             end.to_h
-            base.merge(labels || {})
+          end
+
+          def label_map
+            named_label_map.merge(labels || {})
           end
         end
       end
