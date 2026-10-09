@@ -34,6 +34,8 @@ RSpec.describe "the BIPM rule set" do
       </bibitem>
     XML
     expect(out).to eq "_A journal paper_. <strong>8</strong> (1) 32–36."
+    # the page labels are %-templates: no literal % leaks
+    expect(out).not_to include "%"
   end
 
   it "cites the serial part's pages unlabelled" do
