@@ -97,8 +97,9 @@ module Relaton
               return text if item_kind == "serial_part"
 
               label = @i18n.label(to.empty? || to == from ? "page" : "pages")
-              # the page labels are %-templates ("pp. %")
-              label.include?("%") ? label.sub("%", text) : "#{label} #{text}"
+              # the page labels are %-templates ("pp. %"); the block
+              # form keeps a % in the cited text from re-expanding
+              label.include?("%") ? label.gsub("%") { text } : "#{label} #{text}"
             end
           end
 
