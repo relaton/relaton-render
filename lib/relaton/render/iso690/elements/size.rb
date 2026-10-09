@@ -30,8 +30,12 @@ module Relaton
             unit = type && @i18n.label("size_#{type}")
             return content if unit.nil? || unit == "size_#{type}"
 
-            # The value/unit glue is locale-declared (CJK cites tight,
-            # "巻1" over "vol. 1")
+            # A %-template places the value at its % (the extent
+            # precedent: "% vol." cites "1 vol."); the value/unit glue
+            # is otherwise locale-declared (CJK cites tight, "巻1"
+            # over "vol. 1")
+            return unit.gsub("%", content) if unit.include?("%")
+
             "#{unit}#{@i18n.punct_fetch('size-join', ' ')}#{content}"
           end
         end
