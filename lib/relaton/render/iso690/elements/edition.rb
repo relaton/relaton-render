@@ -14,13 +14,15 @@ module Relaton
           def render
             return "#{@i18n.label('version')} #{raw}" unless word_edition?
 
-            # The worded forms first ("First edition", "第N版" via the
-            # ordinal template), the cardinal last
-            ordinal = locale_template("edition_ordinal", number)
-            return ordinal if ordinal
-
+            # The exact worded forms first ("first edition", "第1版"),
+            # then the generic ordinal template, the cardinal last: a
+            # specific label outranks a template that would apply to
+            # any number
             word = @i18n.label("edition_#{number}")
             return word unless word == "edition_#{number}"
+
+            ordinal = locale_template("edition_ordinal", number)
+            return ordinal if ordinal
 
             cardinal_form || "#{ordinalize(number)} #{@i18n.label('edition')}"
           end
