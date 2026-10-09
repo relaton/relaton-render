@@ -294,7 +294,7 @@ is a rule to promote:
 |`IeeeIdentifier`, `IeeeComponentPart`, `IeeeAccess`, `IeeeMedium` |**[impl]** promoted: `ieee_identifier`, `ieee_component_part`, `ieee_access`, `ieee_medium`
 |`BipmCreator`, `BipmComponentPart`, `BipmProduction`, `BipmExtent`, `BipmMedium`, `BipmEdition`, `BipmVolume` |**[impl]** promoted: `bipm_creator`, `bipm_component_part`, `bipm_production`, `bipm_extent`, `bipm_medium`, `bipm_edition`, `bipm_volume` (slot `volsize`)
 |`IhoEdition`, `IhoCreator` |**[impl]** promoted: `iho_edition`, `iho_creator` (the %w publisher list could never match the multiword organization name — now a string array)
-|`JisComponentPart`, `JisSeries`, `JisExtent` |the JIS host-citation rules
+|`JisComponentPart`, `JisSeries`, `JisExtent` |**[impl]** promoted: `jis_component_part`, `jis_series`, `jis_extent`
 |`BsiStatus` |status presentation
 |===
 
