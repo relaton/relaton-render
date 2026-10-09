@@ -15,8 +15,90 @@ module Relaton
           end
         end
 
+        # The IEEE-SA identifiers: DOI and ISBN carry their kind label
+        # with a colon ("DOI: https://doi.org/…")
+        class IeeeIdentifier < Elements::Identifier
+          private
+
+          def render_id(docidentifier)
+            return "#{docidentifier.type}: #{docidentifier.content}" if
+              %w[DOI ISBN].include?(docidentifier.type)
+
+            super
+          end
+        end
+
+        # The IEEE component part: "in Pellegrini, A. D., and P. K.
+        # Smith (eds.): <em>host</em>, production" — the names first,
+        # the eds marker in the close paren, the host title after the
+        # colon, the production after a comma
+        class IeeeComponentPart < Elements::ComponentPart
+          def render
+            h = host or return ""
+            out = +"in #{host_person_names(h)} (#{eds_label(h)}): "
+            out += host_title.to_s
+            production = Elements::Production
+              .new(h, style: @style, i18n: @i18n).render.to_s
+            out += ", #{production}" unless production.empty?
+            out
+          end
+
+          private
+
+          def host_editors(h)
+            Array(h.contributor).select { |c| has_role?(c, "editor") }
+          end
+
+          def eds_label(h)
+            @i18n.label(host_editors(h).one? ? "ed" : "eds")
+          end
+
+          # The IEEE host form: the first editor inverted, subsequent
+          # editors direct
+          def host_person_names(h)
+            host_editors(h).each_with_index.map { |c, i|
+              person = c.person or next ""
+
+              if i.zero?
+                [person_surname(person), person_given(person)]
+                  .reject(&:empty?).join(", ")
+              else
+                [person_given(person), person_surname(person)]
+                  .reject(&:empty?).join(" ")
+              end
+            }.reject(&:empty?).then { |names| join_names(names) }
+          end
+        end
+
+        # The IEEE access date, bare and unbracketed
+        # ("accessed September 3, 2019")
+        class IeeeAccess < Elements::Access
+          def render
+            "#{@i18n.label('viewed')} #{date_text}"
+          end
+        end
+
+        # The IEEE medium, capitalized and carrying its own trailing
+        # comma ("Dataset,", "Preprint,")
+        class IeeeMedium < Elements::Medium
+          private
+
+          def medium
+            m = @model.medium or return ""
+            text = m.carrier.to_s
+            text = m.genre.to_s if text.empty?
+            text = [m.form.to_s, m.size.to_s].reject(&:empty?)
+              .join(", ") if text.empty?
+            text.empty? ? "" : "#{text.sub(/^\w/) { |c| c.upcase }},"
+          end
+        end
+
         REGISTRY = {
           "status_bare" => BareStatus,
+          "ieee_identifier" => IeeeIdentifier,
+          "ieee_component_part" => IeeeComponentPart,
+          "ieee_access" => IeeeAccess,
+          "ieee_medium" => IeeeMedium,
         }.freeze
 
         class << self
