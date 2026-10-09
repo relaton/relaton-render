@@ -106,6 +106,66 @@ module Relaton
           end
         end
 
+        # The IHO creator cites the affiliation's organization name
+        # after the creator list ("D. Balenson, Internet Engineering
+        # Task Force")
+        class IhoCreator < Elements::Creator
+          def render
+            out = super.to_s
+            aff = affiliation_names
+            out.empty? || aff.empty? ? out : "#{out}, #{aff}"
+          end
+
+          private
+
+          def affiliation_names
+            creators.filter_map do |c|
+              person = c.person or next ""
+
+              Array(person.affiliation).filter_map do |a|
+                Array(a.organization&.name).map(&:content).first.to_s
+              end.reject(&:empty?).first.to_s
+            end.reject(&:empty?).uniq.join(", ")
+          end
+        end
+
+        # The IHO edition cites only for IHO-published documents, as
+        # the raw numeric edition carrying its own label ("edition
+        # 3.1.0"); worded editions ("Revision 1") cite as nothing
+        class IhoEdition < Elements::Edition
+          def render
+            return "" unless iho_publisher?
+
+            text = edition_text
+            text.match?(/\A\d/) ? " edition #{text}" : ""
+          end
+
+          private
+
+          def edition_text
+            raw = @model.edition
+            raw.respond_to?(:content) ? raw.content.to_s : raw.to_s
+          end
+
+          def iho_publisher?
+            Array(@model.contributor).any? do |c|
+              next false unless Array(c.role).any? do |r|
+                r.is_a?(String) ? r == "publisher" : r.type == "publisher"
+              end
+
+              org = c.organization or next false
+              names = Array(org.name).map(&:content) +
+                      [org.abbreviation&.content.to_s]
+              # a string array: %w[] would split the organization's
+              # full name into words and never match it
+              names.any? do |n|
+                ["IHO", "International Hydrographic Organization"]
+                  .include?(n)
+              end
+            end
+          end
+        end
+
         # The NIST rule set lives in its own autoloaded section
         autoload :Nist, "relaton/render/iso690/rules/nist"
 
@@ -124,6 +184,8 @@ module Relaton
           "nist_identifier" => Nist::NistIdentifier,
           "nist_publisher" => Nist::NistPublisher,
           "nist_draft" => Nist::NistDraft,
+          "iho_creator" => IhoCreator,
+          "iho_edition" => IhoEdition,
         }.freeze
 
         class << self

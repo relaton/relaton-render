@@ -69,6 +69,62 @@ RSpec.describe Relaton::Render::Iso690::Rules do
       .to eq "_A work_. DOI: https://doi.org/10.1017/9781108877831."
   end
 
+  it "the iho creator rule cites the affiliation after the creator list" do
+    model = Relaton::Bib::Item.from_xml(<<~XML)
+      <bibitem type="book">
+        <title>A joint work</title>
+        <date type="published"><on>2019</on></date>
+        <contributor><role type="author"/>
+          <person><name><surname>Balenson</surname><forename>David</forename></name>
+            <affiliation><organization><name>Internet Engineering Task Force</name></organization></affiliation>
+          </person>
+        </contributor>
+        <contributor><role type="publisher"/>
+          <organization><name>International Hydrographic Organization</name></organization>
+        </contributor>
+      </bibitem>
+    XML
+    pack = File.join(Dir.mktmpdir, "iho-creator-pack.yml")
+    File.write(pack, <<~YML)
+      name: iho creator pack
+      rules:
+        creator: iho_creator
+      templates:
+        reference: "{{creator}}. {{date}}."
+    YML
+    rendered = Relaton::Render::Iso690::Renderer.render(
+      model, style: pack, lang: "en",
+    )
+    expect(rendered).to include \
+        "BALENSON, David, Internet Engineering Task Force"
+  end
+
+  it "the iho edition rule cites the raw numeric edition with its own label" do
+    model = Relaton::Bib::Item.from_xml(<<~XML)
+      <bibitem type="standard">
+        <title>Standards for Hydrographic Surveys</title>
+        <edition>3.1.0</edition>
+        <date type="published"><on>2020</on></date>
+        <contributor><role type="publisher"/>
+          <organization><name>International Hydrographic Organization</name></organization>
+        </contributor>
+      </bibitem>
+    XML
+    pack = File.join(Dir.mktmpdir, "iho-edition-pack.yml")
+    File.write(pack, <<~YML)
+      name: iho edition pack
+      rules:
+        edition: iho_edition
+      templates:
+        reference: "{{title}}. {{edition}}. {{date}}."
+    YML
+    rendered = Relaton::Render::Iso690::Renderer.render(
+      model, style: pack, lang: "en",
+    )
+    expect(rendered).to eq "_Standards for Hydrographic Surveys_. " \
+      "edition 3.1.0. 2020."
+  end
+
   it "the itu identifier rule labels ISBN and ISSN with a colon" do
     model = Relaton::Bib::Item.from_xml(<<~XML)
       <bibitem type="book">
