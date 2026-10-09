@@ -291,7 +291,7 @@ is a rule to promote:
 
 |`ItuIdentifier` |`identifier: itu`
 |`NistIdentifier`, `NistCreator`, `NistDate`, `SerialDate`, `NistSeries`, `NistComponentPart`, `NistPublisher`, `Draft` |the NIST author-year rule set
-|`IeeeIdentifier`, `IeeeComponentPart`, `IeeeAccess`, `IeeeMedium` |the IEEE-SA rule set (designation-first standards)
+|`IeeeIdentifier`, `IeeeComponentPart`, `IeeeAccess`, `IeeeMedium` |**[impl]** promoted: `ieee_identifier`, `ieee_component_part`, `ieee_access`, `ieee_medium`
 |`BipmCreator`, `BipmComponentPart`, `BipmProduction`, `BipmExtent`, `BipmMedium`, `BipmEdition`, `BipmVolume` |the BIPM rule set
 |`IhoEdition`, `IhoCreator` |affiliation-composite creators
 |`JisComponentPart`, `JisSeries`, `JisExtent` |the JIS host-citation rules
