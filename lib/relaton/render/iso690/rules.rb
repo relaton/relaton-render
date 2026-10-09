@@ -106,6 +106,9 @@ module Relaton
           end
         end
 
+        # The NIST rule set lives in its own autoloaded section
+        autoload :Nist, "relaton/render/iso690/rules/nist"
+
         REGISTRY = {
           "status_bare" => BareStatus,
           "itu_identifier" => ItuIdentifier,
@@ -113,6 +116,14 @@ module Relaton
           "ieee_component_part" => IeeeComponentPart,
           "ieee_access" => IeeeAccess,
           "ieee_medium" => IeeeMedium,
+          "nist_creator" => Nist::NistCreator,
+          "nist_date" => Nist::NistDate,
+          "nist_serial_date" => Nist::NistSerialDate,
+          "nist_series" => Nist::NistSeries,
+          "nist_component_part" => Nist::NistComponentPart,
+          "nist_identifier" => Nist::NistIdentifier,
+          "nist_publisher" => Nist::NistPublisher,
+          "nist_draft" => Nist::NistDraft,
         }.freeze
 
         class << self

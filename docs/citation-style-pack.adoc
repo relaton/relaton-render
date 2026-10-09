@@ -290,7 +290,7 @@ is a rule to promote:
 |Flavor override |Becomes rule
 
 |`ItuIdentifier` |**[impl]** promoted: `identifier: itu_identifier`
-|`NistIdentifier`, `NistCreator`, `NistDate`, `SerialDate`, `NistSeries`, `NistComponentPart`, `NistPublisher`, `Draft` |the NIST author-year rule set
+|`NistIdentifier`, `NistCreator`, `NistDate`, `SerialDate`, `NistSeries`, `NistComponentPart`, `NistPublisher`, `Draft` |**[impl]** promoted: `nist_identifier`, `nist_creator`, `nist_date`, `nist_serial_date`, `nist_series`, `nist_component_part`, `nist_publisher`, `nist_draft`
 |`IeeeIdentifier`, `IeeeComponentPart`, `IeeeAccess`, `IeeeMedium` |**[impl]** promoted: `ieee_identifier`, `ieee_component_part`, `ieee_access`, `ieee_medium`
 |`BipmCreator`, `BipmComponentPart`, `BipmProduction`, `BipmExtent`, `BipmMedium`, `BipmEdition`, `BipmVolume` |the BIPM rule set
 |`IhoEdition`, `IhoCreator` |affiliation-composite creators
