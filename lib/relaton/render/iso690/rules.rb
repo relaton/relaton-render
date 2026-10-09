@@ -93,8 +93,22 @@ module Relaton
           end
         end
 
+        # The ITU identifiers: ISBN and ISSN carry their kind label
+        # with a colon ("ISBN 92-61-12521-9")
+        class ItuIdentifier < Elements::Identifier
+          private
+
+          def render_id(docidentifier)
+            return "#{docidentifier.type}: #{docidentifier.content}" if
+              %w[ISBN ISSN].include?(docidentifier.type)
+
+            super
+          end
+        end
+
         REGISTRY = {
           "status_bare" => BareStatus,
+          "itu_identifier" => ItuIdentifier,
           "ieee_identifier" => IeeeIdentifier,
           "ieee_component_part" => IeeeComponentPart,
           "ieee_access" => IeeeAccess,
