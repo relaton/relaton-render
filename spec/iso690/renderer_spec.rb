@@ -84,6 +84,29 @@ RSpec.describe Relaton::Render::Iso690::Renderer do
                "ISBN 978-0-19-966135-0."
     end
 
+    it "renders a %-template size unit with the value at its %" do
+      pack = File.join(Dir.mktmpdir, "size-pack.yml").tap do |path|
+        File.write(path, <<~YML)
+          name: size pack
+          scheme:
+            locale:
+              labels:
+                size_volume: "% vol."
+          templates:
+            reference: "{{title}}. {{size}}."
+        YML
+      end
+      model = bib(<<~X)
+        <bibitem type="book">
+          <title>A one-volume work</title>
+          <size><value type="volume">1</value></size>
+          <date type="published"><on>2019</on></date>
+        </bibitem>
+      X
+      expect(described_class.new(style: pack).render(model))
+        .to eq "_A one-volume work_. 1 vol."
+    end
+
     it "lets the pack's exact edition word outrank the caller's ordinal template" do
       pack = File.join(Dir.mktmpdir, "edition-words.yml").tap do |path|
         File.write(path, <<~YML)
