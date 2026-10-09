@@ -83,6 +83,31 @@ RSpec.describe Relaton::Render::Iso690::Renderer do
                "Oxford: Oxford University Press, 2015. " \
                "ISBN 978-0-19-966135-0."
     end
+
+    it "lets the pack's exact edition word outrank the caller's ordinal template" do
+      pack = File.join(Dir.mktmpdir, "edition-words.yml").tap do |path|
+        File.write(path, <<~YML)
+          name: edition words
+          scheme:
+            locale:
+              labels:
+                edition_1: "first edition"
+          templates:
+            reference: "{{title}}. {{edition}}."
+        YML
+      end
+      renderer = described_class.new(style: pack, labels: {
+        "edition_ordinal" => "{{ var1 | ordinal_word: '', '' }} edition",
+      })
+      model = bib(<<~X)
+        <bibitem type="book">
+          <title>A first printing</title>
+          <edition>1</edition>
+          <date type="published"><on>2000</on></date>
+        </bibitem>
+      X
+      expect(renderer.render(model)).to eq "_A first printing_. first edition."
+    end
   end
 
   describe "identifier kinds" do
