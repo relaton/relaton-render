@@ -166,10 +166,11 @@ module Relaton
           end
         end
 
-        # The NIST and BIPM rule sets live in their own autoloaded
-        # sections
+        # The NIST, BIPM and JIS rule sets live in their own
+        # autoloaded sections
         autoload :Nist, "relaton/render/iso690/rules/nist"
         autoload :Bipm, "relaton/render/iso690/rules/bipm"
+        autoload :Jis, "relaton/render/iso690/rules/jis"
 
         REGISTRY = {
           "status_bare" => BareStatus,
@@ -195,6 +196,9 @@ module Relaton
           "bipm_medium" => Bipm::BipmMedium,
           "bipm_edition" => Bipm::BipmEdition,
           "bipm_volume" => Bipm::BipmVolume,
+          "jis_component_part" => Jis::JisComponentPart,
+          "jis_series" => Jis::JisSeries,
+          "jis_extent" => Jis::JisExtent,
         }.freeze
 
         class << self
