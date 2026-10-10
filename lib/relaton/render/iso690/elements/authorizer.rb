@@ -13,7 +13,20 @@ module Relaton
           end
 
           def render
+            if (form = authorizer_form) && !form.empty?
+              return Template.new(form).evaluate(
+                "authorizer" => Template::Field[true, authorizer_name],
+              )
+            end
+
             authorizer_name
+          end
+
+          # The kind's declared form for this slot
+          def authorizer_form
+            variant = @style.per_type
+              .find { |t| t.type == @style.kind_for(@model.type) }
+            variant&.authorizer
           end
 
           private

@@ -13,6 +13,16 @@ module Relaton
           end
 
           def render
+            if (form = production_form) && !form.empty?
+              return Template.new(form).evaluate(
+                "production" => Template::Field[true, render_production],
+              )
+            end
+
+            render_production
+          end
+
+          def render_production
             if publisher_first?
               return no_place_production_publisher_first if places.empty? &&
                 no_place_declared?
@@ -32,6 +42,13 @@ module Relaton
         def cjk_place(place)
           sep = @i18n.punct_fetch("cjk-latin-separator", "")
           sep.empty? ? place : place.gsub(", ", sep)
+        end
+
+        # The kind's declared form for this slot
+        def production_form
+          variant = @style.per_type
+            .find { |t| t.type == @style.kind_for(@model.type) }
+          variant&.production
         end
 
         def publisher_first?

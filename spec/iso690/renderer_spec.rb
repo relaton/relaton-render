@@ -84,6 +84,55 @@ RSpec.describe Relaton::Render::Iso690::Renderer do
                "ISBN 978-0-19-966135-0."
     end
 
+    it "wraps the production and authorizer slots in the kind's forms" do
+      pack = File.join(Dir.mktmpdir, "slot-forms.yml").tap do |path|
+        File.write(path, <<~YML)
+          name: slot forms pack
+          perType:
+            - type: report
+              template: "{{creator}}. {{title}}{{authorizer}}{{production}}. {{location}}"
+              authorizer: ". {{authorizer}}"
+              production: ", {{production}}"
+          templates:
+            reference: "{{title}}"
+        YML
+      end
+      ieee = bib(<<~X)
+        <bibitem type="standard">
+          <title>Data specification</title>
+          <docidentifier type="IEEE">IEEE 1234</docidentifier>
+          <contributor><role type="publisher"/>
+            <organization><name>Institute of Electrical and Electronics Engineers</name></organization>
+          </contributor>
+          <contributor><role type="author"/>
+            <organization><name>Institute of Electrical and Electronics Engineers</name></organization>
+          </contributor>
+          <date type="published"><on>2020</on></date>
+        </bibitem>
+      X
+      ietf = bib(<<~X)
+        <bibitem type="standard">
+          <title>Intellectual Property Rights in IETF Technology</title>
+          <docidentifier type="IETF">RFC 3979</docidentifier>
+          <contributor><role type="editor"/>
+            <person><name><completename>S. Bradner</completename></name></person>
+          </contributor>
+          <contributor><role type="authorizer"/>
+            <organization><name>RFC Series</name></organization>
+          </contributor>
+          <date type="published"><on>2005</on></date>
+        </bibitem>
+      X
+      renderer = described_class.new(style: pack)
+      # the authorizer carries the period, the production the comma —
+      # each slot's separator lives in its own form
+      expect(renderer.render(ieee))
+        .to include "_Data specification_, Institute of Electrical"
+      expect(renderer.render(ietf))
+        .to include "_Intellectual Property Rights in IETF " \
+          "Technology_. RFC Series"
+    end
+
     it "renders a %-template size unit with the value at its %" do
       pack = File.join(Dir.mktmpdir, "size-pack.yml").tap do |path|
         File.write(path, <<~YML)

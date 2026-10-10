@@ -11,6 +11,12 @@ module Relaton
           attribute :template, :string
           attribute :series, :string
           attribute :title, :string
+          # Per-slot form overrides for the production and the
+          # authorizer: wrappers over the element's own render, so a
+          # kind can carry its slot's separator in the form
+          # (", {{production}}" over the engine's ". " glue)
+          attribute :production, :string
+          attribute :authorizer, :string
           attribute :home, :boolean
           attribute :fallbacks, :hash, default: -> { {} }
           # The short-cite template for this kind; absent falls back to
@@ -25,6 +31,8 @@ module Relaton
             map "template", to: :template
             map "series", to: :series
             map "title", to: :title
+            map "production", to: :production
+            map "authorizer", to: :authorizer
             map "home", to: :home
             map "fallbacks", to: :fallbacks
             map "short", to: :short
