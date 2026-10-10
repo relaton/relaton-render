@@ -56,7 +56,9 @@ module Relaton
           if model.respond_to?(:formattedref) && model.formattedref
             model.formattedref.content
           else
-            @renderer.render(model, **opts)
+            # a collection's items may each declare their own language;
+            # the single-item render routes like render_all does
+            renderer_for(Array(model.language).first).render(model, **opts)
           end
         embedded ? text : "<formattedref>#{text}</formattedref>"
       end

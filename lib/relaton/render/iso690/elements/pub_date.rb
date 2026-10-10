@@ -38,8 +38,15 @@ module Relaton
             if d.from && d.to
               fy = d.from.to_date.year
               ty = d.to.to_date.year
-              fy == ty ? fy.to_s : "#{fy}#{dash}#{ty}"
-            elsif d.from
+              return (fy == ty ? fy.to_s : "#{fy}#{dash}#{ty}")
+            end
+
+            # A from-only date is an open run ("1925–") for a
+            # continuing resource; a monograph's publication date
+            # cites the year bare ("2022") — the trailing dash would
+            # leak into the terminator otherwise
+            if d.from && %w[continuing serial_part online webdoc]
+                .include?(item_kind)
               "#{d.from.to_date.year}#{dash}"
             end
           end
