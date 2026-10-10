@@ -44,11 +44,13 @@ module Relaton
           sep.empty? ? place : place.gsub(", ", sep)
         end
 
-        # The kind's declared form for this slot
+        # The kind's declared form for this slot: the first entry of
+        # the kind carrying one (a home variant may shadow the type)
         def production_form
-          variant = @style.per_type
-            .find { |t| t.type == @style.kind_for(@model.type) }
-          variant&.production
+          kind = @style.kind_for(@model.type)
+          @style.per_type.find do |t|
+            t.type == kind && !t.production.to_s.empty?
+          end&.production
         end
 
         def publisher_first?
