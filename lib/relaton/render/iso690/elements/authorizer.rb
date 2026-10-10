@@ -22,11 +22,13 @@ module Relaton
             authorizer_name
           end
 
-          # The kind's declared form for this slot
+          # The kind's declared form for this slot: the first entry of
+          # the kind carrying one (a home variant may shadow the type)
           def authorizer_form
-            variant = @style.per_type
-              .find { |t| t.type == @style.kind_for(@model.type) }
-            variant&.authorizer
+            kind = @style.kind_for(@model.type)
+            @style.per_type.find do |t|
+              t.type == kind && !t.authorizer.to_s.empty?
+            end&.authorizer
           end
 
           private
