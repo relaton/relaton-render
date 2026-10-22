@@ -21,6 +21,7 @@ module Relaton
       autoload :Renderer, "relaton/render/iso690/renderer"
         autoload :Rules, "relaton/render/iso690/rules"
       autoload :Style, "relaton/render/iso690/style"
+      autoload :CslImport, "relaton/render/iso690/csl_import"
       autoload :Template, "relaton/render/iso690/template"
     end
   end
