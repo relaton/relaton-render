@@ -17,7 +17,8 @@ scheme:
     givenNameFirst: false
     editorsMarked: true
     loneEditorMarked: true
-    surnameUpcase: false
+    surnameUpcase: true
+    orgUpcase: false
     subsequentSurnameUpcase: false
   locale:
     "in": "in"

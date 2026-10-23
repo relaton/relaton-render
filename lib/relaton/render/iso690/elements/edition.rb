@@ -54,10 +54,13 @@ module Relaton
           private
 
           # Worded editions are document editions; online resources
-          # carry numbered builds rendered as versions
+          # carry numbered builds rendered as versions. A standard is a
+          # document edition too (its report kind carries the clause 8.11
+          # fallback templates, but its numbered editions read as
+          # "Nth edition" — the TS contract renders them so).
           def word_edition?
             number.positive? &&
-              %w[monograph component_part serial_part]
+              %w[monograph component_part serial_part report]
                 .include?(item_kind)
           end
 

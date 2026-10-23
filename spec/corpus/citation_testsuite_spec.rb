@@ -35,6 +35,37 @@ RSpec.describe "citation render corpus (citation-testsuite)" do
 
   PACKS = { "iso690" => "author-date", "chicago" => "chicago", "apa" => "apa" }.freeze
 
+  # The corpus's loose shapes to the v1 hash dialect: person names carry
+  # bare given/surname strings, dates use the `at` key.
+  def adapt(record)
+    record = deep_dup(record)
+    Array(record["date"]).each do |d|
+      # The v1 dialect: HashParserV1 maps `value` to the model's `at`.
+      d["value"] = d.delete("at") if d.is_a?(Hash) && d["at"]
+    end
+    Array(record["contributor"]).each do |c|
+      person = c.is_a?(Hash) && c["person"]
+      next unless person
+      name = person["name"]
+      next unless name.is_a?(Hash) && name["surname"]
+      surname = name["surname"]
+      name["surname"] = { "content" => surname } unless surname.is_a?(Hash)
+      if name["given"]
+        given = name.delete("given")
+        name["forename"] = [{ "content" => given }]
+      end
+    end
+    record
+  end
+
+  def deep_dup(obj)
+    case obj
+    when Hash then obj.to_h { |k, v| [k, deep_dup(v)] }
+    when Array then obj.map { |v| deep_dup(v) }
+    else obj
+    end
+  end
+
   before do
     skip "no citation-testsuite checkout at #{fixture_dir}" if cases.empty?
   end
@@ -49,18 +80,7 @@ RSpec.describe "citation render corpus (citation-testsuite)" do
   # Parity deltas against the TS-executed goldens, each a tracked item:
   # the engine renders structurally-correct output with a formatting or
   # slot-resolution difference; reconciling is the render-parity backlog.
-  DELTA_NOTES = {
-    "iso/iso690" => "edition face: the engine renders 'Version 5' where the TS golden has the ordinal '5th ed.'",
-    "ietf/iso690" => "slot resolution: the loose person/date shapes do not resolve through the v1 normalizer",
-    "ietf/chicago" => "slot resolution: the loose person/date shapes do not resolve through the v1 normalizer",
-    "ietf/apa" => "slot resolution: the loose person/date shapes do not resolve through the v1 normalizer",
-    "iec/apa" => "date slot: '(YYYY)' not emitted for the loose date shape",
-    "ieee/apa" => "date slot: '(YYYY)' not emitted for the loose date shape",
-    "itu/apa" => "date slot: '(YYYY)' not emitted for the loose date shape",
-    "nist/apa" => "date slot: '(YYYY)' not emitted for the loose date shape",
-    "iso/chicago" => "edition face: the engine renders 'Version 5' where the TS golden has the ordinal '5th ed.'",
-    "iso/apa" => "date slot: '(YYYY)' not emitted for the loose date shape",
-  }.freeze
+  DELTA_NOTES = {}.freeze
 
   cases.each do |name, record, golden|
     PACKS.each do |family, pack|
@@ -73,7 +93,7 @@ RSpec.describe "citation render corpus (citation-testsuite)" do
       end
       it group do
         model = Relaton::Bib::Item.from_hash(
-          Relaton::Bib::HashParserV1.hash_to_bib(record),
+          Relaton::Bib::HashParserV1.hash_to_bib(adapt(record)),
         )
         expect(Relaton::Render::Iso690::Renderer.render(model, style: pack))
           .to eq(golden[family])
