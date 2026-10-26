@@ -95,7 +95,7 @@ module Relaton
             return in_text_etal if in_text_etal?
 
             name = creators.first ? in_text_name(creators.first) : ""
-            etal? ? "#{name} <em>et al.</em>" : name
+            etal? ? "#{name}#{etal_suffix}" : name
           end
 
           # The in-text cite truncates at its own threshold: at
@@ -104,7 +104,16 @@ module Relaton
           def in_text_etal
             names = creators.first(name_form.in_text_etal_display)
               .map { |c| in_text_name(c) }
-            "#{join(names)} <em>et al.</em>"
+            "#{join(names)}#{etal_suffix}"
+          end
+
+          # The et-al suffix is the locale's label (roman by default; a
+          # pack's `others` label may carry its own presentation), joined
+          # per the style's list style — the serial comma before it is the
+          # MLA form ("Fielding, Roy, et al.")
+          def etal_suffix
+            sep = name_form.list_style == "serial" ? "," : ""
+            "#{sep} #{@i18n.label('others')}"
           end
 
           # The in-text cite names by surname alone (the 1.x
@@ -190,7 +199,7 @@ module Relaton
             creators.first(display).each_with_index
               .map do |contributor, index|
               format(contributor, first: index.zero?)
-            end.join(", ") + " <em>et al.</em>"
+            end.join(", ") + etal_suffix
           end
 
           def format(contributor, first:)

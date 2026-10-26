@@ -219,7 +219,9 @@ RSpec.describe "batch disambiguation and name-form knobs" do
       </bibitem>
     X
     out = Relaton::Render::Iso690::Renderer.new(style: style).citation(model)
-    expect(out).to eq "A <em>et al.</em>, 2020"
+    # The et-al suffix renders the locale's `others` label, roman by
+      # default — a style wanting emphasis sets `others:` with markup
+      expect(out).to eq "A et al., 2020"
   end
 
   it "truncates the in-text cite at its own et-al threshold" do
@@ -246,7 +248,7 @@ RSpec.describe "batch disambiguation and name-form knobs" do
       </bibitem>
     X
     renderer = Relaton::Render::Iso690::Renderer.new(style: style)
-    expect(renderer.in_text_author(model)).to eq "A <em>et al.</em>"
+    expect(renderer.in_text_author(model)).to eq "A et al."
   end
 
   it "composes the author-date capsule with its disambiguator" do
@@ -358,7 +360,7 @@ RSpec.describe "creator-list et-al truncation" do
     X
     out = Relaton::Render::Iso690::Renderer.new(style: style).render(model)
     expect(out)
-      .to eq "S1, F1, F2 S2, F3 S3 <em>et al.</em>. _T_. 2020."
+      .to eq "S1, F1, F2 S2, F3 S3 et al. _T_. 2020."
   end
 end
 

@@ -33,7 +33,8 @@ RSpec.describe "citation render corpus (citation-testsuite)" do
 
   cases = load_cases
 
-  PACKS = { "iso690" => "author-date", "chicago" => "chicago", "apa" => "apa" }.freeze
+  PACKS = { "iso690" => "author-date", "chicago" => "chicago", "apa" => "apa",
+            "mla" => "mla" }.freeze
 
   # The corpus's loose shapes to the v1 hash dialect: person names carry
   # bare given/surname strings, dates use the `at` key.
@@ -73,7 +74,7 @@ RSpec.describe "citation render corpus (citation-testsuite)" do
 
   it "has the three house-style families in every golden" do
     cases.each do |name, _, golden|
-      expect(golden.keys.sort).to eq(%w[apa chicago iso690])
+      expect(golden.keys.sort).to eq(%w[apa chicago iso690 mla])
     end
   end
 

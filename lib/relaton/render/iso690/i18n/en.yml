@@ -41,6 +41,7 @@ labels:
   in: "In:"
   and: "and"
   oxford_comma: ","
+  others: "et al."
   ed: "ed."
   eds: "eds."
   date_range: "–"
