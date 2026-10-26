@@ -28,6 +28,58 @@ RSpec.describe "canonical style packs" do
     XML
   end
 
+  # MLA Handbook 9th ed. 105: one author, inverted; title italic;
+  # publisher, year
+  it "mla renders the one-author book form" do
+    expect(render_item("mla", <<~XML)).to eq "Kurlansky, Mark. <em>Salt: A World History</em>. Walker and Company, 2002."
+      <bibitem type="book" xmlns="http://riboseinc.com/isoxml">
+        <title type="main">Salt: A World History</title>
+        <contributor><role type="author"/><person><name><surname>Kurlansky</surname><forename>Mark</forename></name></person></contributor>
+        <contributor><role type="publisher"/><organization><name>Walker and Company</name></organization></contributor>
+        <date type="issued"><on>2002</on></date>
+      </bibitem>
+    XML
+  end
+
+  # MLA 9th ed. 105: two authors — the first inverted, the second in
+  # natural order, joined with the serial comma
+  it "mla renders the two-author book form with the serial comma" do
+    expect(render_item("mla", <<~XML)).to eq "Dorris, Michael, and Louise Erdrich. <em>The Crown of Columbus</em>. HarperCollins Publishers, 1999."
+      <bibitem type="book" xmlns="http://riboseinc.com/isoxml">
+        <title type="main">The Crown of Columbus</title>
+        <contributor><role type="author"/><person><name><surname>Dorris</surname><forename>Michael</forename></name></person></contributor>
+        <contributor><role type="author"/><person><name><forename>Louise</forename><surname>Erdrich</surname></name></person></contributor>
+        <contributor><role type="publisher"/><organization><name>HarperCollins Publishers</name></organization></contributor>
+        <date type="issued"><on>1999</on></date>
+      </bibitem>
+    XML
+  end
+
+  # MLA 9th ed. 105: an organization is the author when none other exists
+  it "mla renders the organization-author form" do
+    expect(render_item("mla", <<~XML)).to eq "United Nations. <em>Consequences of Rapid Population Growth in Developing Countries</em>. United Nations, 1991."
+      <bibitem type="standard" xmlns="http://riboseinc.com/isoxml">
+        <title type="main">Consequences of Rapid Population Growth in Developing Countries</title>
+        <contributor><role type="author"/><organization><name>United Nations</name></organization></contributor>
+        <contributor><role type="publisher"/><organization><name>United Nations</name></organization></contributor>
+        <date type="issued"><on>1991</on></date>
+      </bibitem>
+    XML
+  end
+
+  # MLA 9th ed. 106: the Works Cited in-text reference carries the
+  # author alone — no date, no comma
+  it "mla renders the author-only in-text citation" do
+    model = bib(<<~XML)
+      <bibitem type="book" xmlns="http://riboseinc.com/isoxml">
+        <title type="main">The Crown of Columbus</title>
+        <contributor><role type="author"/><person><name><surname>Dorris</surname><forename>Michael</forename></name></person></contributor>
+        <date type="issued"><on>1999</on></date>
+      </bibitem>
+    XML
+    expect(Relaton::Render::Iso690::Renderer.citation(model, style: "mla")).to eq "Dorris"
+  end
+
   # 17.4: only the first book author inverts
   it "ieee-sa renders the first-name-inverted book form" do
     expect(render_item("ieee-sa", <<~XML)).to eq "Peck, R. B., W. E. Hanson, and T. H. Thornburn, <em>Foundation Engineering</em>, 2nd ed. New York: McGraw-Hill, 1972, pp. 230\u2013292."
