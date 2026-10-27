@@ -21,4 +21,8 @@ jobs:
   rake:
     uses: metanorma/ci/.github/workflows/generic-rake.yml@main
     secrets:
-      pat_token: ${{ secrets.METANORMA_CI_PAT_TOKEN }}
+      # This repo's org carries RELATON_CI_PAT (not the metanorma-org
+      # METANORMA_CI_PAT_TOKEN the Cimas template names): without it the
+      # gate's repository_dispatch falls back to the PR-context
+      # GITHUB_TOKEN and fails on every PR (relaton-render#150).
+      pat_token: ${{ secrets.RELATON_CI_PAT }}
