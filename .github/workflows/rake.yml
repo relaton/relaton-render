@@ -10,6 +10,12 @@ on:
 
 permissions:
   contents: write
+  # The shared rake workflow's tests-passed gate dispatches a
+  # repository_dispatch; without actions:write the GITHUB_TOKEN fallback
+  # fails with "Resource not accessible by integration" on every PR
+  # (relaton-render#150). The remote cascade additionally needs the
+  # METANORMA_CI_PAT_TOKEN secret to be present.
+  actions: write
 
 jobs:
   rake:
